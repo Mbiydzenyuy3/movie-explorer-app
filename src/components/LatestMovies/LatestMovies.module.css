@@ -1,0 +1,157 @@
+.carousel {
+  display: flex;
+  overflow-x: hidden;
+  gap: 138px;
+  padding: 16px;
+  animation: scroll 1s;
+  animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73);
+  animation-duration: 1.1s;
+  scrollbar-width: thin;
+  scrollbar-color: #3b0650 rgba(255, 255, 255, 0.1);
+}
+
+.carousel:hover {
+  transition: 0.5s ease-in-out;
+  overflow-x: auto;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.movie {
+  flex: 0 0 auto !important;
+  text-align: center !important;
+  position: relative !important;
+  padding-left: 47px !important;
+}
+
+.movie img {
+  position: absolute;
+  top: 30%;
+  left: 70%;
+  width: 138px;
+  height: 178px;
+  border-radius: 12px;
+  border: 1px solid #ffffff33;
+  box-shadow: 0px 4px 14px 0px #0000004d;
+  z-index: 2;
+  cursor: pointer;
+}
+
+h1 {
+  font-family: var(--secondary-font);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 33.89px;
+  color: #fff;
+  padding-left: 47px;
+}
+
+.number {
+  color: #fff;
+  font-family: var(--primary-font);
+  font-size: 250px;
+  line-height: 298.34px;
+  /* backdrop-filter: blur(40px); */
+  font-weight: 1000;
+}
+
+.headerCarousel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nextMovie {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #fff;
+  width: 120px;
+  padding: 2px;
+  border-radius: 40px;
+  border: 1px solid #ffffff33;
+  backdrop-filter: blur(40px);
+  background: #ffffff33;
+  margin-right: 47px;
+  animation: slideRight ease-in;
+  animation-duration: 1s;
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.loadingSpinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  /* Adjust height as needed */
+}
+
+.spinner {
+  border: 4px solid #d86d0aef;
+  border-top: 4px solid #e97509;
+  /* Change color to match your theme */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel {
+    overflow-x: auto;
+  }
+
+  .headerCarousel h1 {
+    font-size: 18px;
+    padding-left: 16px;
+  }
+
+  .nextMovie {
+    width: 100px;
+    font-size: 14px;
+    height: 40px;
+    margin-right: 16px;
+  }
+
+  .movie img {
+    width: 118px;
+    height: 158px;
+  }
+
+  .number {
+    font-size: 220px;
+  }
+}

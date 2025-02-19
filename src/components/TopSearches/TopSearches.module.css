@@ -1,0 +1,23 @@
+.topRatedMovies {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 16px;
+  width: 1312px;
+  height: fit-content;
+  margin: auto;
+}
+
+.topRatedMovies img {
+  width: 251px;
+  height: 251px;
+  border-radius: 12px;
+  border-width: 1px;
+}
+
+a.movieCard {
+  width: 251px;
+  height: 251px;
+  left: 1059px;
+  border-radius: 12px;
+  border-width: 1px;
+}

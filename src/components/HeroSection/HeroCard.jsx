@@ -2,7 +2,7 @@ import styles from "../HeroSection/HeroSection.module.css";
 import PropTypes from "prop-types";
 export default function HeroSection({
   title,
-  backgroundImage,
+  // backgroundImage,
   description,
   storage,
   movie,
@@ -12,16 +12,18 @@ export default function HeroSection({
   };
   return (
     <>
-      <div
-        className={styles.heroSection}
-        style={{
-          backgroundImage: `linear-gradient(#0037, #111), url(https://image.tmdb.org/t/p/original${backgroundImage})`,
-        }}
-      >
+      <div className={styles.heroSection}>
         <div className={styles.movieDetail}>
           <h1>{title}</h1>
           <div className={styles.detailInitial}>
             <img src="/assets/img/Spiderman.png" alt="spider" />
+            <div className={styles.heropDiv}>
+              <p className={styles.heroMovieDescription}>
+                When a spell goes wrong, dangerous foes from other worlds start
+                to appear, forcing Peter to discover what it truly means to be
+                Spider-Man.
+              </p>
+            </div>
             <div className="frame">CBFC:U/A</div>
             <div className={styles.production}>
               <p>Action</p>
@@ -88,7 +90,7 @@ export default function HeroSection({
               </button>
             </div>
 
-            <div className={styles.heroSubs}>
+            {/* <div className={styles.heroSubs}>
               <button className={styles.functionBtn}>
                 <svg
                   width="22"
@@ -134,7 +136,7 @@ export default function HeroSection({
                   />
                 </svg>
               </button>
-            </div>
+            </div> */}
           </div>
 
           <p className={styles.movieDescription}>{description}</p>

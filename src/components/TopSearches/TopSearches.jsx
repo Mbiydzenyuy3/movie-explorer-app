@@ -20,7 +20,7 @@ export default function TopSearches({
       <div className={styles.headerCarousel}>
         <h1>Top Searches</h1>
         <button className={styles.nextMovie}>
-          View More
+          Load More
           <svg
             width="7"
             height="11"
@@ -53,6 +53,13 @@ export default function TopSearches({
                 alt={movie.title}
                 onClick={() => detail(movie)}
               />
+              <div className="movie-meta">
+                <h3 className="movie-title">{movie.title}</h3>
+                <span className="movie-rate">
+                  ⭐ {movie.vote_average.toFixed(1)}
+                </span>
+                <span>{new Date(movie.release_date).getFullYear()}</span>
+              </div>
             </div>
           ))}
         </div>

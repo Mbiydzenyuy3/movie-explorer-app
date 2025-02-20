@@ -2,7 +2,7 @@ import { MoviesContext } from "../context/movieContext";
 import { useParams } from "react-router";
 import { useContext, useState, useEffect } from "react";
 import MovieCast from "../components/Cast/movieCast";
-import HeroSection from "../components/HeroSection/HeroCard";
+import DetailsHeroSection from "../components/detailsHeroSection/detailHeroSection";
 import SimilarMovies from "../components/SimilarMovies/SimilarMovies";
 import { useNavigate } from "react-router";
 import Header from "../components/Navigations/header";
@@ -77,7 +77,7 @@ export default function DetailPage() {
   return (
     <>
       <Header />
-      <HeroSection
+      <DetailsHeroSection
         backgroundImage={
           selectedMovie.backdrop_path
             ? selectedMovie.backdrop_path

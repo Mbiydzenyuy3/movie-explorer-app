@@ -10,6 +10,21 @@
   scrollbar-color: #3b0650 rgba(255, 255, 255, 0.1);
 }
 
+.carouselLatest {
+  position: absolute;
+  top: 560px;
+  left: 0;
+  display: flex;
+  overflow-x: hidden;
+  gap: 138px;
+  padding: 16px;
+  animation: scroll 1s;
+  animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73);
+  animation-duration: 1.1s;
+  scrollbar-width: thin;
+  scrollbar-color: #3b0650 rgba(255, 255, 255, 0.1);
+}
+
 .carousel:hover {
   transition: 0.5s ease-in-out;
   overflow-x: auto;
@@ -69,6 +84,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: -275px;
 }
 
 .nextMovie {

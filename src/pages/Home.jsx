@@ -44,7 +44,7 @@ export default function Homepage() {
         BASE_URL={baseUrl}
         IMAGE_PATH={IMAGE_PATH}
         title="Action"
-        genre={28}
+        genre={53}
         detail={handleMovieDetail}
       />
       <MoviesLayout
@@ -60,7 +60,7 @@ export default function Homepage() {
         BASE_URL={baseUrl}
         IMAGE_PATH={IMAGE_PATH}
         title="Comedy"
-        genre={35}
+        genre={37}
         detail={handleMovieDetail}
       />
 

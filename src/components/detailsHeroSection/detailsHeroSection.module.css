@@ -1,16 +1,13 @@
 /* Herosection */
-.heroSection {
+.detailHeroSection {
   background-size: cover;
   background-position: center;
-  height: 800px;
+  height: 900px;
   background-repeat: no-repeat;
   position: relative;
-  margin-bottom: 50px;
-  padding: 0 75px 0 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-image: url("/assets/img/hero-bg.png");
 }
 
 .movieDetail {
@@ -19,7 +16,9 @@
   color: #fff;
   bottom: 0;
   justify-content: center;
-  margin-top: 223px;
+  align-items: center;
+  height: 800px;
+  margin-bottom: 32px;
 
   h1 {
     padding-left: 0;
@@ -71,14 +70,15 @@
   margin-top: 50px;
   padding-right: 75px;
   width: 550px;
+  text-align: center;
 }
 
-.heroSubs {
+/* .heroSubs {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   padding-right: 75px;
-}
+} */
 
 .heroBtn {
   font-family: 'Inter', sans-serif;
@@ -86,6 +86,7 @@
   width: 433px;
   display: flex;
   justify-content: center;
+  gap: 32px;
 
   button {
     display: flex;
@@ -155,6 +156,7 @@
     padding-right: 16px;
     min-width: 300px;
     font-size: 14px;
+    text-align: left;
   }
 }
 

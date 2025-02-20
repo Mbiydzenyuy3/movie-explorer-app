@@ -26,7 +26,7 @@ export default function MoviesLayout({
       <div className={styles.headerCarousel}>
         <h1>{title}</h1>
         <button className={styles.nextMovie}>
-          View More
+          Load More
           <svg
             width="7"
             height="11"
@@ -55,6 +55,11 @@ export default function MoviesLayout({
               alt={movie.title}
               onClick={() => detail(movie)}
             />
+            <div className="movie-meta">
+              <h3 className="movie-title">{movie.title}</h3>
+              <span>⭐ {movie.vote_average.toFixed(1)}</span>
+              <span>{new Date(movie.release_date).getFullYear()}</span>
+            </div>
           </div>
         ))}
       </div>

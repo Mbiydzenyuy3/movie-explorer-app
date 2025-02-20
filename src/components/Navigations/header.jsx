@@ -21,16 +21,16 @@ export default function Header() {
                 <Link to="/">Home</Link>
               </li>
               <li>
-                <Link to="/movie/:id">Movies</Link>
+                <Link to="/details/:id">Movies</Link>
               </li>
               <li>
-                <Link to="/movie/:id">Series</Link>
+                <Link to="/details/:id">Series</Link>
               </li>
               <li>
-                <Link to="/movie/:id">Trending</Link>
+                <Link to="/details/:id">Trending</Link>
               </li>
               <li>
-                <Link to="/movie/:id">Categories</Link>
+                <Link to="/details/:id">Categories</Link>
               </li>
             </ul>
           </nav>

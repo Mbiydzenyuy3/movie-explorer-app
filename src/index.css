@@ -81,33 +81,12 @@ h3 {
   color: #fff;
 }
 
-.more-movies {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 1312px;
-  height: 1050px;
-  margin: auto;
-  top: 942px;
-  left: 49px;
-  gap: 50px;
+.movie-title {
+  color: #fff;
 }
 
-.action-movies,
-.romance-movies,
-.comedy-movies {
-  display: grid;
-  grid-template-columns: repeat(24, 1fr);
-  gap: 16px;
-  margin-top: 100px;
-}
-
-
-.movie-section-items {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 32px;
+.movie-meta {
+  color: #fff;
 }
 
 /* sections */
@@ -130,7 +109,7 @@ footer {
 
 .footer {
   width: 100%;
-  margin-top: 400px;
+  margin-top: 100px;
 }
 
 .footer-main-items {

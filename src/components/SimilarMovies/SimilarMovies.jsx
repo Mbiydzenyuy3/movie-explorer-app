@@ -33,6 +33,11 @@ export default function SimilarMovies({
                 alt={movie.title}
                 onClick={() => detail(movie)}
               />
+              <div className="movie-meta">
+                <h3 className="movie-title">{movie.title}</h3>
+                <span>⭐ {movie.vote_average.toFixed(1)}</span>
+                <span>{new Date(movie.release_date).getFullYear()}</span>
+              </div>
             </div>
           ))}
         </div>

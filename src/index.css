@@ -18,8 +18,12 @@ body {
   padding-block: 8px;
 }
 
-/* header */
+div#root {
+  display: block;
+  position: relative;
+}
 
+/* header */
 header {
   width: min(1920px, 100%);
   padding-block: 16px;

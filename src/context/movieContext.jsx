@@ -6,10 +6,11 @@ export const MoviesContext = createContext();
 
 export const DetailMovieData = ({ children }) => {
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const apiKey = import.meta.env.VITE_BASE_API_KEY;
+  const apiKey = import.meta.env.VITE_API_KEY;
   const baseUrl = import.meta.env.VITE_BASE_BASE_URL;
   const IMAGE_PATH = import.meta.env.VITE_BASE_IMG_PATH;
 
+  console.log(apiKey)
   return (
     <MoviesContext.Provider
       value={{ selectedMovie, setSelectedMovie, apiKey, baseUrl, IMAGE_PATH }}

@@ -7,15 +7,19 @@
   position: relative;
   margin-bottom: 50px;
   padding: 0 75px 0 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .movieDetail {
   display: flex;
   flex-direction: column;
-  padding-top: 100px;
+  /* padding-top: 100px; */
   color: #fff;
-  position: absolute;
+  /* position: absolute; */
   bottom: 0;
+  justify-content: center;
 
   h1 {
     padding-left: 0;
@@ -29,6 +33,7 @@
 
 .detailInitial {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   font-family: var(--primary-font);
   align-items: center;
@@ -38,6 +43,12 @@
   line-height: 23.87px;
   padding-bottom: 20px;
   width: 433px;
+}
+
+.production {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .movieDescription {
@@ -59,7 +70,7 @@
   font-size: 20px;
   width: 433px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 
   button {
     display: flex;
@@ -68,7 +79,7 @@
     align-items: center;
     border-radius: 40px;
     line-height: 24.2px;
-    gap: 10px;
+    gap: 16px;
     justify-content: center;
   }
 }
@@ -86,7 +97,8 @@
 
 .heroBtns {
   display: flex;
-  justify-content: space-between;
+  gap: 16px;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
@@ -135,7 +147,6 @@
   color: #000;
   font-size: 16px;
   box-shadow: 0px 4px 14px 0px #00000029;
-
   box-shadow: 0px 4px 40px 0px #FFFFFF1F;
 }
 
@@ -143,4 +154,6 @@
   background-color: #272626;
   backdrop-filter: blur(40px);
   color: #fff;
+  border: 0;
+  margin-right: 16px;
 }

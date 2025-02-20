@@ -1,5 +1,5 @@
 import styles from "../MoviesLayout/MoviesLayout.module.css";
-import useFetchMovies from "../../hook/moviesFetch";
+import useFetchMovies from "../../hook/useMoviesFetch";
 import PropTypes from "prop-types";
 
 export default function MoviesLayout({

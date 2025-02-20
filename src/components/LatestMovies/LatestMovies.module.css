@@ -26,7 +26,7 @@
 }
 
 .carousel:hover {
-  transition: 0.5s ease-in-out;
+  transition: 0.5s ease-in;
   overflow-x: auto;
 }
 
@@ -126,22 +126,17 @@ h1 {
 }
 
 .spinner {
-  border: 4px solid #f89706;
-  border-top: 4px solid #f89706;
-  /* Change color to match your theme */
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
+  background: radial-gradient(farthest-side, #f89706 94%, #0000) top/9px 9px no-repeat,
+    conic-gradient(#0000 30%, #f89706);
+  animation: spinner-c7wet2 1s infinite linear;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
+@keyframes spinner-c7wet2 {
   100% {
-    transform: rotate(360deg);
+    transform: rotate(1turn);
   }
 }
 

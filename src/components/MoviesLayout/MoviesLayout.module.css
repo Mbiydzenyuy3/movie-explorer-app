@@ -20,13 +20,13 @@
 }
 
 .carouselCommon::-webkit-scrollbar-track {
-  background: #ff4a47;
+  background: #f17209;
   /* Light transparent background */
   border-radius: 10px;
 }
 
 .carouselCommon::-webkit-scrollbar-thumb {
-  background: #ff4a47;
+  background: #f17209;
   /* Semi-transparent thumb */
   border-radius: 10px;
   transition: background 0.3s ease-in-out;
@@ -40,7 +40,7 @@
 /* Firefox scrollbar */
 .carouselCommon {
   scrollbar-width: none;
-  scrollbar-color: #ff4a47 rgba(255, 255, 255, 0.1);
+  scrollbar-color: #f17209 rgba(255, 255, 255, 0.1);
   transition: 0.6s ease-in-out;
 }
 

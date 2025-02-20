@@ -7,7 +7,7 @@
   animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73);
   animation-duration: 1.1s;
   scrollbar-width: thin;
-  scrollbar-color: #3b0650 rgba(255, 255, 255, 0.1);
+  scrollbar-color: #f17209 rgba(255, 255, 255, 0.1);
 }
 
 .carouselLatest {
@@ -22,7 +22,7 @@
   animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73);
   animation-duration: 1.1s;
   scrollbar-width: thin;
-  scrollbar-color: #3b0650 rgba(255, 255, 255, 0.1);
+  scrollbar-color: #f17209 rgba(255, 255, 255, 0.1);
 }
 
 .carousel:hover {
@@ -43,10 +43,10 @@
 }
 
 .movie {
-  flex: 0 0 auto !important;
-  text-align: center !important;
-  position: relative !important;
-  padding-left: 47px !important;
+  flex: 0 0 auto;
+  text-align: center;
+  position: relative;
+  padding-left: 47px;
 }
 
 .movie img {
@@ -100,7 +100,7 @@ h1 {
   backdrop-filter: blur(40px);
   background: #ffffff33;
   margin-right: 47px;
-  animation: slideRight ease-in;
+  animation: slideLeft ease-in;
   animation-duration: 1s;
 }
 
@@ -126,22 +126,23 @@ h1 {
 }
 
 .spinner {
-  border: 4px solid #d86d0aef;
-  border-top: 4px solid #e97509;
-  /* Change color to match your theme */
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
+  width: 44.8px;
+  height: 44.8px;
+  animation: spinner-y0fdc1 2s infinite ease;
+  transform-style: preserve-3d;
 }
 
-@keyframes spin {
+@keyframes spinner-y0fdc1 {
   0% {
-    transform: rotate(0deg);
+    transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+  }
+
+  50% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
   }
 
   100% {
-    transform: rotate(360deg);
+    transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
   }
 }
 

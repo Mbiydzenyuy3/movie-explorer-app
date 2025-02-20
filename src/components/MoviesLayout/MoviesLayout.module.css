@@ -7,7 +7,7 @@
   margin-bottom: 50px;
   scroll-behavior: smooth;
   animation: scroll;
-  animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73);
+  animation-timing-function: cubic-bezier(0.37, 0.56, 1, 0.62);
   animation-duration: 1s;
   -webkit-overflow-scrolling: touch;
   /* Smooth scrolling for mobile */
@@ -20,13 +20,13 @@
 }
 
 .carouselCommon::-webkit-scrollbar-track {
-  background: #ff4a47;
+  background: #f89706;
   /* Light transparent background */
   border-radius: 10px;
 }
 
 .carouselCommon::-webkit-scrollbar-thumb {
-  background: #ff4a47;
+  background: #f89706;
   /* Semi-transparent thumb */
   border-radius: 10px;
   transition: background 0.3s ease-in-out;
@@ -40,7 +40,7 @@
 /* Firefox scrollbar */
 .carouselCommon {
   scrollbar-width: none;
-  scrollbar-color: #ff4a47 rgba(255, 255, 255, 0.1);
+  scrollbar-color: #f89706 rgba(255, 255, 255, 0.1);
   transition: 0.6s ease-in-out;
 }
 

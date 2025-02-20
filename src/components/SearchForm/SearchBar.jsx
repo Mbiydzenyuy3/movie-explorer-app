@@ -12,8 +12,8 @@ export default function SearchBar() {
   const IMAGE_PATH = import.meta.env.VITE_BASE_IMG_PATH;
   const { setSelectedMovie } = useContext(MoviesContext);
 
-  const handleQuery = async (e) => {
-    const searchTerm = e.target.value;
+  const handleQuery = async (event) => {
+    const searchTerm = event.target.value;
     setQuery(searchTerm);
 
     if (searchTerm.length > 1) {

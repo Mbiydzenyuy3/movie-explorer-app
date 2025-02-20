@@ -40,7 +40,7 @@
 /* Firefox scrollbar */
 .carouselTopSearch {
   scrollbar-width: none;
-  scrollbar-color: #f8a203 rgba(255, 255, 255, 0.1);
+  scrollbar-color: #f17209 rgba(255, 255, 255, 0.1);
   transition: 0.6s ease-in-out;
 }
 
@@ -113,7 +113,7 @@ h1 {
   backdrop-filter: blur(40px);
   background: #ffffff33;
   margin-right: 47px;
-  animation: slideRight ease-in;
+  animation: slideLeft ease-in;
   animation-duration: 1s;
 }
 
@@ -135,26 +135,42 @@ h1 {
   align-items: center;
   justify-content: center;
   height: 300px;
-  /* Adjust height as needed */
 }
 
 .spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-top: 4px solid #e67d06;
-  /* Change color to match your theme */
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
+  position: relative;
+  width: 22.4px;
+  height: 22.4px;
 }
 
-@keyframes spin {
+.spinner::before,
+.spinner::after {
+  --radius: 250;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: spinner-w7nm60 1s infinite linear;
+  background: #f17209;
+  border-radius: 50%;
+}
+
+.spinner::before {
+  --radius: -250;
+  background: #dbdcef;
+}
+
+@keyframes spinner-w7nm60 {
   0% {
-    transform: rotate(0deg);
+    transform: scale(1) rotate(0deg) translateY(calc(var(--radius) * 1%));
+  }
+
+  50% {
+    transform: scale(0.5) rotate(1440deg) translateY(0);
   }
 
   100% {
-    transform: rotate(360deg);
+    transform: scale(1) rotate(2920deg) translateY(calc(var(--radius) * 1%));
   }
 }
 

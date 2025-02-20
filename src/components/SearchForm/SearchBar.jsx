@@ -7,7 +7,7 @@ export default function SearchBar() {
   const [query, setQuery] = useState("");
   const [searchedMovie, setSearchedMovie] = useState([]);
   const navigate = useNavigate();
-  const apiKey = import.meta.env.VITE_BASE_API_KEY;
+  const apiKey = import.meta.env.VITE_API_KEY;
   const baseUrl = import.meta.env.VITE_BASE_BASE_URL;
   const IMAGE_PATH = import.meta.env.VITE_BASE_IMG_PATH;
   const { setSelectedMovie } = useContext(MoviesContext);
@@ -37,7 +37,7 @@ export default function SearchBar() {
     <div className={styles.input}>
       <input
         type="search"
-        placeholder="Search Movies, Series.."
+        placeholder="Search here for more movies"
         value={query}
         onChange={handleQuery}
       />
@@ -56,9 +56,9 @@ export default function SearchBar() {
         />
       </svg>
       {searchedMovie.length > 0 && (
-        <div className="search-results">
+        <div className={styles.searchResults}>
           {searchedMovie.map((movie) => (
-            <div key={movie.id} className="search-item">
+            <div key={movie.id} className={styles.searchItem}>
               <img
                 src={`${IMAGE_PATH}${movie.poster_path}`}
                 alt={movie.title}

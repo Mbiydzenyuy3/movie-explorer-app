@@ -47,6 +47,10 @@
   text-align: center;
   position: relative;
   padding-left: 47px;
+  flex: 0 0 auto;
+  text-align: center;
+  position: relative;
+  padding-left: 47px;
 }
 
 .movie img {
@@ -100,7 +104,7 @@ h1 {
   backdrop-filter: blur(40px);
   background: #ffffff33;
   margin-right: 47px;
-  animation: slideRight ease-in;
+  animation: slideLeft ease-in;
   animation-duration: 1s;
 }
 

@@ -37,7 +37,6 @@ export default function LatestMovies({
                 alt={movie.title}
                 onClick={() => detail(movie)}
               />
-             
             </div>
           ))}
         </div>

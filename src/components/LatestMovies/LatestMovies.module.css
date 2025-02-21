@@ -4,8 +4,8 @@
   gap: 138px;
   padding: 16px;
   animation: scroll 1s;
-  animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73);
-  animation-duration: 1.1s;
+  animation-timing-function: cubic-bezier(0.66, 0, 0.31, 1);
+  animation-duration: 1.5s;
   scrollbar-width: thin;
   scrollbar-color: #f89706 rgba(255, 255, 255, 0.1);
 }
@@ -19,8 +19,8 @@
   gap: 138px;
   padding: 16px;
   animation: scroll 1s;
-  animation-timing-function: cubic-bezier(0.37, 0.56, 1, 0.62);
-  animation-duration: 1.1s;
+  transition: animation ease-in-out;
+  animation-duration: 2s;
   scrollbar-width: thin;
   scrollbar-color: #f89706 rgba(255, 255, 255, 0.1);
 }
@@ -90,35 +90,6 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin-top: -275px;
-}
-
-.nextMovie {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  color: #fff;
-  width: 120px;
-  padding: 2px;
-  border-radius: 40px;
-  border: 1px solid #ffffff33;
-  backdrop-filter: blur(40px);
-  background: #ffffff33;
-  margin-right: 47px;
-  animation: slideLeft ease-in;
-  animation-duration: 1s;
-}
-
-@keyframes slideRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
 }
 
 .loadingSpinner {

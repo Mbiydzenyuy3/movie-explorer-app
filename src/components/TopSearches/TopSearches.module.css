@@ -1,15 +1,13 @@
 .carouselTopSearch {
   display: flex;
-  width: 1280px;
-  margin: auto;
   overflow-x: auto;
   /* Enable scrolling */
   gap: 14px;
-  padding: 16px 47px;
+  padding: 16px 40px;
+  margin-right: 48px;
   margin-bottom: 50px;
   scroll-behavior: smooth;
   animation: scroll;
-  /* animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73); */
   animation-duration: 1s;
   -webkit-overflow-scrolling: touch;
   /* Smooth scrolling for mobile */

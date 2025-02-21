@@ -16,7 +16,8 @@ div#root {
 
 /* header */
 header {
-  width: min(1920px, 100%);
+  width: min(1280px, 100%);
+  margin: auto;
   padding-block: 16px;
   display: flex;
   align-items: center;

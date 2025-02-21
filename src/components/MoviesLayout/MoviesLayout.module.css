@@ -1,12 +1,11 @@
 .carouselCommon {
   display: flex;
-  width: 1280px;
-  margin: auto;
   overflow-x: auto;
   /* Enable scrolling */
   gap: 14px;
   padding: 16px 47px;
   margin-bottom: 50px;
+  margin-right: 48px;
   scroll-behavior: smooth;
   animation: scroll;
   animation-timing-function: cubic-bezier(0.37, 0.56, 1, 0.62);

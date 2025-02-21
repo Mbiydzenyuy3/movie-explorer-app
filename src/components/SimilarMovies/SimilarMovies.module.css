@@ -1,4 +1,6 @@
 .carouselSimilar {
+  width: 1280px;
+  margin: auto;
   display: flex;
   overflow-x: hidden;
   gap: 14px;

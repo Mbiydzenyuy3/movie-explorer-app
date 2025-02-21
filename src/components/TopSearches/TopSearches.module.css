@@ -1,5 +1,7 @@
 .carouselTopSearch {
   display: flex;
+  width: 1280px;
+  margin: auto;
   overflow-x: auto;
   /* Enable scrolling */
   gap: 14px;

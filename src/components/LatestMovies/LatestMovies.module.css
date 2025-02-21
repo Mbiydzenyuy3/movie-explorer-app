@@ -1,4 +1,6 @@
 .carousel {
+  width: 1280px;
+  margin: auto;
   display: flex;
   overflow-x: hidden;
   gap: 138px;

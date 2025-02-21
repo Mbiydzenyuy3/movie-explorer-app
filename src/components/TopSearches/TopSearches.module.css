@@ -7,7 +7,7 @@
   margin-bottom: 50px;
   scroll-behavior: smooth;
   animation: scroll;
-  animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73);
+  /* animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73); */
   animation-duration: 1s;
   -webkit-overflow-scrolling: touch;
   /* Smooth scrolling for mobile */
@@ -29,7 +29,7 @@
   background: #140620;
   /* Semi-transparent thumb */
   border-radius: 10px;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease-in;
 }
 
 .carouselTopSearch:hover::-webkit-scrollbar-thumb {
@@ -80,7 +80,7 @@
   cursor: pointer;
 
   &:hover {
-    transition: 0.3s ease-in-out;
+    transition: 0.3s ease-in;
     transform: translateY(-10%)
   }
 }

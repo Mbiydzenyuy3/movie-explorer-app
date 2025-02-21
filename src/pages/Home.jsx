@@ -29,6 +29,7 @@ export default function Homepage() {
         API_KEY={apiKey}
         BASE_URL={baseUrl}
         IMAGE_PATH={IMAGE_PATH}
+        genre={80}
         detail={handleMovieDetail}
       />
 
@@ -37,6 +38,7 @@ export default function Homepage() {
         BASE_URL={baseUrl}
         IMAGE_PATH={IMAGE_PATH}
         path="popular"
+        genre={27}
         detail={handleMovieDetail}
       />
       <MoviesLayout

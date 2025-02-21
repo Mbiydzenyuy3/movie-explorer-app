@@ -82,6 +82,7 @@ h1 {
   line-height: 298.34px;
   /* backdrop-filter: blur(40px); */
   font-weight: 1000;
+  font-family: sans-serif;
 }
 
 .headerCarousel {
@@ -168,5 +169,6 @@ h1 {
 
   .number {
     font-size: 220px;
+    font-family: sans-serif;
   }
 }

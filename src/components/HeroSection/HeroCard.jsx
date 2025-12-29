@@ -51,7 +51,6 @@ export default function HeroSection({
                 </svg>
                 Watch Now
               </button>
-              {/* {console.log(movie)} */}
               <button
                 className={styles.chevronBtn}
                 onClick={() => storage(movie)}

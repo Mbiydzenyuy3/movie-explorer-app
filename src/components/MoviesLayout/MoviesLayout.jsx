@@ -8,7 +8,7 @@ export default function MoviesLayout({
   IMAGE_PATH,
   title,
   genre,
-  detail,
+  detail
 }) {
   const url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genre}`;
   const { movies: latestMovies, loading, error } = useFetchMovies(url);
@@ -16,7 +16,7 @@ export default function MoviesLayout({
   if (loading)
     return (
       <div className={styles.common}>
-        <div className="spinner"></div>
+        <div className='spinner'></div>
       </div>
     );
   if (error) return <p>Error: {error.message}</p>;
@@ -31,17 +31,15 @@ export default function MoviesLayout({
           <div className={styles.movieCommon} key={movie.id}>
             <img
               src={
-                movie.poster_path ? (
-                  `${IMAGE_PATH}${movie.poster_path}`
-                ) : (
-                  <div className="spinner"></div>
-                )
+                movie.poster_path
+                  ? `${IMAGE_PATH}${movie.poster_path}`
+                  : "/assets/img/placeholder.png"
               }
               alt={movie.title}
               onClick={() => detail(movie)}
             />
-            <div className="movie-meta">
-              <h3 className="movie-title">{movie.title}</h3>
+            <div className='movie-meta'>
+              <h3 className='movie-title'>{movie.title}</h3>
               <span>⭐ {movie.vote_average.toFixed(1)}</span>
               <span>{new Date(movie.release_date).getFullYear()}</span>
             </div>
@@ -58,5 +56,5 @@ MoviesLayout.propTypes = {
   IMAGE_PATH: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   genre: PropTypes.string.isRequired,
-  detail: PropTypes.func,
+  detail: PropTypes.func
 };

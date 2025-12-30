@@ -133,7 +133,10 @@
 .heroBtns {
   display: flex;
   gap: 16px;
-  justify-content: center;
+  justify-content: left;
+  width: 100%;
+  align-items: "flex-start";
+  margin-top: 1rem;
 }
 
 @media (max-width: 768px) {

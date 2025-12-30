@@ -57,7 +57,7 @@ export default function SearchBar() {
       </svg> */}
       {searchedMovie.length > 0 && (
         <div className={styles.searchResults}>
-          {searchedMovie.map((movie) => (
+          {searchedMovie.slice(0, 5).map((movie) => (
             <div key={movie.id} className={styles.searchItem}>
               <img
                 src={`${IMAGE_PATH}${movie.poster_path}`}

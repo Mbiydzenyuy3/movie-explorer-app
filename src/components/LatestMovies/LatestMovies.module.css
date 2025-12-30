@@ -85,6 +85,7 @@ h1 {
   /* backdrop-filter: blur(40px); */
   font-weight: 1000;
   font-family: sans-serif;
+  z-index: 999px;
 }
 
 .headerCarousel {
@@ -107,7 +108,8 @@ h1 {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: radial-gradient(farthest-side, #f89706 94%, #0000) top/9px 9px no-repeat,
+  background: radial-gradient(farthest-side, #f89706 94%, #0000) top/9px 9px
+      no-repeat,
     conic-gradient(#0000 30%, #f89706);
   animation: spinner-c7wet2 1s infinite linear;
 }

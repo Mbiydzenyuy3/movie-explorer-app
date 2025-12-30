@@ -29,7 +29,7 @@ export default function HeroSection({ movies, storage, IMAGE_PATH }) {
     <>
       <div className={styles.heroSection} style={{ backgroundImage }}>
         <div className={styles.movieDetail}>
-          <h1>{currentMovie.title}</h1>
+          <h1 style={{ padding: 0 }}>{currentMovie.title}</h1>
           <p className={styles.movieDescription}>{currentMovie.overview}</p>
           <div className={styles.heroBtns}>
             <div className={styles.heroBtn}>

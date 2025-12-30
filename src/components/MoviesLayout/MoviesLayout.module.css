@@ -80,7 +80,7 @@
 
   &:hover {
     transition: 0.3s ease-in;
-    transform: translateY(-5%)
+    transform: translateY(-5%);
   }
 }
 
@@ -96,7 +96,6 @@ h1 {
   font-size: 28px;
   line-height: 33.89px;
   color: #fff;
-  padding-left: 47px;
   animation: slideIn ease-in;
   animation-duration: 1s;
 }
@@ -117,6 +116,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 100;
 }
 
 .nextMovie {

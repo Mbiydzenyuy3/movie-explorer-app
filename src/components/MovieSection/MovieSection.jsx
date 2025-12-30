@@ -2,17 +2,16 @@ import styles from "../MoviesLayout/MoviesLayout.module.css";
 import useFetchMovies from "../../hook/useMoviesFetch";
 import PropTypes from "prop-types";
 
-export default function MoviesLayout({
+export default function MovieSection({
   API_KEY,
   BASE_URL,
   IMAGE_PATH,
   title,
-  genre,
-  detail,
-  type = "movie"
+  url,
+  detail
 }) {
-  const url = `${BASE_URL}/discover/${type}?api_key=${API_KEY}&with_genres=${genre}`;
-  const { movies: latestMovies, loading, error } = useFetchMovies(url);
+  const fullUrl = `${BASE_URL}${url}?api_key=${API_KEY}`;
+  const { movies: sectionMovies, loading, error } = useFetchMovies(fullUrl);
 
   if (loading)
     return (
@@ -28,7 +27,7 @@ export default function MoviesLayout({
         <h1>{title}</h1>
       </div>
       <div className={styles.carouselCommon}>
-        {latestMovies.map((movie) => (
+        {sectionMovies.map((movie) => (
           <div className={styles.movieCommon} key={movie.id}>
             <img
               src={
@@ -36,13 +35,17 @@ export default function MoviesLayout({
                   ? `${IMAGE_PATH}${movie.poster_path}`
                   : "/assets/img/placeholder.png"
               }
-              alt={movie.title}
+              alt={movie.title || movie.name}
               onClick={() => detail(movie)}
             />
             <div className='movie-meta'>
-              <h3 className='movie-title'>{movie.title}</h3>
+              <h3 className='movie-title'>{movie.title || movie.name}</h3>
               <span>⭐ {movie.vote_average.toFixed(1)}</span>
-              <span>{new Date(movie.release_date).getFullYear()}</span>
+              <span>
+                {new Date(
+                  movie.release_date || movie.first_air_date
+                ).getFullYear()}
+              </span>
             </div>
           </div>
         ))}
@@ -51,12 +54,11 @@ export default function MoviesLayout({
   );
 }
 
-MoviesLayout.propTypes = {
+MovieSection.propTypes = {
   API_KEY: PropTypes.string.isRequired,
   BASE_URL: PropTypes.string.isRequired,
   IMAGE_PATH: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  genre: PropTypes.string.isRequired,
-  detail: PropTypes.func,
-  type: PropTypes.string
+  url: PropTypes.string.isRequired,
+  detail: PropTypes.func
 };

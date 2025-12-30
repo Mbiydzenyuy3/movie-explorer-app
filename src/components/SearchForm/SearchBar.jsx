@@ -36,13 +36,13 @@ export default function SearchBar() {
   return (
     <div className={styles.input}>
       <input
-        type="search"
-        placeholder="Search here for more movies"
+        type='search'
+        placeholder='Search here for more movies'
         value={query}
         onChange={handleQuery}
       />
 
-      <svg
+      {/* <svg
         width="20"
         height="21"
         viewBox="0 0 20 21"
@@ -54,7 +54,7 @@ export default function SearchBar() {
           fill="white"
           fillOpacity="0.6"
         />
-      </svg>
+      </svg> */}
       {searchedMovie.length > 0 && (
         <div className={styles.searchResults}>
           {searchedMovie.map((movie) => (

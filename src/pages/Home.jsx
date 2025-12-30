@@ -18,7 +18,6 @@ export default function Homepage() {
 
   const popularUrl = `${baseUrl}/movie/popular?api_key=${apiKey}`;
   const { movies: popularMovies } = useFetchMovies(popularUrl);
-  const heroMovie = popularMovies ? popularMovies[0] : null;
 
   const handleMovieDetail = (movie) => {
     console.log(movie);
@@ -29,11 +28,9 @@ export default function Homepage() {
   return (
     <>
       <Header />
-      {heroMovie && (
+      {popularMovies && popularMovies.length > 0 && (
         <HeroSection
-          title={heroMovie.title}
-          description={heroMovie.overview}
-          movie={heroMovie}
+          movies={popularMovies}
           storage={handleMovieDetail}
           IMAGE_PATH={IMAGE_PATH}
         />

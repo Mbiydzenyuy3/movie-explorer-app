@@ -1,37 +1,42 @@
 import styles from "../HeroSection/HeroSection.module.css";
 import PropTypes from "prop-types";
-export default function HeroSection({
-  title,
-  description,
-  storage,
-  movie,
-  IMAGE_PATH
-}) {
+import { useState, useEffect } from "react";
+
+export default function HeroSection({ movies, storage, IMAGE_PATH }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (movies.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [movies.length]);
+
+  if (movies.length === 0) return null;
+
+  const currentMovie = movies[currentIndex];
+
   const handleMovie = (id) => {
     window.location.href = `https://www.themoviedb.org/movie/${id}`;
   };
+
+  const backgroundImage = currentMovie.backdrop_path
+    ? `url(${IMAGE_PATH}${currentMovie.backdrop_path})`
+    : `url(${IMAGE_PATH}${currentMovie.poster_path})`; // fallback
+
   return (
     <>
-      <div className={styles.heroSection}>
+      <div className={styles.heroSection} style={{ backgroundImage }}>
         <div className={styles.movieDetail}>
-          <h1>{title}</h1>
-          <div className={styles.detailInitial}>
-            <img src={`${IMAGE_PATH}${movie.poster_path}`} alt={movie.title} />
-            <div className={styles.heropDiv}>
-              <p className={styles.heroMovieDescription}>{description}</p>
-            </div>
-            <div className='frame'>CBFC:U/A</div>
-            <div className={styles.production}>
-              <p>Action</p>
-              <span>.</span>
-              <p>Action</p>
-              <span>.</span>
-              <p>7h 28m</p>
-            </div>
-          </div>
+          <h1>{currentMovie.title}</h1>
+          <p className={styles.movieDescription}>{currentMovie.overview}</p>
           <div className={styles.heroBtns}>
             <div className={styles.heroBtn}>
-              <button className='playBtn' onClick={() => handleMovie(movie.id)}>
+              <button
+                className='playBtn'
+                onClick={() => handleMovie(currentMovie.id)}
+              >
                 <svg
                   width='20'
                   height='20'
@@ -53,7 +58,7 @@ export default function HeroSection({
               </button>
               <button
                 className={styles.chevronBtn}
-                onClick={() => storage(movie)}
+                onClick={() => storage(currentMovie)}
               >
                 <svg
                   width='20'
@@ -85,8 +90,16 @@ export default function HeroSection({
               </button>
             </div>
           </div>
-
-          <p className={styles.movieDescription}>{description}</p>
+          <div className={styles.detailInitial}>
+            {/* <div className='frame'>CBFC:U/A</div> */}
+            {/* <div className={styles.production}>
+              <p>Action</p>
+              <span>.</span>
+              <p>Action</p>
+              <span>.</span>
+              <p>7h 28m</p>
+            </div> */}
+          </div>
         </div>
       </div>
     </>
@@ -94,9 +107,7 @@ export default function HeroSection({
 }
 
 HeroSection.propTypes = {
-  description: PropTypes.string,
-  title: PropTypes.string,
-  movie: PropTypes.object,
-  storage: PropTypes.func,
-  IMAGE_PATH: PropTypes.string
+  movies: PropTypes.arrayOf(PropTypes.object).isRequired,
+  storage: PropTypes.func.isRequired,
+  IMAGE_PATH: PropTypes.string.isRequired
 };

@@ -2,32 +2,48 @@
 .heroSection {
   background-size: cover;
   background-position: center;
-  height: 800px;
+  height: 600px;
   background-repeat: no-repeat;
   position: relative;
   margin-bottom: 50px;
-  padding: 0 75px 0 50px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-image: url("/assets/img/hero-bg.png");
+  align-items: flex-end;
+  /* background-image: url("/assets/img/hero-bg.png"); */
+}
+
+.heroSection::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  z-index: 1;
 }
 
 .movieDetail {
   display: flex;
   flex-direction: column;
   color: #fff;
-  bottom: 0;
+  margin-bottom: 5em;
   justify-content: center;
-  margin-top: 223px;
+  padding: 0 50px 50px 50px;
+  z-index: 2;
+  max-width: 1200px;
+  width: 100%;
 
   h1 {
-    padding-left: 0;
     font-size: 50px;
-    padding-bottom: 50px;
+    padding-bottom: 20px;
     font-weight: 1000;
     line-height: 50px;
     text-transform: uppercase;
+    margin: 0;
   }
 }
 
@@ -42,7 +58,8 @@
   font-size: 20px;
   line-height: 23.87px;
   padding-bottom: 20px;
-  width: 433px;
+  width: 100%;
+  max-width: 433px;
 }
 
 .heroMovieDescription {
@@ -56,7 +73,7 @@
   line-height: 19.36px;
   letter-spacing: 0%;
   text-align: center;
-  color: #FFFFFFCC;
+  color: #ffffffcc;
 }
 
 .production {
@@ -68,9 +85,10 @@
 .movieDescription {
   color: #ffffffcc;
   font-family: var(--secondary-font);
-  margin-top: 50px;
-  padding-right: 75px;
-  width: 550px;
+  margin-top: 30px;
+  width: 100%;
+  max-width: 600px;
+  line-height: 1.6;
 }
 
 .heroSubs {
@@ -81,10 +99,11 @@
 }
 
 .heroBtn {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 20px;
   width: 433px;
   display: flex;
+  gap: 40px;
   justify-content: center;
 
   button {
@@ -118,13 +137,12 @@
 }
 
 @media (max-width: 768px) {
-  .hero {
-    padding: 0;
+  .heroSection {
+    height: 600px;
   }
 
   .movieDetail {
-    padding-top: 50px;
-    padding: 16px;
+    padding: 16px 16px 50px 16px;
 
     h1 {
       font-size: 30px;
@@ -152,8 +170,7 @@
   }
 
   .movieDescription {
-    padding-right: 16px;
-    min-width: 300px;
+    max-width: 300px;
     font-size: 14px;
   }
 }
@@ -163,7 +180,7 @@
   color: #000;
   font-size: 16px;
   box-shadow: 0px 4px 14px 0px #00000029;
-  box-shadow: 0px 4px 40px 0px #FFFFFF1F;
+  box-shadow: 0px 4px 40px 0px #ffffff1f;
 }
 
 .chevronBtn {

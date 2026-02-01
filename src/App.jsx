@@ -1,35 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router";
+import Homepage from "./pages/Home";
+import DetailPage from "./pages/MovieDetailsPage";
+import MoviesPage from "./pages/MoviesPage";
+import SeriesPage from "./pages/SeriesPage";
+import TrendingPage from "./pages/TrendingPage";
+import CategoriesPage from "./pages/CategoriesPage";
+import GenrePage from "./pages/GenrePage";
+import ErrorBoundary from "./components/ErrorCatch/ErrorBoundary";
+
+import { DetailMovieData } from "./context/movieContext";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ErrorBoundary>
+      <DetailMovieData>
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' element={<Homepage />} />
+            <Route path='/movies' element={<MoviesPage />} />
+            <Route path='/series' element={<SeriesPage />} />
+            <Route path='/trending' element={<TrendingPage />} />
+            <Route path='/categories' element={<CategoriesPage />} />
+            <Route path='/categories/:id' element={<GenrePage />} />
+            <Route path='/details/:id' element={<DetailPage />} />
+          </Routes>
+        </BrowserRouter>
+      </DetailMovieData>
+    </ErrorBoundary>
+  );
 }
 
-export default App
+export default App;

@@ -1,0 +1,149 @@
+.carousel {
+  display: flex;
+  overflow-x: hidden;
+  gap: 124px;
+  padding: 16px;
+  margin-left: -45px;
+  margin-right: 48px;
+  animation: scroll 1s;
+  animation-timing-function: cubic-bezier(0.66, 0, 0.31, 1);
+  animation-duration: 1.5s;
+  scrollbar-width: thin;
+  scrollbar-color: #f89706 rgba(255, 255, 255, 0.1);
+}
+
+.carouselLatest {
+  position: absolute;
+  top: 560px;
+  left: 0;
+  display: flex;
+  overflow-x: hidden;
+  gap: 138px;
+  padding: 16px;
+  animation: scroll 1s;
+  transition: animation ease-in-out;
+  animation-duration: 2s;
+  scrollbar-width: thin;
+  scrollbar-color: #f89706 rgba(255, 255, 255, 0.1);
+}
+
+.carousel:hover {
+  transition: 0.5s ease-in;
+  overflow-x: auto;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.movie {
+  flex: 0 0 auto;
+  text-align: center;
+  position: relative;
+  padding-left: 47px;
+  flex: 0 0 auto;
+  text-align: center;
+  position: relative;
+  padding-left: 47px;
+}
+
+.movie img {
+  position: absolute;
+  top: 30%;
+  left: 70%;
+  width: 138px;
+  height: 178px;
+  border-radius: 12px;
+  border: 1px solid #ffffff33;
+  box-shadow: 0px 4px 14px 0px #0000004d;
+  z-index: 2;
+  cursor: pointer;
+}
+
+h1 {
+  font-family: var(--secondary-font);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 33.89px;
+  color: #fff;
+  padding-left: 47px;
+}
+
+.number {
+  color: #fff;
+  font-family: var(--primary-font);
+  font-size: 250px;
+  line-height: 298.34px;
+  /* backdrop-filter: blur(40px); */
+  font-weight: 1000;
+  font-family: sans-serif;
+  z-index: 999px;
+}
+
+.headerCarousel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -275px;
+}
+
+.loadingSpinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  /* Adjust height as needed */
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(farthest-side, #f89706 94%, #0000) top/9px 9px
+      no-repeat,
+    conic-gradient(#0000 30%, #f89706);
+  animation: spinner-c7wet2 1s infinite linear;
+}
+
+@keyframes spinner-c7wet2 {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel {
+    overflow-x: auto;
+  }
+
+  .headerCarousel h1 {
+    font-size: 18px;
+    padding-left: 16px;
+  }
+
+  .nextMovie {
+    width: 100px;
+    font-size: 14px;
+    height: 40px;
+    margin-right: 16px;
+  }
+
+  .movie img {
+    width: 118px;
+    height: 158px;
+  }
+
+  .number {
+    font-size: 220px;
+    font-family: sans-serif;
+  }
+}

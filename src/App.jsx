@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./context/AuthContext";
+import { MoodProvider } from "./context/MoodContext";
 import ErrorBoundary from "./components/ErrorCatch/ErrorDisplay";
 
 import Homepage from "./pages/Home";
@@ -19,19 +20,21 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <DetailMovieData>
-            <BrowserRouter>
-              <Routes>
-                <Route path='/' element={<Homepage />} />
-                <Route path='/movies' element={<MoviesPage />} />
-                <Route path='/series' element={<SeriesPage />} />
-                <Route path='/trending' element={<TrendingPage />} />
-                <Route path='/categories' element={<CategoriesPage />} />
-                <Route path='/categories/:id' element={<GenrePage />} />
-                <Route path='/details/:id' element={<DetailPage />} />
-              </Routes>
-            </BrowserRouter>
-          </DetailMovieData>
+          <MoodProvider>
+            <DetailMovieData>
+              <BrowserRouter>
+                <Routes>
+                  <Route path='/' element={<Homepage />} />
+                  <Route path='/movies' element={<MoviesPage />} />
+                  <Route path='/series' element={<SeriesPage />} />
+                  <Route path='/trending' element={<TrendingPage />} />
+                  <Route path='/categories' element={<CategoriesPage />} />
+                  <Route path='/categories/:id' element={<GenrePage />} />
+                  <Route path='/details/:id' element={<DetailPage />} />
+                </Routes>
+              </BrowserRouter>
+            </DetailMovieData>
+          </MoodProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

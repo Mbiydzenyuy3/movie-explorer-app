@@ -8,11 +8,16 @@ import { MoviesContext } from "../context/movieContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
 import useFetchMovies from "../hook/useMoviesFetch";
+import MoodSelector from "../components/MoodSelector/MoodSelector";
+import VibeSearch from "../components/VibeSearch/VibeSearch";
+import HybridFeed from "../components/HybridFeed/HybridFeed";
+import { useMood } from "../context/MoodContext";
 
 export default function Homepage() {
   const { setSelectedMovie, apiKey, baseUrl, IMAGE_PATH } =
     useContext(MoviesContext);
   const navigate = useNavigate();
+  const { currentMood, isMoodActive } = useMood();
 
   console.log(apiKey);
 
@@ -28,7 +33,25 @@ export default function Homepage() {
   return (
     <>
       <Header />
-      {popularMovies && popularMovies.length > 0 && (
+
+      {/* Vibe Search - Natural Language Search */}
+      <VibeSearch />
+
+      {/*  Mood-Based Discovery */}
+      <MoodSelector />
+
+      {/*  Hybrid Feed - Mixed Content */}
+      {isMoodActive && currentMood && (
+        <HybridFeed
+          mood={currentMood}
+          API_KEY={apiKey}
+          BASE_URL={baseUrl}
+          IMAGE_PATH={IMAGE_PATH}
+          onMovieClick={handleMovieDetail}
+        />
+      )}
+
+      {!isMoodActive && popularMovies && popularMovies.length > 0 && (
         <HeroSection
           movies={popularMovies}
           storage={handleMovieDetail}

@@ -1,0 +1,214 @@
+.container {
+  position: relative;
+  z-index: 100;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 30px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.toggleBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.toggleBtn.active {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.toggleIcon {
+  font-size: 1.2rem;
+}
+
+.moodPanel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 16px;
+  width: 400px;
+  background: #1a1a2e;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Energy Slider */
+.energySlider {
+  display: flex;
+  gap: 8px;
+}
+
+.energyBtn {
+  flex: 1;
+  padding: 12px;
+  background: #16213e;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.energyBtn:hover {
+  background: #1f3460;
+}
+
+.energyBtn.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #764ba2;
+}
+
+.energyLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Mood Grid */
+.moodGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.moodBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: #16213e;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.moodBtn:hover {
+  background: #1f3460;
+  transform: scale(1.05);
+}
+
+.moodBtn.selected {
+  background: #1f3460;
+}
+
+.moodEmoji {
+  font-size: 1.5rem;
+}
+
+.moodLabel {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Time Grid */
+.timeGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.timeBtn {
+  padding: 10px;
+  background: #16213e;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timeBtn:hover {
+  background: #1f3460;
+}
+
+.timeBtn.selected {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+}
+
+/* Current Mood Display */
+.currentMood {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.currentMoodEmoji {
+  font-size: 2.5rem;
+}
+
+.currentMoodText {
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.currentMoodText strong {
+  font-size: 1.125rem;
+}
+
+.currentMoodText span {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .moodPanel {
+    width: calc(100vw - 32px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .moodGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .timeGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

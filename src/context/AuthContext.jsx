@@ -14,7 +14,8 @@ const TOKEN_KEY = "streamx_auth_token";
 const REFRESH_TOKEN_KEY = "streamx_refresh_token";
 const USER_KEY = "streamx_user";
 
-// Token expiry time (15 minutes)
+// Token expiry time (15 minutes) - used for auto-logout logic
+// eslint-disable-next-line no-unused-vars
 const ACCESS_TOKEN_EXPIRY = 15 * 60 * 1000;
 
 /**

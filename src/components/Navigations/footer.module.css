@@ -12,12 +12,14 @@
 }
 
 .container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 24px 40px;
+  /* margin: 0 auto; */
+  padding: 12px 36px;
+  gap: 24px;
 }
 
 /* Brand Section */

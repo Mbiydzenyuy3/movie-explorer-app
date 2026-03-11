@@ -55,7 +55,7 @@
   line-height: 19.36px;
   letter-spacing: 0%;
   text-align: center;
-  color: #FFFFFFCC;
+  color: #ffffffcc;
 }
 
 .production {
@@ -81,7 +81,7 @@
 } */
 
 .heroBtn {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 20px;
   width: 433px;
   display: flex;
@@ -165,7 +165,7 @@
   color: #000;
   font-size: 16px;
   box-shadow: 0px 4px 14px 0px #00000029;
-  box-shadow: 0px 4px 40px 0px #FFFFFF1F;
+  box-shadow: 0px 4px 40px 0px #ffffff1f;
 }
 
 .chevronBtn {
@@ -174,4 +174,253 @@
   color: #fff;
   border: 0;
   margin-right: 16px;
+}
+
+/* New Styles for Streaming App */
+.detailheroSection {
+  position: relative;
+  min-height: 85vh;
+  background-size: cover;
+  background-position: center top;
+  display: flex;
+  align-items: flex-end;
+  padding: 80px 24px 60px;
+  margin-top: -64px;
+}
+
+.movieDetail {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.movieTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  line-height: 1.2;
+}
+
+.detailInitial {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.rating {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.runtime {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.heroBtns {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.heroBtn {
+  display: flex;
+  gap: 12px;
+}
+
+.playBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.playBtn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: scale(1.02);
+}
+
+.playBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.watchlistBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.watchlistBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.watchlistBtn.active {
+  background: #e50914;
+  border-color: #e50914;
+}
+
+.descriptionWrapper {
+  margin-bottom: 24px;
+  max-width: 600px;
+}
+
+.movieDescription {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.movieDescription.expanded {
+  -webkit-line-clamp: unset;
+}
+
+.showMoreBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.showMoreBtn:hover {
+  color: #fff;
+}
+
+.showMoreBtn svg {
+  transition: transform 0.2s ease;
+}
+
+.showMoreBtn svg.rotated {
+  transform: rotate(180deg);
+}
+
+.additionalInfo {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.infoLabel {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.infoValue {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Video Player Modal */
+.videoModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoModalContent {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  aspect-ratio: 16 / 9;
+}
+
+.closePlayer {
+  position: absolute;
+  top: -48px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.closePlayer:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .detailheroSection {
+    min-height: 70vh;
+    padding: 100px 16px 40px;
+  }
+
+  .movieTitle {
+    font-size: 2rem;
+  }
+
+  .heroBtns {
+    flex-direction: column;
+  }
+
+  .playBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .additionalInfo {
+    gap: 20px;
+  }
+
+  .videoModalContent {
+    width: 100%;
+    max-width: 100%;
+  }
 }

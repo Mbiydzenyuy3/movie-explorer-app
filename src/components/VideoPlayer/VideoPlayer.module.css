@@ -1,0 +1,380 @@
+/* Video Player Styles - Premium Streaming Experience */
+
+.player {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.player.fullscreen {
+  border-radius: 0;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #000;
+}
+
+/* Loading Spinner */
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error Display */
+.error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background-color: rgba(220, 38, 38, 0.9);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* Title */
+.title {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 8px 16px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), transparent);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.player:hover .title {
+  opacity: 1;
+}
+
+/* Controls Overlay */
+.controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 16px 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.controls.visible {
+  opacity: 1;
+}
+
+/* Progress Bar */
+.progressContainer {
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.progressBar {
+  position: relative;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressContainer:hover .progressBar {
+  height: 6px;
+}
+
+.buffered {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: width 0.1s ease;
+}
+
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #e50914;
+  transition: width 0.1s ease;
+}
+
+.progress::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background-color: #e50914;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progressContainer:hover .progress::after {
+  opacity: 1;
+}
+
+/* Bottom Controls */
+.bottomControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leftControls,
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Control Buttons */
+.controlButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.controlButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.controlButton:focus {
+  outline: 2px solid #e50914;
+  outline-offset: 2px;
+}
+
+/* Volume Control */
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.volumeSlider {
+  width: 0;
+  opacity: 0;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease;
+  cursor: pointer;
+  accent-color: #e50914;
+}
+
+.volumeControl:hover .volumeSlider {
+  width: 80px;
+  opacity: 1;
+}
+
+/* Time Display */
+.time {
+  color: #fff;
+  font-size: 13px;
+  margin-left: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Settings Menu */
+.settingsWrapper {
+  position: relative;
+}
+
+.settingsMenu {
+  position: absolute;
+  bottom: 48px;
+  right: 0;
+  min-width: 200px;
+  background-color: rgba(20, 20, 20, 0.95);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.settingsSection {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settingsSection:last-child {
+  border-bottom: none;
+}
+
+.settingsLabel {
+  display: block;
+  padding: 4px 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settingsOptions {
+  display: flex;
+  flex-direction: column;
+}
+
+.settingsOption {
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.settingsOption:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.settingsOption.active {
+  color: #e50914;
+  font-weight: 600;
+}
+
+/* Play Overlay */
+.playOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.playOverlay:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background-color: rgba(229, 9, 20, 0.8);
+}
+
+/* Fullscreen Styles */
+.player.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  aspect-ratio: unset;
+  border-radius: 0;
+  z-index: 9999;
+}
+
+/* Keyboard Focus Styles */
+.player:focus {
+  outline: none;
+}
+
+.player:focus-visible {
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .controls {
+    padding: 16px 12px 12px;
+  }
+
+  .controlButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .time {
+    font-size: 12px;
+  }
+
+  .volumeControl:hover .volumeSlider {
+    width: 60px;
+  }
+
+  .title {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .settingsMenu {
+    min-width: 160px;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .progressBar {
+    height: 6px;
+  }
+
+  .controlButton {
+    border: 2px solid #fff;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .controls,
+  .title,
+  .controlButton,
+  .progressBar,
+  .playOverlay {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}

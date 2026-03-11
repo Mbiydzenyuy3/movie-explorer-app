@@ -8,10 +8,9 @@ import { MoviesContext } from "../context/movieContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
 import useFetchMovies from "../hook/useMoviesFetch";
-import MoodSelector from "../components/MoodSelector/MoodSelector";
-import VibeSearch from "../components/VibeSearch/VibeSearch";
 import HybridFeed from "../components/HybridFeed/HybridFeed";
 import { useMood } from "../context/MoodContext";
+import VibeSelector from "../components/VibeSelector/VibeSelector";
 
 export default function Homepage() {
   const { setSelectedMovie, apiKey, baseUrl, IMAGE_PATH } =
@@ -19,13 +18,10 @@ export default function Homepage() {
   const navigate = useNavigate();
   const { currentMood, isMoodActive } = useMood();
 
-  console.log(apiKey);
-
   const popularUrl = `${baseUrl}/movie/popular?api_key=${apiKey}`;
   const { movies: popularMovies } = useFetchMovies(popularUrl);
 
   const handleMovieDetail = (movie) => {
-    console.log(movie);
     setSelectedMovie(movie);
     navigate(`/details/${movie.id}`);
   };
@@ -34,13 +30,10 @@ export default function Homepage() {
     <>
       <Header />
 
-      {/* Vibe Search - Natural Language Search */}
-      <VibeSearch />
+      {/* VibeSelector - Chatbot-like mode selector */}
+      <VibeSelector />
 
-      {/*  Mood-Based Discovery */}
-      <MoodSelector />
-
-      {/*  Hybrid Feed - Mixed Content */}
+      {/* Hybrid Feed - Mixed Content based on mood */}
       {isMoodActive && currentMood && (
         <HybridFeed
           mood={currentMood}
@@ -51,6 +44,7 @@ export default function Homepage() {
         />
       )}
 
+      {/* Default Hero Section when no mood selected */}
       {!isMoodActive && popularMovies && popularMovies.length > 0 && (
         <HeroSection
           movies={popularMovies}
@@ -58,6 +52,8 @@ export default function Homepage() {
           IMAGE_PATH={IMAGE_PATH}
         />
       )}
+
+      {/* Movie Sections */}
       <LatestMovies
         API_KEY={apiKey}
         BASE_URL={baseUrl}
@@ -74,6 +70,7 @@ export default function Homepage() {
         genre={27}
         detail={handleMovieDetail}
       />
+
       <MoviesLayout
         API_KEY={apiKey}
         BASE_URL={baseUrl}
@@ -82,6 +79,7 @@ export default function Homepage() {
         genre={53}
         detail={handleMovieDetail}
       />
+
       <MoviesLayout
         API_KEY={apiKey}
         BASE_URL={baseUrl}
@@ -90,6 +88,7 @@ export default function Homepage() {
         genre={10749}
         detail={handleMovieDetail}
       />
+
       <MoviesLayout
         API_KEY={apiKey}
         BASE_URL={baseUrl}

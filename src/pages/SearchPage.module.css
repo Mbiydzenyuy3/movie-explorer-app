@@ -1,0 +1,324 @@
+/* Search Page Styles */
+.searchPage {
+  min-height: 100vh;
+  padding-top: 80px;
+  padding-bottom: 60px;
+  background: #0a0a0a;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+.header {
+  margin-bottom: 32px;
+  padding-top: 24px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.count {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+  color: #e50914;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: #e50914;
+  text-align: center;
+}
+
+.error p {
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Movies Grid */
+.moviesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px;
+}
+
+.movieCard {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.movieCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Poster */
+.posterWrapper {
+  position: relative;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+}
+
+.poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.movieCard:hover .poster {
+  transform: scale(1.05);
+}
+
+.noPoster {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Overlay */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.movieCard:hover .overlay {
+  opacity: 1;
+}
+
+.playBtn {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e50914;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.playBtn:hover {
+  transform: scale(1.1);
+  background: #f40612;
+}
+
+/* Info */
+.info {
+  padding: 16px;
+}
+
+.movieTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.watchBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #e50914;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.watchBtn:hover {
+  background: #f40612;
+}
+
+.favoriteBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.favoriteBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.favoriteBtn.active {
+  background: #e50914;
+  border-color: #e50914;
+}
+
+/* Empty State */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.empty h2 {
+  margin-top: 24px;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.empty p {
+  margin-top: 8px;
+  margin-bottom: 24px;
+}
+
+.browseBtn {
+  padding: 14px 32px;
+  background: #e50914;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.browseBtn:hover {
+  background: #f40612;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .moviesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .info {
+    padding: 12px;
+  }
+
+  .movieTitle {
+    font-size: 13px;
+  }
+
+  .actions {
+    padding: 0 12px 12px;
+  }
+
+  .watchBtn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .favoriteBtn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .movieCard,
+  .poster,
+  .playBtn,
+  .watchBtn,
+  .favoriteBtn,
+  .browseBtn {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}

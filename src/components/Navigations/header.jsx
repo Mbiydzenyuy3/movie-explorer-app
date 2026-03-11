@@ -11,7 +11,8 @@ import {
   Tv,
   TrendingUp,
   Layers,
-  Loader2
+  Loader2,
+  Bookmark
 } from "lucide-react";
 import styles from "./header.module.css";
 
@@ -125,6 +126,10 @@ export default function Header() {
           <Link to='/categories' className={styles.navLink} onClick={closeMenu}>
             <Layers size={18} />
             <span>Categories</span>
+          </Link>
+          <Link to='/watchlist' className={styles.navLink} onClick={closeMenu}>
+            <Bookmark size={18} />
+            <span>Watchlist</span>
           </Link>
         </nav>
 
@@ -253,6 +258,14 @@ export default function Header() {
         >
           <Layers size={20} />
           <span>Categories</span>
+        </Link>
+        <Link
+          to='/watchlist'
+          className={styles.mobileNavLink}
+          onClick={closeMenu}
+        >
+          <Bookmark size={20} />
+          <span>Watchlist</span>
         </Link>
       </nav>
     </header>

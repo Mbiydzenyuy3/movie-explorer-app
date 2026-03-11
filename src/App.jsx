@@ -12,6 +12,8 @@ import SeriesPage from "./pages/SeriesPage";
 import TrendingPage from "./pages/TrendingPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import GenrePage from "./pages/GenrePage";
+import SearchPage from "./pages/SearchPage";
+import WatchlistPage from "./pages/WatchlistPage";
 
 import { DetailMovieData } from "./context/movieContext";
 
@@ -31,6 +33,8 @@ function App() {
                   <Route path='/categories' element={<CategoriesPage />} />
                   <Route path='/categories/:id' element={<GenrePage />} />
                   <Route path='/details/:id' element={<DetailPage />} />
+                  <Route path='/search' element={<SearchPage />} />
+                  <Route path='/watchlist' element={<WatchlistPage />} />
                 </Routes>
               </BrowserRouter>
             </DetailMovieData>

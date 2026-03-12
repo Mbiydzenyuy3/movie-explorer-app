@@ -15,6 +15,7 @@ import {
   Bookmark
 } from "lucide-react";
 import styles from "./header.module.css";
+import AccessibilityMenu from "../AccessibilityMenu/AccessibilityMenu";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -212,6 +213,9 @@ export default function Header() {
           <button className={styles.iconButton} aria-label='Notifications'>
             <Bell size={20} />
           </button>
+
+          {/* Accessibility Settings */}
+          <AccessibilityMenu />
 
           {/* Profile */}
           <button className={styles.profileButton} aria-label='Profile'>

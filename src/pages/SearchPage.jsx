@@ -134,7 +134,7 @@ export default function SearchPage() {
 
           {/* Loading State */}
           {loading && (
-            <div className={styles.loading}>
+            <div className={styles.loading} aria-live="polite" aria-busy="true">
               <Loader2 className={styles.spinner} size={40} />
               <p>Searching movies...</p>
             </div>
@@ -142,7 +142,7 @@ export default function SearchPage() {
 
           {/* Error State */}
           {error && (
-            <div className={styles.error}>
+            <div className={styles.error} role="alert" aria-live="assertive">
               <X size={40} />
               <p>{error}</p>
             </div>
@@ -150,12 +150,25 @@ export default function SearchPage() {
 
           {/* Results Grid */}
           {!loading && !error && movies.length > 0 && (
-            <div className={styles.moviesGrid}>
+            <div
+              className={styles.moviesGrid}
+              role='list'
+              aria-label='Search results'
+            >
               {movies.map((movie) => (
                 <div
                   key={movie.id}
                   className={styles.movieCard}
                   onClick={() => handleMovieClick(movie)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleMovieClick(movie);
+                    }
+                  }}
+                  role='listitem'
+                  tabIndex={0}
+                  aria-label={`${movie.title}, ${movie.release_date?.split("-")[0] || "N/A"}, rated ${movie.vote_average?.toFixed(1) || "N/A"} stars`}
                 >
                   {/* Poster */}
                   <div className={styles.posterWrapper}>

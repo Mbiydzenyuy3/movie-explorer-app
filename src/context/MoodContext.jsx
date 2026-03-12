@@ -60,6 +60,10 @@ export const MoodProvider = ({ children }) => {
     setSelectedTime,
     setEnergyLevel: handleEnergyChange,
     toggleMoodMode,
+    setMood: (mood) => {
+      setSelectedMood(mood.id);
+      setIsMoodActive(true);
+    },
 
     // Helpers
     resetMood: () => {

@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
-import { Play, Plus, Check, X, ChevronDown } from "lucide-react";
+import { Play, Plus, Check, X, ChevronDown, Loader2 } from "lucide-react";
 import styles from "../detailsHeroSection/detailsHeroSection.module.css";
+import HLSPlayer from "../HLSPlayer/HLSPlayer";
+import { getMovieStream } from "../../services/streaming-service";
 
 export default function DetailsHeroSection({
   title,
@@ -16,6 +18,12 @@ export default function DetailsHeroSection({
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [isPlayingTrailer, setIsPlayingTrailer] = useState(false);
+  
+  // Native streaming state
+  const [streamUrl, setStreamUrl] = useState(null);
+  const [loadingStream, setLoadingStream] = useState(false);
+  const [streamError, setStreamError] = useState(null);
+  const [useNativePlayer, setUseNativePlayer] = useState(false);
 
   // Fetch trailer
   useEffect(() => {
@@ -28,7 +36,6 @@ export default function DetailsHeroSection({
         );
         const data = await response.json();
 
-        // Find YouTube trailer
         const trailer = data.results?.find(
           (video) => video.type === "Trailer" && video.site === "YouTube"
         );
@@ -52,35 +59,56 @@ export default function DetailsHeroSection({
     }
   }, [movie?.id]);
 
-  const handlePlayTrailer = () => {
-    // Open embedded player for trailer
-    if (trailerKey) {
-      setIsPlayingTrailer(true);
-      setShowPlayer(true);
+  // Fetch stream URL using Consumet API
+  const fetchStreamUrl = useCallback(async () => {
+    if (!movie?.id) return;
+    
+    setLoadingStream(true);
+    setStreamError(null);
+    
+    try {
+      const mediaType = movie?.media_type || "movie";
+      const streamData = await getMovieStream(movie.id);
+      
+      if (streamData?.url) {
+        setStreamUrl(streamData.url);
+        setUseNativePlayer(true);
+      } else {
+        // Fallback to embed if Consumet fails
+        setStreamError("Direct stream unavailable. Using fallback player.");
+        setUseNativePlayer(false);
+      }
+    } catch (error) {
+      console.error("Error fetching stream:", error);
+      setStreamError("Failed to load stream");
+      setUseNativePlayer(false);
+    } finally {
+      setLoadingStream(false);
     }
+  }, [movie?.id, movie?.media_type]);
+
+  // Handle Watch Full Movie - try native player first
+  const handleWatchFullMovie = async () => {
+    setIsPlayingTrailer(false);
+    setShowPlayer(true);
+    
+    // Try native player with Consumet API
+    await fetchStreamUrl();
   };
 
-  // Get embedded streaming URL for full movie
-  const getEmbedUrl = () => {
-    if (!movie?.id) return null;
-    const mediaType = movie?.media_type || "movie";
-    return `https://vidsrc.to/embed/${mediaType}/${movie.id}`;
-  };
-
-  // Get YouTube embed URL for trailer
-  const getTrailerEmbedUrl = () => {
-    if (!trailerKey) return null;
-    return `https://www.youtube.com/embed/${trailerKey}?autoplay=1`;
+  // Handle Watch Trailer
+  const handlePlayTrailer = () => {
+    setUseNativePlayer(false);
+    setStreamUrl(null);
+    setIsPlayingTrailer(true);
+    setShowPlayer(true);
   };
 
   const handleClosePlayer = () => {
     setShowPlayer(false);
     setIsPlayingTrailer(false);
-  };
-
-  const handleWatchFullMovie = () => {
-    // Open embedded player directly on the page
-    setShowPlayer(true);
+    setStreamUrl(null);
+    setUseNativePlayer(false);
   };
 
   const handleWatchlist = () => {
@@ -89,21 +117,32 @@ export default function DetailsHeroSection({
     const watchlist = JSON.parse(localStorage.getItem("watchlist") || "[]");
 
     if (isInWatchlist) {
-      // Remove from watchlist
       const updated = watchlist.filter((item) => item.id !== movie.id);
       localStorage.setItem("watchlist", JSON.stringify(updated));
       setIsInWatchlist(false);
     } else {
-      // Add to watchlist
       watchlist.push(movie);
       localStorage.setItem("watchlist", JSON.stringify(watchlist));
       setIsInWatchlist(true);
     }
   };
 
+  // Get YouTube embed URL for trailer
+  const getTrailerEmbedUrl = () => {
+    if (!trailerKey) return null;
+    return `https://www.youtube.com/embed/${trailerKey}?autoplay=1`;
+  };
+
+  // Get fallback embed URL
+  const getEmbedUrl = () => {
+    if (!movie?.id) return null;
+    const mediaType = movie?.media_type || "movie";
+    return `https://vidsrc.to/embed/${mediaType}/${movie.id}`;
+  };
+
   return (
     <>
-      {/* Video Player Modal - Embedded Streaming */}
+      {/* Video Player Modal */}
       {showPlayer && (
         <div className={styles.videoModal}>
           <div className={styles.videoModalContent}>
@@ -114,16 +153,39 @@ export default function DetailsHeroSection({
             >
               <X size={24} />
             </button>
-            <div className={styles.embedContainer}>
-              <iframe
-                src={isPlayingTrailer ? getTrailerEmbedUrl() : getEmbedUrl()}
-                title={isPlayingTrailer ? "Trailer" : "Movie"}
-                frameBorder='0'
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                allowFullScreen
-                className={styles.videoIframe}
-              ></iframe>
-            </div>
+
+            {/* Loading State */}
+            {loadingStream && (
+              <div className={styles.loadingStream}>
+                <Loader2 className={styles.spinner} size={48} />
+                <span>Finding best stream...</span>
+                <p>This may take a few seconds</p>
+              </div>
+            )}
+
+            {/* Native HLS Player */}
+            {useNativePlayer && streamUrl && !loadingStream && (
+              <HLSPlayer
+                src={streamUrl}
+                poster={`https://image.tmdb.org/t/p/original${backgroundImage}`}
+                title={title}
+                onClose={handleClosePlayer}
+              />
+            )}
+
+            {/* Fallback to iframe if native fails */}
+            {!useNativePlayer && !loadingStream && (
+              <div className={styles.embedContainer}>
+                <iframe
+                  src={isPlayingTrailer ? getTrailerEmbedUrl() : getEmbedUrl()}
+                  title={isPlayingTrailer ? "Trailer" : "Movie"}
+                  frameBorder='0'
+                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                  allowFullScreen
+                  className={styles.videoIframe}
+                ></iframe>
+              </div>
+            )}
           </div>
         </div>
       )}

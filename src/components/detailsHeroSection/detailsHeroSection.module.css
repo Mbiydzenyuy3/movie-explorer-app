@@ -169,15 +169,27 @@
   background: rgba(255, 255, 255, 0.9);
 }
 
-/* Trailer Button - Secondary */
 .trailerBtn {
-  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 100px;
 }
 
 .trailerBtn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .trailerBtn:disabled {
@@ -209,22 +221,26 @@
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
+  text-align: center;
 }
 
 .movieTitle {
-  font-size: 3rem;
+  font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: 700;
   margin-bottom: 16px;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
   line-height: 1.2;
+  word-wrap: break-word;
 }
 
 .detailInitial {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 12px;
   margin-bottom: 24px;
   flex-wrap: wrap;
+  font-size: 14px;
 }
 
 .rating {
@@ -242,32 +258,39 @@
 
 .heroBtns {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .heroBtn {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .playBtn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  padding: 14px 32px;
-  background: #fff;
-  color: #000;
+  padding: 14px 28px;
+  background: #e50914;
+  color: #fff;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 140px;
 }
 
 .playBtn:hover {
-  background: rgba(255, 255, 255, 0.9);
+  background: #f40612;
   transform: scale(1.02);
 }
 
@@ -282,26 +305,29 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #e50914;
   border-radius: 50%;
-  color: #fff;
+  color: #e50914;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .watchlistBtn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(229, 9, 20, 0.15);
 }
 
 .watchlistBtn.active {
   background: #e50914;
   border-color: #e50914;
+  color: #fff;
 }
 
 .descriptionWrapper {
   margin-bottom: 24px;
   max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .movieDescription {
@@ -346,8 +372,9 @@
 
 .additionalInfo {
   display: flex;
-  gap: 32px;
+  gap: 24px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .infoItem {
@@ -413,45 +440,195 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  color: #fff;
+  color: #e50914;
   cursor: pointer;
   z-index: 10;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .closePlayer:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(229, 9, 20, 0.1);
+}
+
+/* Source Bar */
+.sourceBar {
+  position: absolute;
+  top: -44px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.sourceLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.nextSourceBtn {
+  padding: 6px 12px;
+  background: rgba(255, 165, 0, 0.8);
+  border: none;
+  border-radius: 4px;
+  color: #000;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.nextSourceBtn:hover {
+  background: #ffa500;
+}
+
+/* Error Container */
+.errorContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+}
+
+.errorContent {
+  text-align: center;
+  padding: 40px;
+  max-width: 500px;
+}
+
+.errorContent h3 {
+  color: #ffa500;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.errorContent p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.errorNote {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 14px !important;
+  font-style: italic;
+}
+
+.retryBtn {
+  margin-top: 20px;
+  padding: 12px 32px;
+  background: #ffa500;
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retryBtn:hover {
+  background: #ff8c00;
+  transform: scale(1.02);
+}
+
+/* Loading Stream State */
+.loadingStream {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  color: white;
+}
+
+.loadingStream .spinner {
+  color: #ffa500;
+  animation: spin 1s linear infinite;
+}
+
+.loadingStream p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .detailheroSection {
-    min-height: 70vh;
-    padding: 100px 16px 40px;
+    min-height: 60vh;
+    padding: 100px 16px 32px;
   }
 
   .movieTitle {
-    font-size: 2rem;
+    font-size: 1.5rem;
+  }
+
+  .detailInitial {
+    font-size: 12px;
+    gap: 8px;
   }
 
   .heroBtns {
     flex-direction: column;
+    gap: 10px;
+    width: 100%;
   }
 
-  .playBtn {
+  .heroBtn {
     width: 100%;
     justify-content: center;
   }
 
+  .playBtn,
+  .trailerBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 13px;
+    min-width: unset;
+  }
+
+  .watchlistBtn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  .descriptionWrapper {
+    text-align: left;
+  }
+
+  .movieDescription {
+    font-size: 14px;
+  }
+
   .additionalInfo {
-    gap: 20px;
+    gap: 16px;
+    justify-content: flex-start;
+  }
+
+  .infoItem {
+    font-size: 12px;
   }
 
   .videoModalContent {
     width: 100%;
     max-width: 100%;
+    height: 56.25vw;
+  }
+
+  .closePlayer {
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
   }
 }

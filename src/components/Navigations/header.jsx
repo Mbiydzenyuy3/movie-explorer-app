@@ -5,7 +5,7 @@ import {
   X,
   Search,
   User,
-  Bell,
+  // Bell,
   Home,
   Film,
   Tv,
@@ -209,10 +209,10 @@ export default function Header() {
             )}
           </div>
 
-          {/* Notifications */}
-          <button className={styles.iconButton} aria-label='Notifications'>
+          {/* Notifications - TODO: Add notification feature }
+          {/* <button className={styles.iconButton} aria-label='Notifications'>
             <Bell size={20} />
-          </button>
+          </button> */}
 
           {/* Accessibility Settings */}
           <AccessibilityMenu />

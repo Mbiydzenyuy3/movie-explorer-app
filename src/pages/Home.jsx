@@ -2,7 +2,7 @@ import HeroSection from "../components/HeroSection/HeroCard";
 import Header from "../components/Navigations/header";
 import Footer from "../components/Navigations/footer";
 import { MoviesContext } from "../context/movieContext";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useFetchMovies from "../hook/useMoviesFetch";
 import HybridFeed from "../components/HybridFeed/HybridFeed";
@@ -82,7 +82,7 @@ export default function Homepage() {
       {/* Short Dramas Section - DramaBox/ReelShorts Style */}
       {!loadingSeries && tvSeries.length > 0 && (
         <Shorts
-          title="Short Dramas"
+          title='Short Dramas'
           seriesList={tvSeries}
           IMAGE_PATH={IMAGE_PATH}
           apiKey={apiKey}

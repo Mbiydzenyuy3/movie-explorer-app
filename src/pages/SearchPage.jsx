@@ -82,6 +82,14 @@ export default function SearchPage() {
     navigate(`/details/${movie.id}`);
   };
 
+  // Open streaming for movie - embedded player
+  const handleWatchMovie = (movie, e) => {
+    e?.stopPropagation();
+    // Navigate to details page with streaming
+    setSelectedMovie(movie);
+    navigate(`/details/${movie.id}`);
+  };
+
   const toggleWatchlist = (movie, e) => {
     e.stopPropagation();
     const current = JSON.parse(localStorage.getItem("watchlist") || "[]");
@@ -134,7 +142,7 @@ export default function SearchPage() {
 
           {/* Loading State */}
           {loading && (
-            <div className={styles.loading} aria-live="polite" aria-busy="true">
+            <div className={styles.loading} aria-live='polite' aria-busy='true'>
               <Loader2 className={styles.spinner} size={40} />
               <p>Searching movies...</p>
             </div>
@@ -142,7 +150,7 @@ export default function SearchPage() {
 
           {/* Error State */}
           {error && (
-            <div className={styles.error} role="alert" aria-live="assertive">
+            <div className={styles.error} role='alert' aria-live='assertive'>
               <X size={40} />
               <p>{error}</p>
             </div>
@@ -212,13 +220,19 @@ export default function SearchPage() {
                   <div className={styles.actions}>
                     <button
                       className={styles.watchBtn}
+                      onClick={(e) => handleWatchMovie(movie, e)}
+                    >
+                      <Play size={16} />
+                      <span>Watch</span>
+                    </button>
+                    <button
+                      className={`${styles.detailBtn}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleMovieClick(movie);
                       }}
                     >
-                      <Play size={16} />
-                      <span>Watch</span>
+                      <span>Details</span>
                     </button>
                     <button
                       className={`${styles.favoriteBtn} ${isInWatchlist(movie.id) ? styles.active : ""}`}

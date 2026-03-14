@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Play, Plus, Check, X, ChevronDown } from "lucide-react";
-import VideoPlayer from "../VideoPlayer/VideoPlayer";
 import styles from "../detailsHeroSection/detailsHeroSection.module.css";
 
 export default function DetailsHeroSection({
@@ -16,6 +15,7 @@ export default function DetailsHeroSection({
   const [showPlayer, setShowPlayer] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
+  const [isPlayingTrailer, setIsPlayingTrailer] = useState(false);
 
   // Fetch trailer
   useEffect(() => {
@@ -53,13 +53,34 @@ export default function DetailsHeroSection({
   }, [movie?.id]);
 
   const handlePlayTrailer = () => {
+    // Open embedded player for trailer
     if (trailerKey) {
+      setIsPlayingTrailer(true);
       setShowPlayer(true);
     }
   };
 
+  // Get embedded streaming URL for full movie
+  const getEmbedUrl = () => {
+    if (!movie?.id) return null;
+    const mediaType = movie?.media_type || "movie";
+    return `https://vidsrc.to/embed/${mediaType}/${movie.id}`;
+  };
+
+  // Get YouTube embed URL for trailer
+  const getTrailerEmbedUrl = () => {
+    if (!trailerKey) return null;
+    return `https://www.youtube.com/embed/${trailerKey}?autoplay=1`;
+  };
+
   const handleClosePlayer = () => {
     setShowPlayer(false);
+    setIsPlayingTrailer(false);
+  };
+
+  const handleWatchFullMovie = () => {
+    // Open embedded player directly on the page
+    setShowPlayer(true);
   };
 
   const handleWatchlist = () => {
@@ -80,12 +101,9 @@ export default function DetailsHeroSection({
     }
   };
 
-  // For demo: create a sample HLS stream (in production, this would come from your video backend)
-  const demoStreamUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
-
   return (
     <>
-      {/* Video Player Modal */}
+      {/* Video Player Modal - Embedded Streaming */}
       {showPlayer && (
         <div className={styles.videoModal}>
           <div className={styles.videoModalContent}>
@@ -96,13 +114,16 @@ export default function DetailsHeroSection({
             >
               <X size={24} />
             </button>
-            <VideoPlayer
-              src={demoStreamUrl}
-              title={`${title} - Trailer`}
-              poster={`https://image.tmdb.org/t/p/original${backgroundImage}`}
-              onEnded={handleClosePlayer}
-              autoPlay={true}
-            />
+            <div className={styles.embedContainer}>
+              <iframe
+                src={isPlayingTrailer ? getTrailerEmbedUrl() : getEmbedUrl()}
+                title={isPlayingTrailer ? "Trailer" : "Movie"}
+                frameBorder='0'
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                allowFullScreen
+                className={styles.videoIframe}
+              ></iframe>
+            </div>
           </div>
         </div>
       )}
@@ -142,14 +163,20 @@ export default function DetailsHeroSection({
           {/* Action Buttons */}
           <div className={styles.heroBtns}>
             <div className={styles.heroBtn}>
-              {/* Play Trailer Button */}
+              {/* Watch Full Movie Button */}
+              <button className={styles.playBtn} onClick={handleWatchFullMovie}>
+                <Play size={24} fill='currentColor' />
+                <span>Watch Now</span>
+              </button>
+
+              {/* Watch Trailer Button */}
               <button
-                className={styles.playBtn}
+                className={styles.trailerBtn}
                 onClick={handlePlayTrailer}
                 disabled={!trailerKey}
               >
-                <Play size={24} fill='currentColor' />
-                <span>Watch Trailer</span>
+                <Play size={20} fill='currentColor' />
+                <span>Trailer</span>
               </button>
 
               {/* Watchlist Button */}

@@ -1,16 +1,15 @@
-import LatestMovies from "../components/LatestMovies/LatestMovies";
-import MoviesLayout from "../components/MoviesLayout/MoviesLayout";
-import TopSearches from "../components/TopSearches/TopSearches";
 import HeroSection from "../components/HeroSection/HeroCard";
 import Header from "../components/Navigations/header";
 import Footer from "../components/Navigations/footer";
 import { MoviesContext } from "../context/movieContext";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import useFetchMovies from "../hook/useMoviesFetch";
 import HybridFeed from "../components/HybridFeed/HybridFeed";
 import { useMood } from "../context/MoodContext";
 import VibeSelector from "../components/VibeSelector/VibeSelector";
+import MovieCarousel from "../components/MovieCarousel/MovieCarousel";
+import Shorts from "../components/Shorts/Shorts";
 
 export default function Homepage() {
   const { setSelectedMovie, apiKey, baseUrl, IMAGE_PATH } =
@@ -18,8 +17,35 @@ export default function Homepage() {
   const navigate = useNavigate();
   const { currentMood, isMoodActive } = useMood();
 
+  // Fetch popular movies
   const popularUrl = `${baseUrl}/movie/popular?api_key=${apiKey}`;
   const { movies: popularMovies } = useFetchMovies(popularUrl);
+
+  // Fetch popular TV series for Shorts section
+  const [tvSeries, setTvSeries] = useState([]);
+  const [loadingSeries, setLoadingSeries] = useState(true);
+
+  useEffect(() => {
+    const fetchTvSeries = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/tv/popular?api_key=${apiKey}&page=1`
+        );
+        const data = await response.json();
+        // Filter to get series with fewer episodes (short dramas)
+        const shortSeries = data.results?.slice(0, 12) || [];
+        setTvSeries(shortSeries);
+      } catch (error) {
+        console.error("Error fetching TV series:", error);
+      } finally {
+        setLoadingSeries(false);
+      }
+    };
+
+    if (apiKey && baseUrl) {
+      fetchTvSeries();
+    }
+  }, [apiKey, baseUrl]);
 
   const handleMovieDetail = (movie) => {
     setSelectedMovie(movie);
@@ -53,49 +79,44 @@ export default function Homepage() {
         />
       )}
 
-      {/* Movie Sections */}
-      <LatestMovies
-        API_KEY={apiKey}
-        BASE_URL={baseUrl}
+      {/* Short Dramas Section - DramaBox/ReelShorts Style */}
+      {!loadingSeries && tvSeries.length > 0 && (
+        <Shorts
+          title="Short Dramas"
+          seriesList={tvSeries}
+          IMAGE_PATH={IMAGE_PATH}
+          apiKey={apiKey}
+          baseUrl={baseUrl}
+        />
+      )}
+
+      {/* Movie Sections with Carousel */}
+      <MovieCarousel
+        title='Trending Now'
+        movies={popularMovies || []}
         IMAGE_PATH={IMAGE_PATH}
-        genre={80}
-        detail={handleMovieDetail}
+        onMovieClick={handleMovieDetail}
       />
 
-      <TopSearches
-        API_KEY={apiKey}
-        BASE_URL={baseUrl}
+      <MovieCarousel
+        title='Action & Adventure'
+        movies={popularMovies?.slice(0, 10) || []}
         IMAGE_PATH={IMAGE_PATH}
-        path='popular'
-        genre={27}
-        detail={handleMovieDetail}
+        onMovieClick={handleMovieDetail}
       />
 
-      <MoviesLayout
-        API_KEY={apiKey}
-        BASE_URL={baseUrl}
-        IMAGE_PATH={IMAGE_PATH}
-        title='Action'
-        genre={53}
-        detail={handleMovieDetail}
-      />
-
-      <MoviesLayout
-        API_KEY={apiKey}
-        BASE_URL={baseUrl}
-        IMAGE_PATH={IMAGE_PATH}
+      <MovieCarousel
         title='Romance & Drama'
-        genre={10749}
-        detail={handleMovieDetail}
+        movies={popularMovies?.slice(5, 15) || []}
+        IMAGE_PATH={IMAGE_PATH}
+        onMovieClick={handleMovieDetail}
       />
 
-      <MoviesLayout
-        API_KEY={apiKey}
-        BASE_URL={baseUrl}
-        IMAGE_PATH={IMAGE_PATH}
+      <MovieCarousel
         title='Comedy'
-        genre={37}
-        detail={handleMovieDetail}
+        movies={popularMovies?.slice(10, 20) || []}
+        IMAGE_PATH={IMAGE_PATH}
+        onMovieClick={handleMovieDetail}
       />
 
       <Footer />

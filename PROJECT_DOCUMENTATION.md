@@ -434,4 +434,4 @@ user_preferences:
 | HLS  | HTTP Live Streaming                  |
 | WCAG | Web Content Accessibility Guidelines |
 | JWT  | JSON Web Token                       |
-| Edge | CDN-edge compute for low-latency     |
+| Edge | CDN-edge compute for low-latency     

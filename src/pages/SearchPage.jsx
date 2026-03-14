@@ -2,10 +2,20 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router";
 import { MoviesContext } from "../context/movieContext";
 import { useContext } from "react";
-import { Play, Plus, Check, X, Search, Loader2, Film } from "lucide-react";
+import {
+  Play,
+  Plus,
+  Check,
+  X,
+  Search,
+  Loader2,
+  Film,
+  Clock
+} from "lucide-react";
 import Header from "../components/Navigations/header";
 import Footer from "../components/Navigations/footer";
 import VibeSelector from "../components/VibeSelector/VibeSelector";
+import { timeOptions, moodConfig } from "../lib/moodConfig";
 import styles from "./SearchPage.module.css";
 
 export default function SearchPage() {
@@ -13,6 +23,9 @@ export default function SearchPage() {
   const navigate = useNavigate();
   const query = searchParams.get("query") || "";
   const vibe = searchParams.get("vibe") || "";
+  const timeParam = searchParams.get("time") || "0";
+
+  const timeLimit = parseInt(timeParam, 10);
 
   const { apiKey, baseUrl, IMAGE_PATH, setSelectedMovie } =
     useContext(MoviesContext);
@@ -28,7 +41,7 @@ export default function SearchPage() {
     setWatchlist(saved);
   }, []);
 
-  // Fetch search results
+  // Fetch search results for text search or mood-based search
   useEffect(() => {
     const fetchSearchResults = async () => {
       if (!query && !vibe) {
@@ -55,27 +68,40 @@ export default function SearchPage() {
             romantic: 10749, // Romance
             dark: 27 // Horror
           };
+
           const genreId = vibeGenreMap[vibe] || 28;
           url = `${baseUrl}/discover/movie?api_key=${apiKey}&with_genres=${genreId}&sort_by=popularity.desc`;
+
+          // Add runtime filter if time limit is specified
+          if (timeLimit > 0) {
+            url += `&with_runtime.lte=${timeLimit}`;
+          }
         } else {
           // Regular text search
           url = `${baseUrl}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
         }
 
         const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
         const data = await response.json();
 
         setMovies(data.results || []);
       } catch (err) {
-        setError("Failed to fetch search results");
-        console.error(err);
+        setError("Failed to fetch movies. Please try again.");
+        console.error("Search error:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSearchResults();
-  }, [query, vibe, apiKey, baseUrl]);
+    if (apiKey && baseUrl) {
+      fetchSearchResults();
+    }
+  }, [query, vibe, timeLimit, apiKey, baseUrl]);
 
   const handleMovieClick = (movie) => {
     setSelectedMovie(movie);
@@ -108,19 +134,26 @@ export default function SearchPage() {
 
   const isInWatchlist = (movieId) => watchlist.some((m) => m.id === movieId);
 
+  // Get display info for mood-based search
+  const getMoodInfo = () => {
+    if (!vibe) return null;
+
+    const config = moodConfig[vibe];
+    const timeConfig = timeOptions.find((t) => t.value === timeLimit);
+
+    return {
+      mood: config?.label || vibe,
+      description: config?.description || "",
+      color: config?.color || "#667eea",
+      timeLabel: timeConfig?.label || "Any length"
+    };
+  };
+
+  const moodInfo = getMoodInfo();
+
   const getTitle = () => {
     if (vibe) {
-      const vibeNames = {
-        energetic: "Energetic",
-        relaxed: "Relaxed",
-        tense: "Tense",
-        adventurous: "Adventurous",
-        nostalgic: "Nostalgic",
-        curious: "Curious",
-        romantic: "Romantic",
-        dark: "Dark"
-      };
-      return `${vibeNames[vibe] || vibe} Movies`;
+      return `${moodInfo?.mood || vibe} Movies`;
     }
     return `Search Results for "${query}"`;
   };
@@ -135,6 +168,31 @@ export default function SearchPage() {
           {/* Header */}
           <div className={styles.header}>
             <h1 className={styles.title}>{getTitle()}</h1>
+
+            {/* Show mood context info */}
+            {moodInfo && (
+              <div
+                className={styles.moodContext}
+                style={{ borderColor: moodInfo.color }}
+              >
+                <span
+                  className={styles.moodLabel}
+                  style={{ backgroundColor: moodInfo.color }}
+                >
+                  {moodInfo.mood}
+                </span>
+                <span className={styles.moodDescription}>
+                  {moodInfo.description}
+                </span>
+                {timeLimit > 0 && (
+                  <span className={styles.timeBadge}>
+                    <Clock size={14} />
+                    {moodInfo.timeLabel}
+                  </span>
+                )}
+              </div>
+            )}
+
             <p className={styles.count}>
               {loading ? "Loading..." : `${movies.length} movies found`}
             </p>
@@ -144,7 +202,7 @@ export default function SearchPage() {
           {loading && (
             <div className={styles.loading} aria-live='polite' aria-busy='true'>
               <Loader2 className={styles.spinner} size={40} />
-              <p>Searching movies...</p>
+              <p>Finding perfect movies for your mood...</p>
             </div>
           )}
 

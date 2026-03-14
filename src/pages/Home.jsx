@@ -8,8 +8,9 @@ import useFetchMovies from "../hook/useMoviesFetch";
 import HybridFeed from "../components/HybridFeed/HybridFeed";
 import { useMood } from "../context/MoodContext";
 import VibeSelector from "../components/VibeSelector/VibeSelector";
+import MoodSelector from "../components/MoodSelector/MoodSelector";
 import MovieCarousel from "../components/MovieCarousel/MovieCarousel";
-import Shorts from "../components/Shorts/Shorts";
+// import Shorts from "../components/Shorts/Shorts";
 
 export default function Homepage() {
   const { setSelectedMovie, apiKey, baseUrl, IMAGE_PATH } =
@@ -59,6 +60,9 @@ export default function Homepage() {
       {/* VibeSelector - Chatbot-like mode selector */}
       <VibeSelector />
 
+      {/* MoodSelector - Advanced mood-based movie finder */}
+      <MoodSelector />
+
       {/* Hybrid Feed - Mixed Content based on mood */}
       {isMoodActive && currentMood && (
         <HybridFeed
@@ -80,7 +84,7 @@ export default function Homepage() {
       )}
 
       {/* Short Dramas Section - DramaBox/ReelShorts Style */}
-      {!loadingSeries && tvSeries.length > 0 && (
+      {/* {!loadingSeries && tvSeries.length > 0 && (
         <Shorts
           title='Short Dramas'
           seriesList={tvSeries}
@@ -88,7 +92,7 @@ export default function Homepage() {
           apiKey={apiKey}
           baseUrl={baseUrl}
         />
-      )}
+      )} */}
 
       {/* Movie Sections with Carousel */}
       <MovieCarousel

@@ -1,28 +1,57 @@
-import styles from "../detailsHeroSection/detailsHeroSection.module.css";
+import { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
+import { Play, Plus, Check, X, ChevronDown, Loader2, ExternalLink, Tv, RotateCcw } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import styles from "../detailsHeroSection/detailsHeroSection.module.css";
+import HLSPlayer from "../HLSPlayer/HLSPlayer";
+import AffiliateLink from "../Monetization/AffiliateLink";
+import { getMovieStream } from "../../services/streaming-service";
+import { useAuth } from "../../context/AuthContext";
+import WatchHistoryService from "../../services/WatchHistoryService";
 
 export default function DetailsHeroSection({
   title,
   backgroundImage,
   description,
-  storage,
   movie,
   apiKey,
   baseUrl
 }) {
   const [trailerKey, setTrailerKey] = useState(null);
+  const [showPlayer, setShowPlayer] = useState(false);
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [showFullDesc, setShowFullDesc] = useState(false);
+  const [isPlayingTrailer, setIsPlayingTrailer] = useState(false);
+  
+  // Native streaming state
+  const [streamUrl, setStreamUrl] = useState(null);
+  const [loadingStream, setLoadingStream] = useState(false);
+  const [streamError, setStreamError] = useState(null);
+  const [useNativePlayer, setUseNativePlayer] = useState(false);
+  
+  // Watch Persistence State
+  const { user, getToken } = useAuth();
+  const [initialProgress, setInitialProgress] = useState(0);
+  const [currentProgress, setCurrentProgress] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(0);
+  const lastSavedTimeRef = useRef(0);
+  const [isResuming, setIsResuming] = useState(false);
 
+  // Fetch trailer
   useEffect(() => {
     const fetchTrailer = async () => {
+      if (!movie?.id || !apiKey || !baseUrl) return;
+
       try {
         const response = await fetch(
           `${baseUrl}/movie/${movie.id}/videos?api_key=${apiKey}`
         );
         const data = await response.json();
-        const trailer = data.results.find(
+
+        const trailer = data.results?.find(
           (video) => video.type === "Trailer" && video.site === "YouTube"
         );
+
         if (trailer) {
           setTrailerKey(trailer.key);
         }
@@ -31,97 +60,337 @@ export default function DetailsHeroSection({
       }
     };
 
-    if (movie.id) {
-      fetchTrailer();
-    }
-  }, [movie.id, apiKey, baseUrl]);
+    fetchTrailer();
+  }, [movie?.id, apiKey, baseUrl]);
 
-  const handleMovie = () => {
-    if (trailerKey) {
-      window.open(`https://www.youtube.com/watch?v=${trailerKey}`, "_blank");
-    } else {
-      alert("Trailer not available");
+  // Check watchlist and fetch initial progress
+  useEffect(() => {
+    if (movie?.id) {
+      const watchlist = JSON.parse(localStorage.getItem("watchlist") || "[]");
+      setIsInWatchlist(watchlist.some((item) => item.id === movie.id));
+
+      const fetchSavedProgress = async () => {
+        if (!user) return;
+        const token = await getToken();
+        const history = await WatchHistoryService.getRecentHistory(token, user.id);
+        const entry = history.find(h => h.movie_id === movie.id);
+        if (entry) {
+          setInitialProgress(entry.progress_seconds);
+          setIsResuming(true);
+        }
+      };
+      fetchSavedProgress();
+    }
+  }, [movie?.id, user, getToken]);
+
+  // Fetch stream URL using Consumet API
+  const fetchStreamUrl = useCallback(async () => {
+    if (!movie?.id) return;
+    
+    setLoadingStream(true);
+    setStreamError(null);
+    
+    try {
+      const mediaType = movie?.media_type || "movie";
+      const streamData = await getMovieStream(movie.id);
+      
+      if (streamData?.url) {
+        setStreamUrl(streamData.url);
+        setUseNativePlayer(true);
+      } else {
+        // Fallback to embed if Consumet fails
+        setStreamError("Direct stream unavailable. Using fallback player.");
+        setUseNativePlayer(false);
+      }
+    } catch (error) {
+      console.error("Error fetching stream:", error);
+      setStreamError("Failed to load stream");
+      setUseNativePlayer(false);
+    } finally {
+      setLoadingStream(false);
+    }
+  }, [movie?.id, movie?.media_type]);
+
+  // Handle Watch Full Movie - try native player first
+  const handleWatchFullMovie = async () => {
+    setIsPlayingTrailer(false);
+    setShowPlayer(true);
+    
+    // Try native player with Consumet API
+    await fetchStreamUrl();
+  };
+
+  // Handle Watch Trailer
+  const handlePlayTrailer = () => {
+    setUseNativePlayer(false);
+    setStreamUrl(null);
+    setIsPlayingTrailer(true);
+    setShowPlayer(true);
+  };
+
+  const handleClosePlayer = async () => {
+    // Save final progress before closing
+    if (user && currentProgress > 0) {
+      const token = await getToken();
+      await WatchHistoryService.updateProgress(
+        token, 
+        user.id, 
+        movie, 
+        currentProgress, 
+        totalDuration || 0
+      );
+    }
+    
+    setShowPlayer(false);
+    setIsPlayingTrailer(false);
+    setStreamUrl(null);
+    setUseNativePlayer(false);
+    setIsResuming(false);
+  };
+
+  const handleTimeUpdate = (time) => {
+    setCurrentProgress(time);
+    
+    // Throttle updates to Supabase - every 10 seconds
+    if (user && Math.abs(time - lastSavedTimeRef.current) > 10) {
+      lastSavedTimeRef.current = time;
+      saveProgress(time);
     }
   };
+
+  const saveProgress = async (time) => {
+    const token = await getToken();
+    await WatchHistoryService.updateProgress(
+      token,
+      user.id,
+      movie,
+      time,
+      totalDuration
+    );
+  };
+
+  const handleWatchlist = () => {
+    if (!movie) return;
+
+    const watchlist = JSON.parse(localStorage.getItem("watchlist") || "[]");
+
+    if (isInWatchlist) {
+      const updated = watchlist.filter((item) => item.id !== movie.id);
+      localStorage.setItem("watchlist", JSON.stringify(updated));
+      setIsInWatchlist(false);
+    } else {
+      watchlist.push(movie);
+      localStorage.setItem("watchlist", JSON.stringify(watchlist));
+      setIsInWatchlist(true);
+    }
+  };
+
+  // Get YouTube nocookie embed URL for trailer (no ads, no tracking)
+  const getTrailerEmbedUrl = () => {
+    if (!trailerKey) return null;
+    return `https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&rel=0&modestbranding=1`;
+  };
+
   return (
     <>
+      {/* Video Player Modal */}
+      <AnimatePresence>
+        {showPlayer && (
+          <motion.div
+            className={styles.videoModal}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <motion.div
+              className={styles.videoModalContent}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <button
+                className={styles.closePlayer}
+                onClick={handleClosePlayer}
+                aria-label="Close player"
+              >
+                <X size={24} />
+              </button>
+
+              {/* Loading State */}
+              {loadingStream && (
+                <div className={styles.loadingStream}>
+                  <Loader2 className={styles.spinner} size={48} />
+                  <span>Finding best stream...</span>
+                  <p>This may take a few seconds</p>
+                </div>
+              )}
+
+              {/* Native HLS Player — Ad-free on-platform experience */}
+              {useNativePlayer && streamUrl && !loadingStream && (
+                <HLSPlayer
+                  src={streamUrl}
+                  poster={`https://image.tmdb.org/t/p/original${backgroundImage}`}
+                  title={title}
+                  onClose={handleClosePlayer}
+                  onTimeUpdate={handleTimeUpdate}
+                  onLoadedMetadata={setTotalDuration}
+                  autoPlay={true}
+                  startOffset={initialProgress}
+                />
+              )}
+
+              {/* Trailer Player — YouTube nocookie (no tracking/ad targeting) */}
+              {isPlayingTrailer && !loadingStream && (
+                <div className={styles.embedContainer}>
+                  <iframe
+                    src={getTrailerEmbedUrl()}
+                    title={`${title} — Official Trailer`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className={styles.videoIframe}
+                  />
+                </div>
+              )}
+
+              {/* Clean No-Stream Fallback — NO third-party ad iframes */}
+              {!useNativePlayer && !isPlayingTrailer && !loadingStream && (
+                <div className={styles.noStreamFallback}>
+                  <div className={styles.noStreamIcon}>
+                    <Tv size={48} />
+                  </div>
+                  <h3 className={styles.noStreamTitle}>Direct stream unavailable</h3>
+                  <p className={styles.noStreamSubline}>
+                    This title isn&apos;t available on VibeBox yet. Watch it ad-free on your streaming service:
+                  </p>
+                  <AffiliateLink
+                    movieTitle={title}
+                    className={styles.noStreamAffiliate}
+                  />
+                  {streamError && (
+                    <p className={styles.streamErrorNote}>{streamError}</p>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Hero Section */}
       <div
         className={styles.detailheroSection}
         style={{
-          backgroundImage: `linear-gradient(#0037, #111), url(https://image.tmdb.org/t/p/original${backgroundImage})`
+          backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.3) 100%),
+                           url(https://image.tmdb.org/t/p/original${backgroundImage})`
         }}
       >
         <div className={styles.movieDetail}>
-          <h1>{title}</h1>
+          {/* Title */}
+          <h1 className={styles.movieTitle}>{title}</h1>
+
+          {/* Meta Info */}
           <div className={styles.detailInitial}>
-            <div className='frame'>CBFC:U/A</div>
+            <span className={styles.rating}>PG-13</span>
             <div className={styles.production}>
-              <p>Action</p>
-              <span>.</span>
-              <p>Action</p>
-              <span>.</span>
-              <p>7h 28m</p>
+              {movie?.genres?.slice(0, 3).map((genre, index) => (
+                <span key={genre.id}>
+                  {genre.name}
+                  {index < Math.min(movie.genres.length, 3) - 1 && (
+                    <span> • </span>
+                  )}
+                </span>
+              ))}
             </div>
+            {movie?.runtime && (
+              <span className={styles.runtime}>
+                {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
+              </span>
+            )}
           </div>
+
+          {/* Action Buttons */}
           <div className={styles.heroBtns}>
             <div className={styles.heroBtn}>
-              <button className='playBtn' onClick={handleMovie}>
-                <svg
-                  width='20'
-                  height='20'
-                  viewBox='0 0 20 20'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    d='M9.99999 19.9902C11.366 19.9902 12.652 19.7289 13.8578 19.2062C15.0637 18.6836 16.1274 17.9618 17.049 17.0406C17.9706 16.1195 18.6928 15.0563 19.2156 13.851C19.7385 12.6458 20 11.3604 20 9.99506C20 8.62971 19.7385 7.34439 19.2156 6.13909C18.6928 4.93381 17.9706 3.8706 17.049 2.94948C16.1274 2.02836 15.0621 1.30649 13.8529 0.78387C12.6438 0.261249 11.3562 -6.10352e-05 9.99018 -6.10352e-05C8.62417 -6.10352e-05 7.33823 0.261249 6.13235 0.78387C4.92646 1.30649 3.86437 2.02836 2.94607 2.94948C2.02778 3.8706 1.30719 4.93381 0.784313 6.13909C0.261438 7.34439 0 8.62971 0 9.99506C0 11.3604 0.261438 12.6458 0.784313 13.851C1.30719 15.0563 2.02941 16.1195 2.95097 17.0406C3.87255 17.9618 4.93627 18.6836 6.14214 19.2062C7.34803 19.7289 8.63398 19.9902 9.99999 19.9902Z'
-                    fill='black'
-                    fillOpacity='0.85'
-                  />
-                  <path
-                    d='M8.13724 13.9441C7.90195 14.0878 7.67483 14.1123 7.45587 14.0176C7.23692 13.9228 7.12744 13.7546 7.12744 13.5129V6.48696C7.12744 6.24525 7.24182 6.08193 7.47058 5.997C7.69933 5.91208 7.92156 5.93168 8.13724 6.0558L13.902 9.46589C14.1046 9.59002 14.2075 9.76967 14.2108 10.0048C14.2141 10.2401 14.1111 10.423 13.902 10.5536L8.13724 13.9441Z'
-                    fill='white'
-                  />
-                </svg>
-                Watch Now
+              {/* Watch Full Movie Button */}
+              <button className={styles.playBtn} onClick={handleWatchFullMovie}>
+                {isResuming ? <RotateCcw size={22} /> : <Play size={24} fill='currentColor' />}
+                <span>{isResuming ? "Resume" : "Watch Now"}</span>
               </button>
-              {/* {console.log(movie)} */}
+
+              {/* Watch Trailer Button */}
               <button
-                className={styles.chevronBtn}
-                onClick={() => storage(movie)}
+                className={styles.trailerBtn}
+                onClick={handlePlayTrailer}
+                disabled={!trailerKey}
               >
-                <svg
-                  width='20'
-                  height='21'
-                  viewBox='0 0 20 21'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    d='M9.99999 20.1619C11.366 20.1619 12.652 19.9006 13.8578 19.3779C15.0637 18.8553 16.1274 18.1335 17.049 17.2123C17.9706 16.2912 18.6928 15.228 19.2156 14.0227C19.7385 12.8174 20 11.5321 20 10.1668C20 8.80141 19.7385 7.51608 19.2156 6.31079C18.6928 5.1055 17.9706 4.04229 17.049 3.12117C16.1274 2.20005 15.0621 1.47818 13.8529 0.955562C12.6438 0.432941 11.3562 0.171631 9.99018 0.171631C8.62417 0.171631 7.33823 0.432941 6.13235 0.955562C4.92646 1.47818 3.86437 2.20005 2.94607 3.12117C2.02778 4.04229 1.30719 5.1055 0.784313 6.31079C0.261438 7.51608 0 8.80141 0 10.1668C0 11.5321 0.261438 12.8174 0.784313 14.0227C1.30719 15.228 2.02941 16.2912 2.95097 17.2123C3.87255 18.1335 4.93627 18.8553 6.14214 19.3779C7.34803 19.9006 8.63398 20.1619 9.99999 20.1619Z'
-                    fill='white'
-                  />
-                  <path
-                    d='M7.68624 15.1741C7.52938 15.0173 7.45095 14.8327 7.45095 14.6204C7.45095 14.4081 7.52611 14.2301 7.67643 14.0864L11.8333 10.1765L7.67643 6.27646C7.51958 6.13274 7.44442 5.9531 7.45095 5.73752C7.45749 5.52194 7.53919 5.33902 7.69605 5.18876C7.83984 5.04504 8.01468 4.97808 8.22056 4.98788C8.42644 4.99768 8.60781 5.0777 8.76467 5.22796L12.9705 9.17701C13.1666 9.3534 13.2957 9.56408 13.3578 9.80905C13.4199 10.054 13.4199 10.299 13.3578 10.544C13.2957 10.7889 13.1666 10.9996 12.9705 11.176L8.76467 15.1349C8.62088 15.2721 8.43787 15.344 8.21565 15.3505C7.99343 15.357 7.81696 15.2982 7.68624 15.1741Z'
-                    fill='#20201F'
-                  />
-                  <defs>
-                    <clipPath id='clip0_1_23'>
-                      <rect
-                        width='20'
-                        height='20'
-                        fill='white'
-                        transform='translate(0 0.171631)'
-                      />
-                    </clipPath>
-                  </defs>
-                </svg>
-                Add Watchlist
+                <Play size={20} fill='currentColor' />
+                <span>Trailer</span>
+              </button>
+
+              {/* Watchlist Button */}
+              <button
+                className={`${styles.watchlistBtn} ${isInWatchlist ? styles.active : ""}`}
+                onClick={handleWatchlist}
+                aria-label={
+                  isInWatchlist ? "Remove from watchlist" : "Add to watchlist"
+                }
+              >
+                {isInWatchlist ? <Check size={20} /> : <Plus size={20} />}
               </button>
             </div>
           </div>
 
-          <p className={styles.movieDescription}>{description}</p>
+          {/* Description */}
+          <div className={styles.descriptionWrapper}>
+            <p
+              className={`${styles.movieDescription} ${showFullDesc ? styles.expanded : ""}`}
+            >
+              {description}
+            </p>
+            {description?.length > 200 && (
+              <button
+                className={styles.showMoreBtn}
+                onClick={() => setShowFullDesc(!showFullDesc)}
+              >
+                {showFullDesc ? "Show less" : "Read more"}
+                <ChevronDown
+                  size={16}
+                  className={showFullDesc ? styles.rotated : ""}
+                />
+              </button>
+            )}
+          </div>
+
+          {/* Additional Info */}
+          <div className={styles.additionalInfo}>
+            {movie?.vote_average && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Rating</span>
+                <span className={styles.infoValue}>
+                  ★ {movie.vote_average.toFixed(1)}/10
+                </span>
+              </div>
+            )}
+            {movie?.release_date && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Release</span>
+                <span className={styles.infoValue}>
+                  {new Date(movie.release_date).getFullYear()}
+                </span>
+              </div>
+            )}
+            {movie?.original_language && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Language</span>
+                <span className={styles.infoValue}>
+                  {movie.original_language.toUpperCase()}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

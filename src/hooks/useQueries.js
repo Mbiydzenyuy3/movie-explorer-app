@@ -91,6 +91,21 @@ export const useDiscoverMovies = (genre, page = 1) => {
   });
 };
 
+/**
+ * Hook for discovering movies by mood, time limit, and energy level
+ */
+export const useMoodMovies = (mood, timeLimit = 0, page = 1) => {
+  return useQuery({
+    queryKey: queryKeys.movies.list("mood", { mood, timeLimit, page }),
+    queryFn: () =>
+      apiService
+        .discoverByMood(mood, timeLimit, page)
+        .then((res) => res.results),
+    enabled: !!mood,
+    staleTime: 5 * 60 * 1000 // 5 minutes
+  });
+};
+
 // ==================== TV Series Hooks ====================
 
 /**
@@ -205,6 +220,7 @@ export default {
   useMovieCredits,
   useMovieVideos,
   useDiscoverMovies,
+  useMoodMovies,
   usePopularTV,
   useTopRatedTV,
   useOnTheAirTV,

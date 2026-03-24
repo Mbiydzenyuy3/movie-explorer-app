@@ -1,0 +1,279 @@
+.container {
+  position: relative;
+  z-index: 100;
+}
+
+/* Toggle Button */
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.45);
+}
+
+.toggleBtn.active {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 4px 20px rgba(245, 87, 108, 0.45);
+}
+
+/* Glassmorphism Panel */
+.moodPanel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  width: 420px;
+  background: rgba(15, 12, 35, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.panelTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+.closePanel {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.closePanel:hover {
+  color: white;
+  background: rgba(255,255,255,0.1);
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  color: #a5b4fc;
+  font-size: 0.78rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* Energy Slider */
+.energySlider {
+  display: flex;
+  gap: 8px;
+}
+
+.energyBtn {
+  flex: 1;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+
+.energyBtn.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 0 16px rgba(102, 126, 234, 0.4);
+}
+
+.energyLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* Mood Grid */
+.moodGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.moodBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.moodBtn.selected {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.moodIcon {
+  opacity: 0.85;
+}
+
+.moodBtn.selected .moodIcon {
+  opacity: 1;
+}
+
+.moodLabel {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.moodBtn.selected .moodLabel {
+  color: white;
+}
+
+/* Time Grid */
+.timeGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.timeBtn {
+  padding: 10px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #9ca3af;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.timeBtn.selected {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 0 14px rgba(79, 172, 254, 0.4);
+}
+
+/* Current Mood Display */
+.currentMood {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  margin-top: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.currentMoodIcon {
+  flex-shrink: 0;
+}
+
+.currentMoodText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  color: white;
+}
+
+.currentMoodText strong {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.currentMoodText span {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.arrowIcon {
+  color: rgba(255,255,255,0.4);
+  flex-shrink: 0;
+}
+
+/* Find Movies Button */
+.findMoviesBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  letter-spacing: 0.02em;
+}
+
+.findMoviesBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .moodPanel {
+    width: calc(100vw - 32px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .moodGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .timeGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

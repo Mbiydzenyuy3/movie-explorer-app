@@ -1,0 +1,474 @@
+/* Vertical Shorts Player */
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Force vertical aspect ratio (9:16) */
+  max-width: 100vh;
+  max-height: 100vw;
+  aspect-ratio: 9 / 16;
+}
+
+/* Loading Overlay */
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.spinner {
+  color: #ffa500;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Top Bar */
+.topBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.topBar.visible {
+  opacity: 1;
+}
+
+.closeBtn {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.seriesInfo {
+  flex: 1;
+  text-align: center;
+  padding: 0 12px;
+}
+
+.seriesTitle {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.episodeInfo {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  margin: 4px 0 0 0;
+}
+
+.listBtn {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.listBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Episode List Overlay */
+.episodeOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 70vh;
+  background: rgba(0, 0, 0, 0.95);
+  border-radius: 20px 20px 0 0;
+  z-index: 20;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.episodeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.episodeHeader h4 {
+  color: white;
+  font-size: 18px;
+  margin: 0;
+}
+
+.episodeHeader button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.episodeList {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.episodeItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+
+.episodeItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.episodeItem.active {
+  background: rgba(255, 165, 0, 0.2);
+}
+
+.epNumber {
+  color: #ffa500;
+  font-weight: 600;
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.epTitle {
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playingIcon {
+  width: 24px;
+  height: 24px;
+  background: #ffa500;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+
+/* Side Actions */
+.actions {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.actions.visible {
+  opacity: 1;
+}
+
+.actionBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.actionBtn svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.actionCount {
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.actionBtn.liked svg {
+  color: #ff4757;
+}
+
+/* Bottom Controls */
+.bottomControls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.bottomControls.visible {
+  opacity: 1;
+}
+
+.episodeNav {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.navBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.navBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Progress Bar */
+.progressContainer {
+  margin-bottom: 12px;
+}
+
+.progressBar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #ffa500;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.timeDisplay {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Playback Controls */
+.playbackControls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.playBtn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 165, 0, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.playBtn:hover {
+  transform: scale(1.1);
+  background: #ffa500;
+}
+
+.volumeBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.volumeBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.volumeSlider {
+  width: 80px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #ffa500;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #ffa500;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Swipe Hint */
+.swipeHint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+}
+
+/* Error State */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: white;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .actions {
+    right: 8px;
+    gap: 16px;
+  }
+
+  .actionBtn svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .actionCount {
+    font-size: 10px;
+  }
+
+  .playBtn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .volumeBtn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .seriesTitle {
+    font-size: 14px;
+  }
+
+  .episodeInfo {
+    font-size: 11px;
+  }
+}

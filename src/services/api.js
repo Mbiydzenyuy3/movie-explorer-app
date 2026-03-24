@@ -154,7 +154,56 @@ export const apiService = {
     fetchWithErrorHandling(buildUrl(endpoints.trendingDaily)),
 
   getTrendingWeekly: () =>
-    fetchWithErrorHandling(buildUrl(endpoints.trendingWeekly))
+    fetchWithErrorHandling(buildUrl(endpoints.trendingWeekly)),
+
+  // Mood-based Discovery
+  discoverByMood: (mood, timeLimit = 0, page = 1) => {
+    const moodConfig = {
+      energetic: {
+        genres: [28, 12, 53],
+        keywords: "action,explosive,fast-paced,adventure"
+      },
+      relaxed: {
+        genres: [35, 10749, 16],
+        keywords: "feel-good,lighthearted,comedy,wholesome"
+      },
+      tense: {
+        genres: [18, 53, 80],
+        keywords: "suspenseful,dramatic,psychological,thriller"
+      },
+      adventurous: {
+        genres: [12, 14, 10759],
+        keywords: "adventure,journey,epic,fantasy"
+      },
+      nostalgic: {
+        genres: [36, 10770, 10402],
+        keywords: "classic,nostalgic,retro,vintage"
+      },
+      curious: {
+        genres: [9648, 99, 10770],
+        keywords: "mystery,documentary,investigation,educational"
+      },
+      romantic: {
+        genres: [10749, 35],
+        keywords: "romance,love story,romantic comedy,heartwarming"
+      },
+      dark: {
+        genres: [27, 53, 80],
+        keywords: "horror,dark,gritty,psychological thriller"
+      }
+    };
+
+    const config = moodConfig[mood] || moodConfig.relaxed;
+    const genresParam = config.genres.join(",");
+    let endpoint = `/discover/movie?with_genres=${genresParam}&sort_by=popularity.desc&page=${page}`;
+
+    // Add runtime filter if time limit is specified
+    if (timeLimit > 0) {
+      endpoint += `&with_runtime.lte=${timeLimit}`;
+    }
+
+    return fetchWithErrorHandling(buildUrl(endpoint));
+  }
 };
 
 export default apiService;

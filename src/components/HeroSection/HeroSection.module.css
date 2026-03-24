@@ -1,195 +1,278 @@
-/* Herosection */
+/* Hero Section Styles */
 .heroSection {
-  background-size: cover;
-  background-position: center;
-  height: 600px;
-  background-repeat: no-repeat;
   position: relative;
-  margin-bottom: 50px;
+  min-height: 100vh;
   display: flex;
   align-items: flex-end;
-  /* background-image: url("/assets/img/hero-bg.png"); */
+  padding: 80px 24px 60px;
+  margin-top: -64px;
+  overflow: hidden;
 }
 
-.heroSection::before {
-  content: "";
+/* Animated background layer */
+.heroBg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  z-index: 0;
+}
+
+/* Gradient overlays */
+.overlayBottom {
+  position: absolute;
+  inset: 0;
   background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.1) 0%,
-    rgba(0, 0, 0, 0.7) 100%
+    to top,
+    rgba(5, 3, 18, 1) 0%,
+    rgba(5, 3, 18, 0.75) 35%,
+    rgba(5, 3, 18, 0.2) 65%,
+    transparent 100%
+  );
+  z-index: 1;
+}
+
+.overlayLeft {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(5, 3, 18, 0.85) 0%,
+    rgba(5, 3, 18, 0.4) 50%,
+    transparent 100%
   );
   z-index: 1;
 }
 
 .movieDetail {
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-  margin-bottom: 5em;
-  justify-content: center;
-  padding: 0 50px 50px 50px;
+  position: relative;
+  max-width: 720px;
+  width: 100%;
   z-index: 2;
-  max-width: 1200px;
-  width: 100%;
-
-  h1 {
-    font-size: 50px;
-    padding-bottom: 20px;
-    font-weight: 1000;
-    line-height: 50px;
-    text-transform: uppercase;
-    margin: 0;
-  }
+  margin-bottom: 80px;
+  padding: 0 16px;
 }
 
-.detailInitial {
+.contentWrapper {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  font-family: var(--primary-font);
-  align-items: center;
-  gap: 15px;
-  font-weight: 457;
-  font-size: 20px;
-  line-height: 23.87px;
-  padding-bottom: 20px;
-  width: 100%;
-  max-width: 433px;
+  gap: 0;
 }
 
-.heroMovieDescription {
-  width: 436px;
-  height: 57px;
-  top: 425px;
-  left: 420px;
-  font-family: Inter;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 19.36px;
-  letter-spacing: 0%;
-  text-align: center;
-  color: #ffffffcc;
+/* Rating badge */
+.ratingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 50px;
+  color: #fbbf24;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  width: fit-content;
 }
 
-.production {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.title {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 16px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
 }
 
 .movieDescription {
-  color: #ffffffcc;
-  font-family: var(--secondary-font);
-  margin-top: 30px;
-  width: 100%;
-  max-width: 600px;
-  line-height: 1.6;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+  margin: 0 0 28px;
+  max-width: 520px;
 }
 
-.heroSubs {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding-right: 75px;
+/* Scroll hint */
+.scrollHint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.35);
+  z-index: 2;
 }
 
-.heroBtn {
-  font-family: "Inter", sans-serif;
-  font-size: 20px;
-  width: 433px;
-  display: flex;
-  gap: 40px;
-  justify-content: center;
-
-  button {
-    display: flex;
-    height: 54px;
-    width: 206px;
-    align-items: center;
-    border-radius: 40px;
-    line-height: 24.2px;
-    gap: 16px;
-    justify-content: center;
-    border: 0;
-  }
-}
-
-.functionBtn {
-  width: 54px;
-  height: 54px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #ffffff33;
-  background: #ffffff1a;
-  border-radius: 50%;
-}
-
+/* Hero Buttons */
 .heroBtns {
   display: flex;
-  gap: 16px;
-  justify-content: left;
-  width: 100%;
-  align-items: "flex-start";
-  margin-top: 1rem;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
+/* Watch Button - Red with hover */
+.watchBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: #e50914;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.watchBtn:hover {
+  background: #f40612;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(229, 9, 20, 0.4);
+}
+
+.watchBtn:active {
+  transform: translateY(0);
+}
+
+/* Info Button */
+.infoBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.infoBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Animated Pill Indicators */
+.indicators {
+  display: flex;
+  gap: 6px;
+  margin-top: 28px;
+  align-items: center;
+}
+
+.indicator {
+  height: 8px;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.indicator.active {
+  background: #e50914;
+}
+
+/* Detail Initial (kept for compatibility) */
+.detailInitial {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Production info */
+.production {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.production p {
+  margin: 0;
+}
+
+.production span {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Chevron Button */
+.chevronBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chevronBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .heroSection {
-    height: 600px;
+    min-height: 70vh;
+    padding: 100px 16px 40px;
   }
 
-  .movieDetail {
-    padding: 16px 16px 50px 16px;
-
-    h1 {
-      font-size: 30px;
-      max-width: 300px;
-    }
-  }
-
-  .detailInitial {
-    max-width: 300px;
-    font-size: 14px;
-  }
-
-  .heroSubs {
-    display: none;
-  }
-
-  .heroBtn {
-    font-size: 14px;
-    width: 300px;
-
-    button {
-      height: 39px;
-      width: 140px;
-    }
+  .title {
+    font-size: 2rem;
   }
 
   .movieDescription {
-    max-width: 300px;
     font-size: 14px;
+    max-width: 100%;
+  }
+
+  .heroBtns {
+    flex-direction: column;
+  }
+
+  .watchBtn,
+  .infoBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 1.8rem;
   }
 }
 
-.playBtn {
-  background-color: #fff;
-  color: #000;
-  font-size: 16px;
-  box-shadow: 0px 4px 14px 0px #00000029;
-  box-shadow: 0px 4px 40px 0px #ffffff1f;
+/* High Contrast */
+@media (prefers-contrast: high) {
+  .watchBtn {
+    border: 2px solid #fff;
+  }
+
+  .infoBtn {
+    border: 2px solid #fff;
+  }
 }
 
-.chevronBtn {
-  background-color: #272626;
-  backdrop-filter: blur(40px);
-  color: #fff;
-  border: 0;
-  margin-right: 16px;
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .watchBtn,
+  .infoBtn,
+  .indicator,
+  .chevronBtn {
+    transition: none;
+  }
 }

@@ -27,9 +27,13 @@ export default function MoviesLayout({
       <div className={styles.headerCarousel}>
         <h1>{title}</h1>
       </div>
-      <div className={styles.carouselCommon}>
+      <div
+        className={styles.carouselCommon}
+        role='list'
+        aria-label={`${title} movies`}
+      >
         {latestMovies.map((movie) => (
-          <div className={styles.movieCommon} key={movie.id}>
+          <div className={styles.movieCommon} key={movie.id} role='listitem'>
             <img
               src={
                 movie.poster_path
@@ -38,6 +42,15 @@ export default function MoviesLayout({
               }
               alt={movie.title}
               onClick={() => detail(movie)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  detail(movie);
+                }
+              }}
+              tabIndex={0}
+              role='button'
+              aria-label={`Watch ${movie.title}, rated ${movie.vote_average.toFixed(1)} stars`}
             />
             <div className='movie-meta'>
               <h3 className='movie-title'>{movie.title}</h3>

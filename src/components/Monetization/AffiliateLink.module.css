@@ -1,0 +1,59 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0;
+}
+
+.providers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.providerBtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.providerBtn:hover {
+  background: rgba(var(--provider-color), 0.15);
+  border-color: var(--provider-color);
+  color: white;
+}
+
+.providerIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.providerName {
+  font-size: 0.8rem;
+}
+
+.externalIcon {
+  opacity: 0.5;
+  margin-left: 2px;
+}

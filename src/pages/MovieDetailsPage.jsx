@@ -10,11 +10,44 @@ import Footer from "../components/Navigations/footer";
 import styles from "../components/SimilarMovies/SimilarMovies.module.css";
 
 export default function DetailPage() {
-  const { selectedMovie, apiKey, baseUrl, IMAGE_PATH, setSelectedMovie } =
+  const { selectedMovie, setSelectedMovie, apiKey, baseUrl, IMAGE_PATH } =
     useContext(MoviesContext);
   const { id } = useParams();
   const [cast, setCast] = useState([]);
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Fetch movie details if not available in context
+  useEffect(() => {
+    const fetchMovieDetails = async () => {
+      // If we already have the movie in context with matching ID, use it
+      if (selectedMovie && selectedMovie.id === parseInt(id)) {
+        setMovie(selectedMovie);
+        setLoading(false);
+        return;
+      }
+
+      // Otherwise, fetch from API
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${baseUrl}/movie/${id}?api_key=${apiKey}`
+        );
+        const data = await response.json();
+        setMovie(data);
+        setSelectedMovie(data);
+      } catch (error) {
+        console.error("Error fetching movie details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id && apiKey && baseUrl) {
+      fetchMovieDetails();
+    }
+  }, [id, apiKey, baseUrl, selectedMovie, setSelectedMovie]);
 
   const handleMovieDetail = (movie) => {
     console.log(movie);
@@ -58,8 +91,23 @@ export default function DetailPage() {
     fetchCast();
   }, [id]);
 
+  // Check if we have movie data (from context or API)
+  const currentMovie = movie || selectedMovie;
+
+  // Show loading while fetching
+  if (loading) {
+    return (
+      <div
+        className='error-container'
+        style={{ color: "white", textAlign: "center", padding: "100px" }}
+      >
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
+
   // Incase movie isn't found
-  if (!selectedMovie || selectedMovie.id !== parseInt(id)) {
+  if (!currentMovie || !currentMovie.id) {
     return (
       <div className='error-container'>
         <h1>Movie Not Found</h1>
@@ -79,14 +127,16 @@ export default function DetailPage() {
       <Header />
       <DetailsHeroSection
         backgroundImage={
-          selectedMovie.backdrop_path
-            ? selectedMovie.backdrop_path
-            : selectedMovie.poster_path
+          currentMovie.backdrop_path
+            ? currentMovie.backdrop_path
+            : currentMovie.poster_path
         }
-        description={selectedMovie.overview}
-        title={selectedMovie.title}
+        description={currentMovie.overview}
+        title={currentMovie.title}
         storage={handleStorage}
-        movie={selectedMovie}
+        movie={currentMovie}
+        apiKey={apiKey}
+        baseUrl={baseUrl}
       />
       <MovieCast cast={cast} />
 
@@ -113,7 +163,7 @@ export default function DetailPage() {
         API_KEY={apiKey}
         BASE_URL={baseUrl}
         IMAGE_PATH={IMAGE_PATH}
-        genre={selectedMovie.genre_ids[0]}
+        genre={currentMovie.genres?.[0]?.id || currentMovie.genre_ids?.[0]}
         detail={handleMovieDetail}
       />
 
@@ -121,7 +171,7 @@ export default function DetailPage() {
         API_KEY={apiKey}
         BASE_URL={baseUrl}
         IMAGE_PATH={IMAGE_PATH}
-        genre={selectedMovie.genre_ids[1]}
+        genre={currentMovie.genres?.[1]?.id || currentMovie.genre_ids?.[1]}
         detail={handleMovieDetail}
       />
 

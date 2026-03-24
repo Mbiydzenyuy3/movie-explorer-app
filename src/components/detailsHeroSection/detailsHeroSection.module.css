@@ -299,6 +299,27 @@
   cursor: not-allowed;
 }
 
+.restartBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.restartBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #ffa500;
+  color: #ffa500;
+  transform: rotate(-30deg);
+}
+
 .watchlistBtn {
   display: flex;
   align-items: center;
@@ -671,15 +692,68 @@
 }
 
 .noStreamSubline {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 0.95rem;
-  max-width: 400px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.05rem;
+  max-width: 480px;
   line-height: 1.6;
   margin: 0;
 }
 
+.fallbackActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.backupBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 32px;
+  background: #ffa500;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 10px 20px rgba(255, 165, 0, 0.2);
+}
+
+.backupBtn:hover {
+  background: #ffb732;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(255, 165, 0, 0.3);
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  position: relative;
+  margin: 10px 0;
+}
+
+.divider span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #050312;
+  padding: 0 12px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .noStreamAffiliate {
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 .streamErrorNote {

@@ -255,7 +255,7 @@ export default function DetailsHeroSection({
                 </div>
               )}
 
-              {/* Clean No-Stream Fallback — NO third-party ad iframes */}
+              {/* Clean No-Stream Fallback — NO third-party ad iframes by default */}
               {!useNativePlayer && !isPlayingTrailer && !loadingStream && (
                 <div className={styles.noStreamFallback}>
                   <div className={styles.noStreamIcon}>
@@ -263,12 +263,34 @@ export default function DetailsHeroSection({
                   </div>
                   <h3 className={styles.noStreamTitle}>Direct stream unavailable</h3>
                   <p className={styles.noStreamSubline}>
-                    This title isn&apos;t available on VibeBox yet. Watch it ad-free on your streaming service:
+                    We couldn&apos;t establish a direct high-speed link for this title yet. 
+                    Try our premium backup player or find it on another service:
                   </p>
-                  <AffiliateLink
-                    movieTitle={title}
-                    className={styles.noStreamAffiliate}
-                  />
+                  
+                  <div className={styles.fallbackActions}>
+                    <button 
+                      className={styles.backupBtn}
+                      onClick={() => {
+                        const id = movie.id;
+                        const type = movie.media_type === "tv" ? "tv" : "movie";
+                        const url = `https://vidsrc.me/embed/${type}?tmdb=${id}`;
+                        window.open(url, "_blank", "noopener,noreferrer");
+                      }}
+                    >
+                      <ExternalLink size={18} />
+                      <span>Try Premium Backup</span>
+                    </button>
+                    
+                    <div className={styles.divider}>
+                      <span>OR</span>
+                    </div>
+
+                    <AffiliateLink
+                      movieTitle={title}
+                      className={styles.noStreamAffiliate}
+                    />
+                  </div>
+
                   {streamError && (
                     <p className={styles.streamErrorNote}>{streamError}</p>
                   )}
@@ -314,11 +336,29 @@ export default function DetailsHeroSection({
           {/* Action Buttons */}
           <div className={styles.heroBtns}>
             <div className={styles.heroBtn}>
-              {/* Watch Full Movie Button */}
-              <button className={styles.playBtn} onClick={handleWatchFullMovie}>
-                {isResuming ? <RotateCcw size={22} /> : <Play size={24} fill='currentColor' />}
+              {/* Watch Full Movie / Resume Button */}
+              <button 
+                className={styles.playBtn} 
+                onClick={handleWatchFullMovie}
+              >
+                {isResuming ? <Play size={22} fill='currentColor' /> : <Play size={24} fill='currentColor' />}
                 <span>{isResuming ? "Resume" : "Watch Now"}</span>
               </button>
+
+              {/* Restart Button (only if resuming) */}
+              {isResuming && (
+                <button 
+                  className={styles.restartBtn} 
+                  onClick={() => {
+                    setInitialProgress(0);
+                    setIsResuming(false);
+                    handleWatchFullMovie();
+                  }}
+                  title="Watch from beginning"
+                >
+                  <RotateCcw size={20} />
+                </button>
+              )}
 
               {/* Watch Trailer Button */}
               <button

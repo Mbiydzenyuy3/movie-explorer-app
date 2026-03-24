@@ -49,19 +49,34 @@
 }
 
 .cta {
-  display: inline-block;
-  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 30px;
   color: white;
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
-  border-bottom: 1.5px solid rgba(255, 255, 255, 0.5);
   width: fit-content;
-  transition: border-color 0.2s;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .cta:hover {
-  border-color: white;
+  background: white;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+}
+
+.cta:active {
+  transform: translateY(0);
 }
 
 .dismiss {

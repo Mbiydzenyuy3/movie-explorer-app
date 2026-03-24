@@ -1,0 +1,200 @@
+.page {
+  min-height: 100vh;
+  background: #050312;
+  color: white;
+}
+
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 140px 24px 80px;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  margin-bottom: 80px;
+}
+
+.planCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease;
+}
+
+.planCard.premium {
+  border: 2px solid #667eea;
+  background: rgba(102, 126, 234, 0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.planTag {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #667eea;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+
+.planHeader {
+  margin-bottom: 32px;
+}
+
+.planIcon {
+  color: #667eea;
+  margin-bottom: 16px;
+}
+
+.planName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.planPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.amount {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+.period {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+}
+
+.planDesc {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.featuresList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+  flex-grow: 1;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.checkIcon {
+  color: #667eea;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ctaButton {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctaButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ctaButton:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.premiumCta {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.premiumCta:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #7c91f1 0%, #8d62bc 100%);
+}
+
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  text-align: center;
+  padding: 60px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.benefitItem h3 {
+  font-size: 1.1rem;
+  margin: 16px 0 8px;
+}
+
+.benefitItem p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .main {
+    padding-top: 100px;
+  }
+}

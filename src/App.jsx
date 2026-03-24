@@ -16,6 +16,7 @@ import CategoriesPage from "./pages/CategoriesPage";
 import GenrePage from "./pages/GenrePage";
 import SearchPage from "./pages/SearchPage";
 import WatchlistPage from "./pages/WatchlistPage";
+import UpgradePage from "./pages/UpgradePage";
 
 import { DetailMovieData } from "./context/movieContext";
 import { useSyncUser } from "./services/userService";
@@ -47,6 +48,7 @@ function App() {
                         <Route path='/details/:id' element={<DetailPage />} />
                         <Route path='/search' element={<SearchPage />} />
                         <Route path='/watchlist' element={<WatchlistPage />} />
+                        <Route path='/upgrade' element={<UpgradePage />} />
                       </Routes>
                     </main>
                   </BrowserRouter>

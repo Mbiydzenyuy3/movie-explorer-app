@@ -1,147 +1,124 @@
-// Streaming Service - Uses Consumet API for ad-free M3U8 streaming
-// Based on the research: Direct M3U8 extraction bypasses all ads
-
+// Streaming Service - Multi-Source Engine for Ad-Free HLS Playback
 const CONSUMET_API_BASE = "https://api.consumet.org";
 
 /**
- * Get streaming links for a movie using Consumet API
- * @param {number} tmdbId - TMDB movie ID
- * @param {string} type - 'movie' or 'tv'
- * @returns {Promise<Object>} Streaming sources
+ * Get streaming links with multi-source fallback
  */
 export const getMovieStreamingLinks = async (tmdbId, type = "movie") => {
-  try {
-    const response = await fetch(
-      `${CONSUMET_API_BASE}/${type === "tv" ? "tv" : "movies"}/${tmdbId}`
-    );
-    
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+  // We'll try multiple sub-providers within Consumet or other aggregators
+  const providers = ["flixhq", "view-source", "remote-stream"];
+  
+  for (const provider of providers) {
+    try {
+      const response = await fetch(
+        `${CONSUMET_API_BASE}/meta/tmdb/info/${tmdbId}?type=${type}`
+      );
+      
+      if (!response.ok) continue;
+      
+      const data = await response.json();
+      if (data && data.episodeId) {
+          // For meta/tmdb, we usually get an episodeId/id then fetch sources
+          const sourceRes = await fetch(`${CONSUMET_API_BASE}/meta/tmdb/watch/${data.episodeId}?id=${tmdbId}`);
+          if (sourceRes.ok) {
+              const sourceData = await sourceRes.json();
+              if (sourceData && sourceData.sources) return sourceData;
+          }
+      }
+
+      // Fallback to direct movies/tv route
+      const directRes = await fetch(`${CONSUMET_API_BASE}/${type === "tv" ? "tv" : "movies"}/${tmdbId}`);
+      if (directRes.ok) {
+        const directData = await directRes.json();
+        if (directData && (directData.sources || directData.results)) return directData;
+      }
+    } catch (error) {
+      console.error(`Error with provider ${provider}:`, error);
     }
-    
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching streaming links:", error);
-    return null;
   }
+  return null;
 };
 
 /**
- * Get streaming links for a TV episode
- * @param {number} tmdbId - TMDB TV show ID
- * @param {number} season - Season number
- * @param {number} episode - Episode number
- * @returns {Promise<Object>} Streaming sources
+ * TV Episode streaming
  */
 export const getEpisodeStreamingLinks = async (tmdbId, season, episode) => {
   try {
-    const response = await fetch(
-      `${CONSUMET_API_BASE}/tv/${tmdbId}/${season}/${episode}`
-    );
-    
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+    // Attempt meta/tmdb route first (most reliable for HLS)
+    const infoRes = await fetch(`${CONSUMET_API_BASE}/meta/tmdb/info/${tmdbId}?type=tv`);
+    if (infoRes.ok) {
+        const info = await infoRes.json();
+        const targetEpisode = info.episodes?.find(e => e.season === season && e.number === episode);
+        if (targetEpisode) {
+            const sourceRes = await fetch(`${CONSUMET_API_BASE}/meta/tmdb/watch/${targetEpisode.id}?id=${tmdbId}`);
+            if (sourceRes.ok) return await sourceRes.json();
+        }
     }
-    
-    const data = await response.json();
-    return data;
+
+    // Fallback to standard tv route
+    const response = await fetch(`${CONSUMET_API_BASE}/tv/${tmdbId}/${season}/${episode}`);
+    if (response.ok) return await response.json();
   } catch (error) {
     console.error("Error fetching episode streaming links:", error);
-    return null;
   }
+  return null;
 };
 
 /**
- * Extract the best M3U8 URL from streaming sources
- * @param {Object} streamingData - Data from Consumet API
- * @returns {string|null} Best M3U8 URL
+ * Extract the best M3U8 URL from diverse streaming sources
  */
-export const extractBestStreamUrl = (streamingData) => {
-  if (!streamingData || !streamingData.results) {
-    return null;
+export const extractBestStreamUrl = (data) => {
+  if (!data) return null;
+
+  // Case 1: sources directly in object (meta/tmdb route)
+  if (data.sources && Array.isArray(data.sources)) {
+    // Prefer non-backup, high quality
+    const hls = data.sources.find(s => s.quality === "auto" || s.isM3U8) || data.sources[0];
+    return hls?.url || null;
   }
 
-  // Priority order for providers (most reliable first)
-  const providerPriority = [
-    "vidplay",
-    "streamtape", 
-    "filemoon",
-    "doodstream",
-    "voe",
-    "upcloud",
-    "vidcloud",
-    "streambucket"
-  ];
-
-  const results = streamingData.results;
-
-  // Find the best provider based on priority
-  for (const provider of providerPriority) {
-    const source = results.find(
-      (s) => s.provider?.toLowerCase().includes(provider) ||
-             s.name?.toLowerCase().includes(provider)
-    );
-    
-    if (source?.url) {
-      return source.url;
-    }
-  }
-
-  // If no prioritized provider found, return first available
-  if (results.length > 0 && results[0].url) {
-    return results[0].url;
+  // Case 2: results array (movies/tv route)
+  if (data.results && Array.isArray(data.results)) {
+     const priority = ["vidplay", "upcloud", "vidcloud"];
+     for (const p of priority) {
+         const s = data.results.find(res => res.name?.toLowerCase().includes(p) || res.provider?.toLowerCase().includes(p));
+         if (s?.url) return s.url;
+     }
+     return data.results[0]?.url || null;
   }
 
   return null;
 };
 
 /**
- * Get movie with direct stream URL
- * @param {number} tmdbId - TMDB movie ID
- * @returns {Promise<{url: string, provider: string}|null>}
+ * High-level movie stream getter
  */
 export const getMovieStream = async (tmdbId) => {
-  const streamingData = await getMovieStreamingLinks(tmdbId, "movie");
-  
-  if (!streamingData) {
-    return null;
-  }
-
-  const url = extractBestStreamUrl(streamingData);
+  const data = await getMovieStreamingLinks(tmdbId, "movie");
+  const url = extractBestStreamUrl(data);
   
   return url ? {
     url,
-    provider: streamingData.results?.[0]?.provider || "Unknown"
+    provider: data.providerId || "Multi-Source"
   } : null;
 };
 
 /**
- * Get episode with direct stream URL
- * @param {number} tmdbId - TMDB TV show ID
- * @param {number} season - Season number
- * @param {number} episode - Episode number
- * @returns {Promise<{url: string, provider: string}|null>}
+ * High-level episode stream getter
  */
 export const getEpisodeStream = async (tmdbId, season, episode) => {
-  const streamingData = await getEpisodeStreamingLinks(tmdbId, season, episode);
-  
-  if (!streamingData) {
-    return null;
-  }
-
-  const url = extractBestStreamUrl(streamingData);
+  const data = await getEpisodeStreamingLinks(tmdbId, season, episode);
+  const url = extractBestStreamUrl(data);
   
   return url ? {
     url,
-    provider: streamingData.results?.[0]?.provider || "Unknown"
+    provider: data.providerId || "Multi-Source"
   } : null;
 };
 
 export default {
-  getMovieStreamingLinks,
-  getEpisodeStreamingLinks,
   getMovieStream,
   getEpisodeStream,
-  extractBestStreamUrl
+  getMovieStreamingLinks,
+  getEpisodeStreamingLinks
 };

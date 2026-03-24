@@ -8,7 +8,8 @@ export default function MovieCarousel({
   movies,
   IMAGE_PATH,
   onMovieClick,
-  renderCard
+  renderCard,
+  showProgress = false
 }) {
   const scrollRef = useRef(null);
   const [showLeftBtn, setShowLeftBtn] = useState(false);
@@ -68,6 +69,14 @@ export default function MovieCarousel({
           <div className={styles.overlay}>
             <div className={styles.playIcon}>▶</div>
           </div>
+          {showProgress && movie.progress !== undefined && (
+            <div className={styles.progressContainer}>
+              <div 
+                className={styles.progressBar} 
+                style={{ width: `${Math.max(2, movie.progress)}%` }} 
+              />
+            </div>
+          )}
         </div>
         <div className={styles.movieInfo}>
           <h3 className={styles.movieTitle}>{movie.title || movie.name}</h3>
@@ -141,5 +150,6 @@ MovieCarousel.propTypes = {
   movies: PropTypes.array.isRequired,
   IMAGE_PATH: PropTypes.string,
   onMovieClick: PropTypes.func.isRequired,
-  renderCard: PropTypes.func
+  renderCard: PropTypes.func,
+  showProgress: PropTypes.bool
 };

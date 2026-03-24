@@ -12,13 +12,17 @@ import {
   TrendingUp,
   Layers,
   Loader2,
-  Bookmark
+  Bookmark,
+  Zap
 } from "lucide-react";
+import { SignInButton, UserButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 import styles from "./header.module.css";
 import AccessibilityMenu from "../AccessibilityMenu/AccessibilityMenu";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Header() {
   const navigate = useNavigate();
+  const { isPro } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -104,6 +108,7 @@ export default function Header() {
         {/* Logo - Left */}
         <Link to='/' className={styles.logo} onClick={closeMenu}>
           <span className={styles.logoText}>VibeBox</span>
+          {isPro && <span className={styles.proBadge}>PRO</span>}
         </Link>
 
         {/* Desktop Navigation - Center */}
@@ -217,10 +222,35 @@ export default function Header() {
           {/* Accessibility Settings */}
           <AccessibilityMenu />
 
-          {/* Profile */}
-          <button className={styles.profileButton} aria-label='Profile'>
-            <User size={20} />
-          </button>
+          {/* Profile & Auth */}
+          <div className={styles.authWrapper}>
+            <SignedIn>
+              <div className={styles.signedInActions}>
+                {!isPro && (
+                  <Link to="/upgrade" className={styles.upgradeBtn}>
+                    <Zap size={14} fill="currentColor" />
+                    <span>Go Pro</span>
+                  </Link>
+                )}
+                <UserButton 
+                  afterSignOutUrl="/" 
+                  appearance={{ 
+                    elements: { 
+                      userButtonAvatarBox: styles.clerkAvatar,
+                      userButtonTrigger: styles.clerkTrigger
+                    } 
+                  }} 
+                />
+              </div>
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className={styles.profileButton} aria-label='Sign In'>
+                  <User size={20} />
+                </button>
+              </SignInButton>
+            </SignedOut>
+          </div>
 
           {/* Mobile Menu Toggle */}
           <button

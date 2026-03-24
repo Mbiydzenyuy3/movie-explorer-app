@@ -327,10 +327,72 @@
 }
 
 .mobileNavLink:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffa500;
 }
 
+/* Authentication & Premium Styles */
+.proBadge {
+  font-size: 10px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffa500 0%, #ff4500 100%);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+}
+
+.authWrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.signedInActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.upgradeBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 20px;
+  color: #ffd700;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.upgradeBtn:hover {
+  background: #ffd700;
+  color: #000;
+  transform: translateY(-1px);
+}
+
+.clerkTrigger {
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.clerkAvatar {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: border-color 0.3s ease;
+}
+
+.clerkAvatar:hover {
+  border-color: #ffa500;
+}
 /* Responsive Styles */
 @media (min-width: 900px) {
   .nav {

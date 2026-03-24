@@ -18,34 +18,42 @@ import SearchPage from "./pages/SearchPage";
 import WatchlistPage from "./pages/WatchlistPage";
 
 import { DetailMovieData } from "./context/movieContext";
+import { useSyncUser } from "./services/userService";
+
+const UserSyncWrapper = ({ children }) => {
+  useSyncUser();
+  return <>{children}</>;
+};
 
 function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <MoodProvider>
-            <AccessibilityProvider>
-              <SkipLink />
-              <DetailMovieData>
-                <BrowserRouter>
-                  <main id='main-content' tabIndex={-1}>
-                    <Routes>
-                      <Route path='/' element={<Homepage />} />
-                      <Route path='/movies' element={<MoviesPage />} />
-                      <Route path='/series' element={<SeriesPage />} />
-                      <Route path='/trending' element={<TrendingPage />} />
-                      <Route path='/categories' element={<CategoriesPage />} />
-                      <Route path='/categories/:id' element={<GenrePage />} />
-                      <Route path='/details/:id' element={<DetailPage />} />
-                      <Route path='/search' element={<SearchPage />} />
-                      <Route path='/watchlist' element={<WatchlistPage />} />
-                    </Routes>
-                  </main>
-                </BrowserRouter>
-              </DetailMovieData>
-            </AccessibilityProvider>
-          </MoodProvider>
+          <UserSyncWrapper>
+            <MoodProvider>
+              <AccessibilityProvider>
+                <SkipLink />
+                <DetailMovieData>
+                  <BrowserRouter>
+                    <main id='main-content' tabIndex={-1}>
+                      <Routes>
+                        <Route path='/' element={<Homepage />} />
+                        <Route path='/movies' element={<MoviesPage />} />
+                        <Route path='/series' element={<SeriesPage />} />
+                        <Route path='/trending' element={<TrendingPage />} />
+                        <Route path='/categories' element={<CategoriesPage />} />
+                        <Route path='/categories/:id' element={<GenrePage />} />
+                        <Route path='/details/:id' element={<DetailPage />} />
+                        <Route path='/search' element={<SearchPage />} />
+                        <Route path='/watchlist' element={<WatchlistPage />} />
+                      </Routes>
+                    </main>
+                  </BrowserRouter>
+                </DetailMovieData>
+              </AccessibilityProvider>
+            </MoodProvider>
+          </UserSyncWrapper>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

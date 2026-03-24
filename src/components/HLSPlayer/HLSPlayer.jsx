@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import Hls from "hls.js";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Play,
   Pause,
@@ -10,9 +11,20 @@ import {
   Minimize,
   Loader2,
   X,
-  AlertCircle
+  AlertCircle,
+  Settings,
+  Check
 } from "lucide-react";
 import styles from "./HLSPlayer.module.css";
+
+// Quality presets with data-conscious info
+const QUALITY_PRESETS = [
+  { label: "Auto", tag: "AUTO", note: "Adaptive", levelIndex: -1 },
+  { label: "Eco 480p", tag: "ECO", note: "~450 MB/hr", levelIndex: 0 },
+  { label: "HD 720p", tag: "HD", note: "~1.8 GB/hr", levelIndex: 1 },
+  { label: "FHD 1080p", tag: "FHD", note: "~4 GB/hr", levelIndex: 2 },
+  { label: "Ultra 4K", tag: "4K", note: "~6.7 GB/hr", levelIndex: 3 },
+];
 
 /**
  * Native HLS Player - Plays M3U8 streams directly
@@ -28,7 +40,11 @@ export default function HLSPlayer({
   poster,
   title,
   onClose,
-  onEnded
+  onEnded,
+  onTimeUpdate,
+  onLoadedMetadata,
+  autoPlay = true,
+  startOffset = 0
 }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -44,25 +60,22 @@ export default function HLSPlayer({
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [showQuality, setShowQuality] = useState(false);
+  const [selectedQuality, setSelectedQuality] = useState(0); // index into QUALITY_PRESETS
 
   const controlsTimeoutRef = useRef(null);
+  const initialSeekDone = useRef(false);
 
   // Initialize HLS.js
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !src) return;
 
-    // Reset state
-    setIsLoading(true);
-    setError(null);
-
     if (Hls.isSupported()) {
       const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: false,
-        backBufferLength: 90,
-        // Auto quality switching
-        autoStartLoad: true
+        capLevelToPlayerSize: true,
+        startLevel: -1,
+        debug: false,
       });
 
       hlsRef.current = hls;
@@ -72,7 +85,14 @@ export default function HLSPlayer({
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         setIsLoading(false);
-        video.play().catch(() => {});
+        
+        // Initial seek if offset provided
+        if (startOffset > 0 && !initialSeekDone.current) {
+          video.currentTime = startOffset;
+          initialSeekDone.current = true;
+        }
+
+        if (autoPlay) video.play().catch(() => {});
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -116,8 +136,14 @@ export default function HLSPlayer({
     const video = videoRef.current;
     if (!video) return;
 
-    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
-    const handleLoadedMetadata = () => setDuration(video.duration);
+    const handleTimeUpdate = () => {
+      setCurrentTime(video.currentTime);
+      onTimeUpdate?.(video.currentTime);
+    };
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+      onLoadedMetadata?.(video.duration);
+    };
     const handleEnded = () => onEnded?.();
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
@@ -238,6 +264,16 @@ export default function HLSPlayer({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleQualityChange = (preset, idx) => {
+    setSelectedQuality(idx);
+    setShowQuality(false);
+    if (hlsRef.current) {
+      hlsRef.current.currentLevel = preset.levelIndex;
+    }
+  };
+
+  const currentQuality = QUALITY_PRESETS[selectedQuality];
+
   const progress = duration ? (currentTime / duration) * 100 : 0;
 
   return (
@@ -337,6 +373,43 @@ export default function HLSPlayer({
               }}
             />
           </div>
+
+          {/* Quality Selector */}
+          <div className={styles.qualityWrapper}>
+            <button
+              onClick={() => setShowQuality((v) => !v)}
+              className={`${styles.controlBtn} ${styles.qualityBtn}`}
+              aria-label="Quality settings"
+            >
+              <Settings size={20} />
+              <span className={styles.qualityTag}>{currentQuality.tag}</span>
+            </button>
+
+            <AnimatePresence>
+              {showQuality && (
+                <motion.div
+                  className={styles.qualityPanel}
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.96 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <p className={styles.qualityTitle}>Streaming Quality</p>
+                  {QUALITY_PRESETS.map((preset, idx) => (
+                    <button
+                      key={preset.tag}
+                      className={`${styles.qualityOption} ${idx === selectedQuality ? styles.selectedQuality : ""}`}
+                      onClick={() => handleQualityChange(preset, idx)}
+                    >
+                      <span className={styles.qualityLabel}>{preset.label}</span>
+                      <span className={styles.qualityNote}>{preset.note}</span>
+                      {idx === selectedQuality && <Check size={14} />}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           
           <button onClick={toggleFullscreen} className={styles.controlBtn}>
             {isFullscreen ? <Minimize size={24} /> : <Maximize size={24} />}
@@ -352,7 +425,11 @@ HLSPlayer.propTypes = {
   poster: PropTypes.string,
   title: PropTypes.string,
   onClose: PropTypes.func,
-  onEnded: PropTypes.func
+  onEnded: PropTypes.func,
+  onTimeUpdate: PropTypes.func,
+  onLoadedMetadata: PropTypes.func,
+  autoPlay: PropTypes.bool,
+  startOffset: PropTypes.number
 };
 
 HLSPlayer.defaultProps = {

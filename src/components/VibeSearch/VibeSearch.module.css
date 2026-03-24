@@ -12,22 +12,27 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #1a1a2e;
-  border: 2px solid #2d2d44;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
   border-radius: 50px;
   padding: 8px 8px 8px 20px;
-  transition: all 0.3s ease;
+  transition: border-color 0.25s ease;
 }
 
 .searchBox.focused {
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-  background: #16213e;
+  border-color: rgba(102, 126, 234, 0.6);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .searchIcon {
   color: #6b7280;
   flex-shrink: 0;
+}
+
+.searchBox.focused .searchIcon {
+  color: #a5b4fc;
 }
 
 .searchInput {
@@ -38,28 +43,29 @@
   color: #f3f4f6;
   font-size: 1rem;
   padding: 8px 0;
+  font-family: inherit;
 }
 
 .searchInput::placeholder {
-  color: #6b7280;
+  color: rgba(156, 163, 175, 0.6);
 }
 
 .clearBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2d2d44;
+  background: rgba(255, 255, 255, 0.08);
   border: none;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   color: #9ca3af;
   cursor: pointer;
-  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .clearBtn:hover {
-  background: #3d3d54;
+  background: rgba(255, 255, 255, 0.14);
   color: #f3f4f6;
 }
 
@@ -74,70 +80,71 @@
   height: 44px;
   color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
 }
 
-.submitBtn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-/* Detected Vibe Display */
+/* Detected Vibe */
 .vibeDetected {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 10px;
   padding: 10px 16px;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
-  );
+  background: rgba(102, 126, 234, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(102, 126, 234, 0.2);
   border-radius: 12px;
-  color: #9ca3af;
-  font-size: 0.875rem;
+  color: #a5b4fc;
+  font-size: 0.82rem;
+  overflow: hidden;
 }
 
 .vibeDetected svg {
-  color: #667eea;
+  color: #818cf8;
+  flex-shrink: 0;
 }
 
 .vibeTags {
   display: flex;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 
 .tag {
-  padding: 4px 10px;
-  background: #667eea;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 20px;
   color: white;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.73rem;
+  font-weight: 600;
   text-transform: capitalize;
 }
 
-/* Suggestions */
+/* Suggestions Dropdown */
 .suggestions {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 8px);
   left: 0;
   right: 0;
-  margin-top: 8px;
-  padding: 16px;
-  background: #1a1a2e;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  z-index: 100;
+  padding: 18px;
+  background: rgba(12, 10, 30, 0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  z-index: 200;
 }
 
 .suggestionsTitle {
   color: #6b7280;
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 12px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  margin: 0 0 12px;
 }
 
 .suggestionChips {
@@ -147,23 +154,24 @@
 }
 
 .chip {
-  padding: 8px 16px;
-  background: #16213e;
-  border: 1px solid #2d2d44;
-  border-radius: 20px;
-  color: #9ca3af;
-  font-size: 0.875rem;
+  padding: 7px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  color: #d1d5db;
+  font-size: 0.83rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .chip:hover {
-  background: #1f3460;
-  border-color: #667eea;
-  color: #f3f4f6;
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.4);
+  color: #e5e7eb;
 }
 
-/* Mobile Responsive */
 @media (max-width: 640px) {
   .searchBox {
     padding: 6px 6px 6px 16px;
@@ -175,11 +183,6 @@
   }
 
   .searchInput {
-    font-size: 0.875rem;
-  }
-
-  .chip {
-    font-size: 0.75rem;
-    padding: 6px 12px;
+    font-size: 0.9rem;
   }
 }

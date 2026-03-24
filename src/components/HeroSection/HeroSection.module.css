@@ -2,53 +2,105 @@
 .heroSection {
   position: relative;
   min-height: 100vh;
-  background-size: cover;
-  background-position: center;
   display: flex;
   align-items: flex-end;
   padding: 80px 24px 60px;
   margin-top: -64px;
+  overflow: hidden;
 }
 
-.overlay {
+/* Animated background layer */
+.heroBg {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  z-index: 0;
+}
+
+/* Gradient overlays */
+.overlayBottom {
+  position: absolute;
+  inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.95) 0%,
-    rgba(0, 0, 0, 0.7) 40%,
-    rgba(0, 0, 0, 0.3) 70%,
+    rgba(5, 3, 18, 1) 0%,
+    rgba(5, 3, 18, 0.75) 35%,
+    rgba(5, 3, 18, 0.2) 65%,
     transparent 100%
   );
+  z-index: 1;
+}
+
+.overlayLeft {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(5, 3, 18, 0.85) 0%,
+    rgba(5, 3, 18, 0.4) 50%,
+    transparent 100%
+  );
+  z-index: 1;
 }
 
 .movieDetail {
   position: relative;
-  max-width: 700px;
+  max-width: 720px;
   width: 100%;
-  z-index: 1;
-  margin-bottom: 124px;
+  z-index: 2;
+  margin-bottom: 80px;
   padding: 0 16px;
 }
 
-.title {
-  font-size: 3.5rem;
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Rating badge */
+.ratingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 50px;
+  color: #fbbf24;
+  font-size: 0.8rem;
   font-weight: 700;
+  margin-bottom: 14px;
+  width: fit-content;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
   color: #fff;
-  margin-bottom: 16px;
-  line-height: 1.1;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  margin: 0 0 16px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
 }
 
 .movieDescription {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.6;
-  margin-bottom: 24px;
-  max-width: 550px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+  margin: 0 0 28px;
+  max-width: 520px;
+}
+
+/* Scroll hint */
+.scrollHint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.35);
+  z-index: 2;
 }
 
 /* Hero Buttons */
@@ -106,31 +158,25 @@
   transform: translateY(-2px);
 }
 
-/* Indicators */
+/* Animated Pill Indicators */
 .indicators {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  margin-top: 28px;
+  align-items: center;
 }
 
 .indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  height: 8px;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.25);
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
   padding: 0;
-}
-
-.indicator:hover {
-  background: rgba(255, 255, 255, 0.5);
 }
 
 .indicator.active {
   background: #e50914;
-  width: 32px;
-  border-radius: 6px;
 }
 
 /* Detail Initial (kept for compatibility) */

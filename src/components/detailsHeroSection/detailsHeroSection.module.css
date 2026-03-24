@@ -336,12 +336,14 @@
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .movieDescription.expanded {
   -webkit-line-clamp: unset;
+  line-clamp: unset;
 }
 
 .showMoreBtn {
@@ -631,4 +633,58 @@
     width: 36px;
     height: 36px;
   }
+}
+
+/* No-Stream Fallback Panel */
+.noStreamFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 32px;
+  background: radial-gradient(ellipse at center, rgba(30, 20, 60, 0.95) 0%, rgba(5, 3, 18, 0.98) 100%);
+  text-align: center;
+}
+
+.noStreamIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.15);
+  border: 1.5px solid rgba(102, 126, 234, 0.3);
+  color: #a5b4fc;
+  margin-bottom: 4px;
+}
+
+.noStreamTitle {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.noStreamSubline {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.95rem;
+  max-width: 400px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.noStreamAffiliate {
+  margin-top: 8px;
+}
+
+.streamErrorNote {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+  font-style: italic;
+  margin: 0;
 }

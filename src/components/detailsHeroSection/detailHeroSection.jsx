@@ -1,9 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
-import { Play, Plus, Check, X, ChevronDown, Loader2 } from "lucide-react";
+import { Play, Plus, Check, X, ChevronDown, Loader2, ExternalLink, Tv, RotateCcw } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import styles from "../detailsHeroSection/detailsHeroSection.module.css";
 import HLSPlayer from "../HLSPlayer/HLSPlayer";
+import AffiliateLink from "../Monetization/AffiliateLink";
 import { getMovieStream } from "../../services/streaming-service";
+import { useAuth } from "../../context/AuthContext";
+import WatchHistoryService from "../../services/WatchHistoryService";
 
 export default function DetailsHeroSection({
   title,
@@ -24,6 +28,14 @@ export default function DetailsHeroSection({
   const [loadingStream, setLoadingStream] = useState(false);
   const [streamError, setStreamError] = useState(null);
   const [useNativePlayer, setUseNativePlayer] = useState(false);
+  
+  // Watch Persistence State
+  const { user, getToken } = useAuth();
+  const [initialProgress, setInitialProgress] = useState(0);
+  const [currentProgress, setCurrentProgress] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(0);
+  const lastSavedTimeRef = useRef(0);
+  const [isResuming, setIsResuming] = useState(false);
 
   // Fetch trailer
   useEffect(() => {
@@ -51,13 +63,25 @@ export default function DetailsHeroSection({
     fetchTrailer();
   }, [movie?.id, apiKey, baseUrl]);
 
-  // Check watchlist status
+  // Check watchlist and fetch initial progress
   useEffect(() => {
     if (movie?.id) {
       const watchlist = JSON.parse(localStorage.getItem("watchlist") || "[]");
       setIsInWatchlist(watchlist.some((item) => item.id === movie.id));
+
+      const fetchSavedProgress = async () => {
+        if (!user) return;
+        const token = await getToken();
+        const history = await WatchHistoryService.getRecentHistory(token, user.id);
+        const entry = history.find(h => h.movie_id === movie.id);
+        if (entry) {
+          setInitialProgress(entry.progress_seconds);
+          setIsResuming(true);
+        }
+      };
+      fetchSavedProgress();
     }
-  }, [movie?.id]);
+  }, [movie?.id, user, getToken]);
 
   // Fetch stream URL using Consumet API
   const fetchStreamUrl = useCallback(async () => {
@@ -104,11 +128,45 @@ export default function DetailsHeroSection({
     setShowPlayer(true);
   };
 
-  const handleClosePlayer = () => {
+  const handleClosePlayer = async () => {
+    // Save final progress before closing
+    if (user && currentProgress > 0) {
+      const token = await getToken();
+      await WatchHistoryService.updateProgress(
+        token, 
+        user.id, 
+        movie, 
+        currentProgress, 
+        totalDuration || 0
+      );
+    }
+    
     setShowPlayer(false);
     setIsPlayingTrailer(false);
     setStreamUrl(null);
     setUseNativePlayer(false);
+    setIsResuming(false);
+  };
+
+  const handleTimeUpdate = (time) => {
+    setCurrentProgress(time);
+    
+    // Throttle updates to Supabase - every 10 seconds
+    if (user && Math.abs(time - lastSavedTimeRef.current) > 10) {
+      lastSavedTimeRef.current = time;
+      saveProgress(time);
+    }
+  };
+
+  const saveProgress = async (time) => {
+    const token = await getToken();
+    await WatchHistoryService.updateProgress(
+      token,
+      user.id,
+      movie,
+      time,
+      totalDuration
+    );
   };
 
   const handleWatchlist = () => {
@@ -127,68 +185,99 @@ export default function DetailsHeroSection({
     }
   };
 
-  // Get YouTube embed URL for trailer
+  // Get YouTube nocookie embed URL for trailer (no ads, no tracking)
   const getTrailerEmbedUrl = () => {
     if (!trailerKey) return null;
-    return `https://www.youtube.com/embed/${trailerKey}?autoplay=1`;
-  };
-
-  // Get fallback embed URL
-  const getEmbedUrl = () => {
-    if (!movie?.id) return null;
-    const mediaType = movie?.media_type || "movie";
-    return `https://vidsrc.to/embed/${mediaType}/${movie.id}`;
+    return `https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&rel=0&modestbranding=1`;
   };
 
   return (
     <>
       {/* Video Player Modal */}
-      {showPlayer && (
-        <div className={styles.videoModal}>
-          <div className={styles.videoModalContent}>
-            <button
-              className={styles.closePlayer}
-              onClick={handleClosePlayer}
-              aria-label='Close player'
+      <AnimatePresence>
+        {showPlayer && (
+          <motion.div
+            className={styles.videoModal}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <motion.div
+              className={styles.videoModalContent}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             >
-              <X size={24} />
-            </button>
+              <button
+                className={styles.closePlayer}
+                onClick={handleClosePlayer}
+                aria-label="Close player"
+              >
+                <X size={24} />
+              </button>
 
-            {/* Loading State */}
-            {loadingStream && (
-              <div className={styles.loadingStream}>
-                <Loader2 className={styles.spinner} size={48} />
-                <span>Finding best stream...</span>
-                <p>This may take a few seconds</p>
-              </div>
-            )}
+              {/* Loading State */}
+              {loadingStream && (
+                <div className={styles.loadingStream}>
+                  <Loader2 className={styles.spinner} size={48} />
+                  <span>Finding best stream...</span>
+                  <p>This may take a few seconds</p>
+                </div>
+              )}
 
-            {/* Native HLS Player */}
-            {useNativePlayer && streamUrl && !loadingStream && (
-              <HLSPlayer
-                src={streamUrl}
-                poster={`https://image.tmdb.org/t/p/original${backgroundImage}`}
-                title={title}
-                onClose={handleClosePlayer}
-              />
-            )}
+              {/* Native HLS Player — Ad-free on-platform experience */}
+              {useNativePlayer && streamUrl && !loadingStream && (
+                <HLSPlayer
+                  src={streamUrl}
+                  poster={`https://image.tmdb.org/t/p/original${backgroundImage}`}
+                  title={title}
+                  onClose={handleClosePlayer}
+                  onTimeUpdate={handleTimeUpdate}
+                  onLoadedMetadata={setTotalDuration}
+                  autoPlay={true}
+                  startOffset={initialProgress}
+                />
+              )}
 
-            {/* Fallback to iframe if native fails */}
-            {!useNativePlayer && !loadingStream && (
-              <div className={styles.embedContainer}>
-                <iframe
-                  src={isPlayingTrailer ? getTrailerEmbedUrl() : getEmbedUrl()}
-                  title={isPlayingTrailer ? "Trailer" : "Movie"}
-                  frameBorder='0'
-                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                  allowFullScreen
-                  className={styles.videoIframe}
-                ></iframe>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+              {/* Trailer Player — YouTube nocookie (no tracking/ad targeting) */}
+              {isPlayingTrailer && !loadingStream && (
+                <div className={styles.embedContainer}>
+                  <iframe
+                    src={getTrailerEmbedUrl()}
+                    title={`${title} — Official Trailer`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className={styles.videoIframe}
+                  />
+                </div>
+              )}
+
+              {/* Clean No-Stream Fallback — NO third-party ad iframes */}
+              {!useNativePlayer && !isPlayingTrailer && !loadingStream && (
+                <div className={styles.noStreamFallback}>
+                  <div className={styles.noStreamIcon}>
+                    <Tv size={48} />
+                  </div>
+                  <h3 className={styles.noStreamTitle}>Direct stream unavailable</h3>
+                  <p className={styles.noStreamSubline}>
+                    This title isn&apos;t available on VibeBox yet. Watch it ad-free on your streaming service:
+                  </p>
+                  <AffiliateLink
+                    movieTitle={title}
+                    className={styles.noStreamAffiliate}
+                  />
+                  {streamError && (
+                    <p className={styles.streamErrorNote}>{streamError}</p>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <div
@@ -227,8 +316,8 @@ export default function DetailsHeroSection({
             <div className={styles.heroBtn}>
               {/* Watch Full Movie Button */}
               <button className={styles.playBtn} onClick={handleWatchFullMovie}>
-                <Play size={24} fill='currentColor' />
-                <span>Watch Now</span>
+                {isResuming ? <RotateCcw size={22} /> : <Play size={24} fill='currentColor' />}
+                <span>{isResuming ? "Resume" : "Watch Now"}</span>
               </button>
 
               {/* Watch Trailer Button */}

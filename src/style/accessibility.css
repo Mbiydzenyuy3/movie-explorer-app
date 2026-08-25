@@ -1,0 +1,295 @@
+/* ========================================
+   VibeBox - Accessibility Styles
+   WCAG 2.1 AA Compliance
+   ======================================== */
+
+/* ========================================
+   1. Focus Management - Visible Focus Indicators
+   ======================================== */
+
+/* Global focus styles */
+*:focus {
+  outline: 3px solid #ffa500;
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 3px solid #ffa500;
+  outline-offset: 2px;
+}
+
+/* High contrast focus for keyboard navigation */
+.focus-visible {
+  outline: 3px solid #ffa500 !important;
+  outline-offset: 3px !important;
+}
+
+/* Skip to main content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #ffa500;
+  color: #000;
+  padding: 8px 16px;
+  z-index: 10000;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus within containers */
+.focus-within:focus-within {
+  outline: 2px solid #ffa500;
+  outline-offset: 2px;
+}
+
+/* ========================================
+   2. High Contrast Mode
+   ======================================== */
+
+[data-high-contrast="true"] {
+  /* Increase contrast ratios */
+  --text-primary: #ffffff;
+  --text-secondary: #f0f0f0;
+  --background-primary: #000000;
+  --background-secondary: #1a1a1a;
+  --border-color: #ffffff;
+  --accent-color: #ffcc00;
+}
+
+[data-high-contrast="true"] body {
+  background-color: #000 !important;
+}
+
+[data-high-contrast="true"] .movie-card,
+[data-high-contrast="true"] .card {
+  border: 2px solid #fff !important;
+}
+
+[data-high-contrast="true"] a {
+  color: #fff !important;
+  text-decoration: underline !important;
+}
+
+[data-high-contrast="true"] button {
+  border: 2px solid #fff !important;
+}
+
+[data-high-contrast="true"] input {
+  border: 2px solid #fff !important;
+  background: #000 !important;
+  color: #fff !important;
+}
+
+/* ========================================
+   3. Reduced Motion
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-reduced-motion="true"] *,
+[data-reduced-motion="true"] *::before,
+[data-reduced-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ========================================
+   4. Screen Reader Only Content
+   ======================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Make sr-only content visible when focused */
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* ========================================
+   5. Keyboard Navigation Enhancements
+   ======================================== */
+
+/* Ensure buttons are keyboard accessible */
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Visible focus for all interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #ffa500;
+  outline-offset: 2px;
+}
+
+/* ========================================
+   6. Live Regions for Screen Readers
+   ======================================== */
+
+[aria-live] {
+  /* Ensure live regions are present */
+  contain: layout style;
+}
+
+[aria-live="polite"] {
+  /* Polite announcements */
+}
+
+[aria-live="assertive"] {
+  /* Urgent announcements */
+}
+
+/* ========================================
+   7. Touch Target Sizes (WCAG 2.1 AA - 44x44px minimum)
+   ======================================== */
+
+@media (pointer: coarse) {
+  /* For touch devices */
+  button,
+  a,
+  input,
+  select {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+  }
+}
+
+/* ========================================
+   8. Color Contrast Helpers
+   ======================================== */
+
+/* Ensure sufficient contrast */
+.high-contrast-text {
+  color: #ffffff !important;
+}
+
+.low-contrast-text {
+  color: #b0b0b0;
+}
+
+/* Status indicators with icons for colorblind users */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-indicator::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.status-indicator.success::before {
+  background: #22c55e;
+}
+
+.status-indicator.warning::before {
+  background: #f59e0b;
+}
+
+.status-indicator.error::before {
+  background: #ef4444;
+}
+
+/* ========================================
+   9. Loading States Accessibility
+   ======================================== */
+
+[aria-busy="true"] {
+  position: relative;
+}
+
+/* Loading spinner for screen readers */
+.spinner-sr {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #ffa500;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+/* Skip loading animation for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .spinner-sr {
+    animation: none;
+    border-top-color: #ffa500;
+  }
+}
+
+/* ========================================
+   10. Form Accessibility
+   ======================================== */
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: #ef4444 !important;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* Required field indicator */
+.required::after {
+  content: " *";
+  color: #ef4444;
+}

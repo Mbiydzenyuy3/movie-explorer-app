@@ -1,0 +1,275 @@
+.carouselContainer {
+  position: relative;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 48px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.carousel {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 48px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.cardWrapper {
+  flex: 0 0 auto;
+  width: 200px;
+}
+
+/* Navigation Buttons */
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.navButton:hover {
+  background: rgba(255, 165, 0, 0.9);
+  color: #000;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.navButton:focus-visible {
+  outline: 2px solid #ffa500;
+  outline-offset: 2px;
+}
+
+.leftButton {
+  left: 8px;
+}
+
+.rightButton {
+  right: 8px;
+}
+
+/* Show buttons on hover/focus */
+.wrapper:hover .navButton,
+.navButton:focus-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Movie Card */
+.movieCard {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.movieCard:hover {
+  transform: translateY(-8px);
+}
+
+.posterWrapper {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+.poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.movieCard:hover .poster {
+  transform: scale(1.05);
+}
+
+.noPoster {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #666;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0) 50%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.movieCard:hover .overlay {
+  opacity: 1;
+}
+
+.playIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 165, 0, 0.95);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+
+.movieCard:hover .playIcon {
+  transform: scale(1);
+}
+
+.movieInfo {
+  padding: 12px 4px;
+}
+
+.movieTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 8px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #999;
+}
+
+.rating {
+  color: #ffa500;
+}
+
+.year {
+  color: #666;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 16px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .carousel {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+
+  .cardWrapper {
+    width: 140px;
+  }
+
+  .posterWrapper {
+    height: 210px;
+  }
+
+  .navButton {
+    width: 36px;
+    height: 36px;
+    opacity: 1;
+    visibility: visible;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .leftButton {
+    left: 4px;
+  }
+
+  .rightButton {
+    right: 4px;
+  }
+
+  .movieTitle {
+    font-size: 12px;
+  }
+}
+
+/* Hide scrollbar but allow scrolling */
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Progress Bar for Continue Watching */
+.progressContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 5;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(to right, #ffa500, #ff4500);
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+  transition: width 0.3s ease;
+}
+
+.movieCard:hover .progressBar {
+  background: linear-gradient(to right, #00d2ff, #3a7bd5);
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+}

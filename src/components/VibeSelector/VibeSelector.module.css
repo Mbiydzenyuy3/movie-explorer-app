@@ -1,0 +1,277 @@
+/* Vibe Selector Chatbot Styles */
+.floatingBtn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e50914, #b2070f);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(229, 9, 20, 0.4);
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.floatingBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(229, 9, 20, 0.6);
+}
+
+.chatbot {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  width: 360px;
+  max-height: 500px;
+  background: rgba(20, 20, 20, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chatbotHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #e50914, #b2070f);
+  color: #fff;
+}
+
+.headerIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.headerText {
+  flex: 1;
+}
+
+.headerText h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.headerText p {
+  font-size: 12px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Vibe Grid */
+.vibeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 16px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.vibeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vibeCard:hover {
+  background: rgba(229, 9, 20, 0.2);
+  border-color: rgba(229, 9, 20, 0.5);
+  transform: translateY(-2px);
+}
+
+.vibeCard.selected {
+  background: rgba(229, 9, 20, 0.3);
+  border-color: #e50914;
+}
+
+.vibeEmoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.vibeName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* Search Panel */
+.searchPanel {
+  padding: 16px;
+}
+
+.selectedVibe {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.searchBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  background: #e50914;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.searchBtn:hover {
+  background: #f40612;
+  transform: translateY(-1px);
+}
+
+.backBtn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.backBtn:hover {
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .floatingBtn {
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .chatbot {
+    bottom: 90px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
+
+  .vibeGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .vibeCard {
+    padding: 12px 8px;
+  }
+
+  .vibeEmoji {
+    font-size: 24px;
+  }
+
+  .vibeName {
+    font-size: 12px;
+  }
+}
+
+/* Scrollbar */
+.vibeGrid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vibeGrid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vibeGrid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.vibeGrid::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .floatingBtn,
+  .chatbot,
+  .vibeCard,
+  .searchBtn {
+    transition: none;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}

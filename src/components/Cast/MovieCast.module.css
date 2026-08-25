@@ -1,0 +1,131 @@
+.h2 {
+  font-family: var(--secondary-font);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 26px;
+  letter-spacing: 0.12px;
+  color: #fff;
+  margin-bottom: 20px;
+  padding: 0 50px;
+}
+
+.cast {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 50px;
+  overflow-x: auto;
+  gap: 12px;
+  scroll-behavior: smooth;
+  animation: scroll;
+  animation-timing-function: cubic-bezier(0.53, 0.03, 0.43, 0.73);
+  animation-duration: 1s;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling for mobile */
+}
+
+/* Custom Scrollbar */
+.cast::-webkit-scrollbar {
+  height: 8px;
+  /* Thin scrollbar */
+}
+
+.cast::-webkit-scrollbar-track {
+  background: #ec9007;
+  /* Light transparent background */
+  border-radius: 10px;
+}
+
+.cast::-webkit-scrollbar-thumb {
+  background: #37033b;
+  /* Semi-transparent thumb */
+  border-radius: 10px;
+  transition: background 0.3s ease-in-out;
+}
+
+.cast:hover::-webkit-scrollbar-thumb {
+  background: #fff;
+  /* Becomes more visible on hover */
+}
+
+/* Firefox scrollbar */
+.cast {
+  scrollbar-width: none;
+  scrollbar-color: #ec790e rgba(255, 255, 255, 0.1);
+  transition: 0.6s ease-in-out;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateY(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(30%);
+    opacity: 1;
+  }
+}
+
+.profiles {
+  min-width: 171px;
+  display: grid;
+  grid-template-columns: 30% 70%;
+  align-items: center;
+
+  img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  h4 {
+    font-family: var(--secondary-font);
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0.5%;
+    color: #F9F9F9;
+  }
+
+  h6 {
+    font-family: var(--secondary-font);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+    letter-spacing: 0.5%;
+    color: #9CA4AB;
+  }
+}
+
+.perso {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .h2 {
+    padding: 0 16px;
+    font-size: 20px;
+  }
+
+  .cast {
+    padding: 16px;
+  }
+
+  .profiles {
+    img {
+      width: 40px;
+      height: 40px;
+    }
+
+    h4 {
+      font-size: 14px;
+    }
+
+    h6 {
+      font-size: 11px;
+    }
+  }
+
+}

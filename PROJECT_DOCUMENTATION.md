@@ -1,437 +1,264 @@
-# VibeBox - Context-Aware Streaming Platform
+# VibeBox — Project Documentation
 
-## Project Documentation v1.0
-
----
-
-## 1. Project Vision
-
-Transform the Movie Explorer app into **VibeBox**, a profitable, modern streaming platform that solves "Subscription Fatigue" and "Choice Paralysis" through **Context-Aware Streaming**.
-
-### Core Philosophy
-
-- **"Lean but Lethal"**: Compete with billion-dollar infrastructures using optimized, modern web technologies
-- **Premium FAST**: A free-tier app that feels like a $20/month luxury experience
-- **Universal Curation**: Act as the "smart layer" that aggregates where to watch
+**Version 2.0** · Updated 2026-08-24
+Supersedes v1.0, which documented a streaming architecture that has been removed.
+See [docs/decisions/0001-drop-unlicensed-streaming.md](docs/decisions/0001-drop-unlicensed-streaming.md).
 
 ---
 
-## 2. Unique Value Proposition (UVP)
+## 1. What this is
 
-### The Problem
+A mood- and time-based discovery layer over the streaming services people already
+pay for. You say what you're in the mood for and how long you have; VibeBox
+suggests something, then tells you where it is legally available in your region.
 
-In 2026, users spend an average of **19 minutes** just trying to pick a movie.
+**It does not host, stream, proxy or embed video.** The only thing it plays is a
+YouTube trailer.
 
-### Our Solution: "Context-Aware Streaming"
+### Core philosophy
 
-| Feature                   | Description                                                                      |
-| ------------------------- | -------------------------------------------------------------------------------- |
-| **Atmospheric Discovery** | Instead of standard grids, use mood-based exploration                            |
-| **Mood-Based Filters**    | "I have 40 minutes, I'm feeling stressed, and I want something visually vibrant" |
-| **Hyper-Local Relevance** | Prioritize regional content (Nollywood, Lazizi) for African markets              |
-| **Hybrid Feed**           | Mix high-quality indie trailers with short-form "behind-the-scenes" content      |
-
----
-
-## 3. Competitive Analysis
-
-### Competitor Matrix
-
-| Competitor        | Core Strength          | 2026 Pain Point        | Our Opportunity          |
-| ----------------- | ---------------------- | ---------------------- | ------------------------ |
-| Netflix/Disney+   | Massive IP libraries   | Content Fragmentation  | Universal Curation layer |
-| YouTube/TikTok    | Creator-led short-form | Low Cinematic Quality  | Premium hybrid feed      |
-| Pluto/Tubi (FAST) | Free ad-supported      | Poor UX & High Latency | Premium FAST experience  |
+The problem is not a shortage of content. It's that finding something worth
+watching, across four services, at 11pm, takes longer than the time left to watch
+it. VibeBox optimises for *time-to-decision*, not catalogue size.
 
 ---
 
-## 4. Development Phases
+## 2. Value proposition
 
-### Phase 1: Foundation & Infrastructure ⚡
+### The problem
 
-**Goal**: Build the technical foundation for performance, security, and scalability
+Two things, both real:
 
-| Task                    | Priority | Description                                 |
-| ----------------------- | -------- | ------------------------------------------- |
-| Edge Functions Setup    | P0       | Move data fetching to Vercel Edge Functions |
-| API Proxy Layer         | P0       | Hide TMDB API keys server-side              |
-| React Query Integration | P0       | Implement caching to reduce API calls       |
-| JWT Authentication      | P0       | Zero-trust auth with short-lived tokens     |
-| Error Handling System   | P1       | Global error boundaries and fallback UI     |
+1. **Choice paralysis.** Twenty minutes scrolling, nothing chosen.
+2. **Fragmentation.** Once you've chosen, "which service has this, here?" is a
+   separate search — and in Nigeria, Cameroon, Ghana and Kenya it's a harder one
+   than in the US, because coverage differs and the incumbents index it poorly.
 
-**Success Metrics**:
+### The solution
 
-- Time to Interactive < 1.2s
-- Zero API key exposure in client
+| Layer | What it does |
+|---|---|
+| Mood engine | Filters by energy level and available time, not genre |
+| Vibe search | Natural language — "something dark but hopeful", "short film under 20 mins" |
+| Where-to-watch | Region-aware availability, licensed providers only |
+| Curation angle | African and diaspora cinema, where JustWatch/Reelgood coverage is thin |
 
----
+### Honest assessment of the differentiation
 
-### Phase 2: Core UX/UI Transformation 🎨
-
-**Goal**: Implement the unique value proposition features
-
-| Task                      | Priority | Description                                  |
-| ------------------------- | -------- | -------------------------------------------- |
-| Mood-Based Discovery      | P0       | New discovery engine based on user mood/time |
-| Regional Content Priority | P0       | Hyper-local content for African markets      |
-| Atmospheric Hero Section  | P1       | Dynamic backgrounds based on mood/content    |
-| Enhanced Search           | P1       | "Watch on Amazon" affiliate links            |
-| Hybrid Feed System        | P2       | Short-form + long-form content mix           |
-
-**Success Metrics**:
-
-- User time-to-decision < 5 minutes
-- Regional content visibility increased 300%
+Mood filtering is a UI feature. JustWatch or Reelgood could ship it in a sprint.
+The only plausibly defensible position is African and diaspora catalogue
+curation — and that is currently a hypothesis with no demand evidence behind it.
+Do not treat it as a moat in planning.
 
 ---
 
-### Phase 3: Video Player & Streaming 🎬
+## 3. Competitive analysis
 
-**Goal**: Premium streaming experience with ABR
+| Competitor | Core strength | Weakness we might exploit | Reality check |
+|---|---|---|---|
+| JustWatch | Best-in-class availability data | Thin African coverage; utilitarian UX | They supply *our* data via TMDB |
+| Reelgood | Good US aggregation | Barely serves African markets | Could expand if the market proved out |
+| Letterboxd | Strong cinephile community | Not an availability tool | Different job entirely |
+| Netflix / Prime | Owns the catalogue | Only shows you their own titles | Cross-service view is genuinely useful |
+| IROKOTV | Deep Nollywood library | Single-service | A provider we route *to*, not a rival |
 
-| Task                | Priority | Description                            |
-| ------------------- | -------- | -------------------------------------- |
-| Custom Video Player | P0       | Build proprietary player wrapper       |
-| HLS Integration     | P0       | Adaptive bitrate streaming             |
-| Video Encryption    | P1       | AES-128 segment encryption             |
-| Multi-Audio Tracks  | P1       | Audio descriptions, multiple languages |
-| Offline Downloads   | P2       | Pro tier feature                       |
-
-**Success Metrics**:
-
-- Zero buffering on 4G connections
-- Piracy reduction via encryption
+We depend on JustWatch data through TMDB. That is a real supply-side dependency
+and belongs in risk planning, not competitive strategy.
 
 ---
 
-### Phase 4: Accessibility & Navigation ♿
+## 4. Current state
 
-**Goal**: WCAG 2.1 AA compliance
+**Pre-validation MVP.** Working, deployable, zero users, zero revenue, no demand
+testing done.
 
-| Task                       | Priority | Description                       |
-| -------------------------- | -------- | --------------------------------- |
-| Keyboard Navigation        | P0       | Full D-pad/keyboard support       |
-| Screen Reader Optimization | P0       | ARIA labels, live regions         |
-| Focus Management           | P0       | Visible focus indicators          |
-| Audio Descriptions         | P1       | Default multi-track audio support |
-| High Contrast Mode         | P2       | Accessibility preferences         |
+### Built and working
 
-**Success Metrics**:
+- TMDB browsing: popular, trending, discover, search, genres, details, cast
+- Mood engine and vibe search
+- Region-aware where-to-watch with graceful empty states
+- Progressive auth (Clerk) — browse anonymously, sign in to save
+- Watchlist (localStorage) and recently-viewed (Supabase)
+- Accessibility: skip links, high contrast, reduced motion, focus indicators
+- Server-side TMDB proxy; no API key in the client bundle
+- 85 passing tests
 
-- WCAG 2.1 AA compliance
-- Full navigability without mouse/touch
+### Known gaps
 
----
-
-### Phase 5: Monetization Infrastructure 💰
-
-**Goal**: Hybrid monetization model
-
-| Task                  | Priority | Description                         |
-| --------------------- | -------- | ----------------------------------- |
-| User Accounts System  | P0       | Registration, profiles, preferences |
-| Watchlist Sync        | P0       | Server-side watchlist persistence   |
-| Ad Integration        | P1       | Pre-roll ads for free tier          |
-| Sponsor Spotlight     | P1       | Pinned sponsored content            |
-| Affiliate Links       | P1       | "Watch on Amazon" integration       |
-| Tiered Access Control | P2       | Free (720p) vs Pro (4K) tiers       |
-
-**Revenue Streams**:
-
-- Free: 720p + Discovery ads
-- Pro: 4K + Offline + Watch Party sync
-- Sponsorships: Local business featured content
-- Affiliate: 5-10% referral on external streams
+| Gap | Note |
+|---|---|
+| Supabase RLS unverified | `WatchHistoryService` filters `user_id` client-side. If RLS is off, that is a live data-exposure bug. |
+| Bundle size | 768 kB / 228 kB gzipped, no code splitting |
+| Provider coverage | ~60% on sampled Nollywood titles |
+| No analytics | Nothing measures whether any of this works |
+| 3 pre-existing lint errors | Predate the pivot |
 
 ---
 
-### Phase 6: Performance Optimization 🚀
+## 5. Scope boundaries
 
-**Goal**: Premium feel with minimal resources
+### In scope
 
-| Task               | Priority | Description                  |
-| ------------------ | -------- | ---------------------------- |
-| Image Optimization | P0       | WebP/AVIF with lazy loading  |
-| Code Splitting     | P0       | Route-based code splitting   |
-| Prefetching        | P1       | Predict next content to load |
-| Service Worker     | P1       | Offline capability for Pro   |
-| Edge CDN           | P2       | Global content delivery      |
+React 19 + Vite; Vercel edge deployment; TMDB integration through our own proxy;
+where-to-watch routing; progressive auth; accessibility; mood and vibe discovery.
 
----
+### Out of scope
 
-## 5. Scope Boundaries
-
-### IN SCOPE ✅
-
-- React 19 + Vite architecture
-- Vercel Edge deployment
-- TMDB API integration
-- Custom streaming player
-- User authentication
-- Affiliate/Ad systems
-- Accessibility compliance
-
-### OUT OF SCOPE ❌
-
-- Building own content library (use TMDB)
+- **Hosting, streaming or embedding video.** Not a resourcing decision — a
+  licensing one. See the decision record.
+- Building a content library
 - Server-side video encoding
-- Payment processing (use Stripe/PayPal)
-- Mobile apps (focus on web PWA)
-- Live streaming capabilities
+- Native mobile apps (web first)
+- Affiliate tracking parameters until a programme has actually approved us
 
-### NICE TO HAVE (Post-MVP)
+### Post-validation, not now
 
-- Watch Party sync feature
-- Social sharing
-- AI-powered recommendations
-- Podcast/audio content
-- Multi-language UI
+Watch-party sync, social sharing, AI recommendations, multi-language UI. None of
+these should be built before demand is demonstrated.
 
 ---
 
-## 6. Technical Requirements
+## 6. Technical requirements
 
 ### Stack
 
-| Layer      | Technology                  |
-| ---------- | --------------------------- |
-| Framework  | React 19 + Vite             |
-| Routing    | React Router v7             |
-| State      | React Query + Context       |
-| Styling    | CSS Modules + CSS Variables |
-| Deployment | Vercel (Edge Functions)     |
-| Auth       | JWT with refresh tokens     |
-| Streaming  | HLS.js + Video.js           |
+| Layer | Choice | Why |
+|---|---|---|
+| UI | React 19, Vite 6 | Already in place; fast builds |
+| Styling | CSS Modules | No runtime cost, scoped by default |
+| Data fetching | React Query + custom hooks | Caching and retry |
+| Metadata | TMDB via our edge proxy | Keeps the key server-side |
+| Availability | TMDB `/watch/providers` | JustWatch data, free |
+| Auth | Clerk | Progressive auth, passkeys, low integration cost |
+| Storage | Supabase Postgres | RLS, generous free tier |
+| Motion | Framer Motion | Already in place |
+| Tests | Vitest + Testing Library | Fast, Vite-native |
+| Hosting | Vercel | Edge functions for the proxy |
 
-### Environment Variables
+### Environment variables
 
 ```
-VITE_API_KEY=                    # TMDB API Key (via proxy only)
-VITE_BASE_URL=                   # TMDB Base URL (via proxy)
-VITE_JWT_SECRET=                # Auth secret
-VITE_AD_CLIENT=                 # Ad integration ID
-VITE_AFFILIATE_API=             # Amazon affiliate API
+TMDB_API_KEY=              # server-only, NO Vite prefix
+VITE_BASE_IMG_PATH=
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_CLERK_PUBLISHABLE_KEY=
 ```
+
+`TMDB_API_KEY` must never gain a `VITE_` prefix. Vite inlines every `VITE_*` var
+into the browser bundle.
 
 ---
 
-## 7. Success Metrics
+## 7. The TMDB proxy
 
-### Performance
+```
+browser -> /api/tmdb/movie/550 -> api.themoviedb.org/3/movie/550?api_key=…
+```
 
-- [ ] Time to Interactive < 1.2s
-- [ ] First Contentful Paint < 1.5s
-- [ ] Lighthouse Score > 90
+| Environment | Implementation |
+|---|---|
+| Production | `api/tmdb/[...path].js` (Vercel edge function) |
+| Dev / preview | Middleware in `vite.config.js` |
+| Shared | `shared/tmdb-paths.js` — allowlist + URL builder |
 
-### Business
+Both entry points import the same allowlist so it cannot drift. Design points:
 
-- [ ] User registration > 10,000
-- [ ] Pro conversion rate > 5%
-- [ ] Average session time > 15 minutes
+- **Allowlist is deny-by-default.** Without it the endpoint is an open relay to
+  any TMDB route, including account and list routes that mutate state.
+- **Caller-supplied `api_key` is stripped** and replaced with ours.
+- **Edge caching** — `s-maxage=300, stale-while-revalidate=3600`. TMDB data is
+  public and slow-moving; this keeps us inside rate limits as traffic grows.
 
-### Accessibility
+Covered by `src/test/tmdbPaths.test.js`.
 
-- [ ] WCAG 2.1 AA compliance
-- [ ] Keyboard-only navigation functional
-- [ ] Screen reader compatible
+---
+
+## 8. Authentication
+
+**Clerk** for identity, **Supabase** for data. Clerk issues the JWT; Supabase
+validates it and enforces Row Level Security.
+
+### Progressive auth
+
+1. Browse anonymously — discovery, mood filters, trailers, where-to-watch
+2. Auth triggers only on save-to-watchlist
+3. One tap: passkey, Google or Apple
+4. Clerk handles sessions and suspicious-login detection
+
+Nothing behind the discovery experience requires an account. Sign-in is for
+persistence, not access control.
+
+### Schema
+
+```sql
+profiles          -- id, clerk_id, email, full_name, avatar_url, plan, created_at
+watch_history     -- user_id, movie_id, title, poster_path, updated_at, is_completed
+```
+
+`plan` currently only ever reads `free`. There is no paid tier; the column is
+retained for a future legitimate one.
+
+> **Open item:** RLS must be enabled on both tables. `WatchHistoryService` filters
+> by `user_id` in client code, which is not a security boundary. See §11.
+
+---
+
+## 9. Success metrics
+
+Nothing here is being measured yet. That is the point of the current stage.
+
+### Would indicate the product works
+
+| Metric | Why it matters |
+|---|---|
+| Provider-link click-through | The core action. If people don't click through, the routing is not useful. |
+| Mood-filter → detail-page rate | Does the mood engine actually surface things people want? |
+| Empty-state rate | How often we fail to answer "where can I watch this" |
+| Return visits within 7 days | Discovery is habitual or it is nothing |
 
 ### Technical
 
-- [ ] Zero API key exposure
-- [ ] Zero critical security vulnerabilities
-- [ ] 99.9% uptime
+Time to interactive under 1.2s, availability lookup under 500ms, Lighthouse
+accessibility 90+.
 
 ---
 
-## 8. Development Guidelines
+## 10. Risk management
 
-### Code Standards
-
-1. **Always** use functional components with hooks
-2. **Always** implement proper TypeScript types (or PropTypes)
-3. **Never** expose API keys in client code
-4. **Always** implement error boundaries
-5. **Always** add ARIA labels to interactive elements
-
-### Git Workflow
-
-```
-main → develop → feature/xxx → PR → merge
-```
-
-### Testing Requirements
-
-- Unit tests for utilities
-- Component tests for key UI
-- E2E tests for critical flows
+| Risk | Impact | Mitigation |
+|---|---|---|
+| **Nobody wants this** | Existential | Landing-page test before building further. Currently unmitigated. |
+| Provider coverage gaps | High | Honest empty states; measure the rate; consider supplementing |
+| TMDB policy change / JustWatch data withdrawal | High | Single supply dependency. No fallback today. |
+| Differentiation copied | High | Only defence is depth in African catalogue curation |
+| TMDB rate limits | Medium | Edge caching already in place |
+| Supabase RLS misconfigured | Medium | Verify and add a policy test |
+| Edge function costs | Low | Caching keeps invocations low at current scale |
 
 ---
 
-## 9. File Structure (Target)
+## 11. Open items
 
-```
-src/
-├── api/                    # Edge function proxies
-│   ├── movies.js
-│   ├── auth.js
-│   └── affiliate.js
-├── components/
-│   ├── common/            # Shared UI components
-│   ├── discovery/        # Mood-based discovery
-│   ├── player/           # Video player components
-│   └── layout/           # Layout components
-├── contexts/              # React contexts
-├── hooks/                 # Custom hooks
-├── pages/                 # Route pages
-├── services/              # API services
-├── styles/                # Global styles
-├── utils/                 # Helper functions
-└── App.jsx               # Root component
-```
+1. **Verify Supabase RLS** on `watch_history` and `profiles`. Highest-priority
+   security item.
+2. **Rotate the TMDB key.** The old key shipped in a built bundle before the proxy
+   existed and must be treated as compromised.
+3. **Add analytics.** Without click-through data, none of §9 can be answered.
+4. **Landing-page demand test.** The gating question before further building.
+5. Code splitting for the 768 kB bundle.
+6. Three pre-existing lint errors.
 
 ---
 
-## 10. Roadmap
+## 12. Glossary
 
-```
-Q1 2026
-├── Phase 1: Foundation
-│   ├── Edge Functions setup
-│   ├── API Proxy layer
-│   └── React Query integration
-
-Q2 2026
-├── Phase 2: UX Transformation
-│   ├── Mood-based discovery
-│   ├── Regional prioritization
-│   └── Enhanced search
-├── Phase 3: Video Player
-│   ├── Custom player build
-│   └── HLS integration
-
-Q3 2026
-├── Phase 4: Accessibility
-│   ├── Keyboard navigation
-│   ├── Screen reader support
-│   └── WCAG compliance
-├── Phase 5: Monetization
-│   ├── User accounts
-│   ├── Ad integration
-│   └── Tiered access
-
-Q4 2026
-├── Phase 6: Optimization
-│   ├── Performance tuning
-│   ├── Offline capabilities
-│   └── PWA features
-```
-
----
-
-## 11. Risk Management
-
-| Risk                   | Impact | Mitigation                              |
-| ---------------------- | ------ | --------------------------------------- |
-| API rate limits        | High   | Aggressive caching, queue requests      |
-| TMDB policy changes    | High   | Abstract API layer, plan for migration  |
-| Ad revenue variability | Medium | Diversify with affiliate + sponsorships |
-| Edge function costs    | Medium | Implement request limiting              |
-| Browser compatibility  | Low    | Progressive enhancement                 |
-
----
-
-## 12. Authentication Strategy (Clerk + Supabase)
-
-### Authentication Provider: Clerk
-
-We use **Clerk** for authentication for these reasons:
-
-| Feature             | Clerk                     | Supabase Auth |
-| ------------------- | ------------------------- | ------------- |
-| Passkeys/Biometrics | Native                    | Limited       |
-| Session Security    | Advanced threat detection | Basic         |
-| Social Login        | One-tap Google/Apple      | Available     |
-
-**Why Clerk?**
-
-- Security: Session management protects accounts on public Wi-Fi
-- Performance: Lighter client-side footprint
-
-### Progressive Auth Flow
-
-1. **Browse Anonymously**: Explore mood filters & trailers
-2. **Trigger Login**: On "Play" or "Save to Watchlist"
-3. **One-Tap Auth**: Passkey, Google, or Apple
-4. **Session Security**: Clerk handles suspicious sessions
-
-### Environment Variables
-
-```
-VITE_CLERK_PUBLISHABLE_KEY=   # Clerk key
-VITE_SUPABASE_URL=             # Supabase URL
-VITE_SUPABASE_ANON_KEY=       # Supabase anon key
-```
-
-### Database: Supabase PostgreSQL (Data Only)
-
-For a streaming app, authentication is mandatory for three reasons:
-
-| Reason                     | Purpose                                                    |
-| -------------------------- | ---------------------------------------------------------- |
-| **Personalization**        | "Mood-First" engine requires knowing whose mood to track   |
-| **Profitability**          | Link payment/subscription to specific user                 |
-| **Security (Anti-Piracy)** | JWT authorization for video segments prevents stream theft |
-
-### Industry Standards (2026)
-
-| Platform    | Auth Method                                        |
-| ----------- | -------------------------------------------------- |
-| Netflix     | IP + Device Fingerprinting, 2FA verification codes |
-| Disney+     | Passkeys (FIDO2) - FaceID/Fingerprint login        |
-| Modern Apps | SSO (Google/Apple/GitHub), Magic Links             |
-
-### Our Strategy: Progressive Auth
-
-We implement a "hook-first" approach to maximize conversion:
-
-1. **Browse Anonymously**: Users explore mood filters & trailers without login
-2. **Magic Link/Passkey**: Triggered on "Play" or "Save to Watchlist"
-3. **Session Management**: Supabase handles suspicious session logout
-
-### Supabase Implementation
-
-| Feature      | Implementation        |
-| ------------ | --------------------- |
-| Provider     | Supabase Auth         |
-| Database     | Supabase PostgreSQL   |
-| Passwordless | Magic Link + Passkeys |
-| Session      | JWT with auto-refresh |
-
-### Database Schema
-
-```sql
-profiles:
-  - id: uuid (FK to auth.users)
-  - email, full_name, avatar_url
-  - plan: enum ('free', 'pro')
-
-watchlist:
-  - user_id, movie_id, created_at
-
-user_preferences:
-  - preferred_genres, mood_history, region
-```
-
----
-
-## 13. Glossary
-
-| Term | Definition                           |
-| ---- | ------------------------------------ |
-| FAST | Free Ad-Supported Television         |
-| AVOD | Ad-Supported Video on Demand         |
-| ABR  | Adaptive Bitrate Streaming           |
-| HLS  | HTTP Live Streaming                  |
-| WCAG | Web Content Accessibility Guidelines |
-| JWT  | JSON Web Token                       |
-| Edge | CDN-edge compute for low-latency     
+| Term | Meaning |
+|---|---|
+| Mood engine | Filtering by energy level and available time rather than genre |
+| Vibe search | Natural-language input mapped to mood/tone/duration filters |
+| Where-to-watch | Region-scoped licensed availability for a title |
+| Watch region | ISO 3166-1 country code scoping availability lookups |
+| Progressive auth | Full browsing anonymously; sign-in only to persist |
+| Flatrate | Included with a subscription, as opposed to rent or buy |
+| RLS | Row Level Security — Postgres per-row access policies |

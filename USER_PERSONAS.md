@@ -1,4 +1,8 @@
-# StreamX - User Personas & Product Requirements
+# VibeBox — User Personas & Product Requirements
+
+> **Updated 2026-08-24.** The personas below still hold. The *feature requirements*
+> were rewritten after the app stopped streaming video and became a discovery and
+> routing product. See [docs/decisions/0001-drop-unlicensed-streaming.md](docs/decisions/0001-drop-unlicensed-streaming.md).
 
 ## Executive Summary
 
@@ -44,17 +48,17 @@ Wants an app that "understands" her current energy level and suggests a 40-minut
 | **Income**       | Student budget, uses free tiers                                         |
 
 **Pain Point**:
-Loves cinema but hates when apps buffer or "eat" data with unoptimized 4K streams when he only needs 720p.
+On a metered connection, he does not want to burn data browsing four different apps to find out none of them have the film — or discover after signing up that it isn't available in his country.
 
 **Goal**:
-A fast, lightweight interface that allows him to see exactly how much data a movie will consume before he hits "Play."
+A light, fast interface that answers "can I watch this, here, on something I already have?" before he commits any data to it.
 
 **User Story**:
 
-> "As a data-conscious user, I want to see a Data-Estimate for each quality setting so I can manage my spending while streaming."
+> "As a data-conscious user, I want to know which service has a film in my country before I open that app, so I don't waste data finding out it isn't there."
 
 **Feature Requirement**:
-**Dynamic Quality Selector** - UI element showing "720p (~800MB)" vs "1080p (~1.5GB)"
+**Region-accurate where-to-watch** plus a lightweight page. We no longer stream video, so per-quality data estimates no longer apply; the data saving now comes from not making him hunt across apps.
 
 ---
 
@@ -112,14 +116,17 @@ Explore content and see trailers without registration friction.
 
 ### Core Features (Must-Have)
 
-| Persona | Feature                            | Priority |
-| ------- | ---------------------------------- | -------- |
-| Sarah   | Mood-Sieve Engine                  | P0       |
-| Sarah   | Smart-Resume Dashboard             | P0       |
-| Kevin   | Dynamic Quality Selector           | P0       |
-| Kevin   | Adaptive Bitrate Streaming         | P0       |
-| Amara   | Visual Metadata / Aura Collections | P0       |
-| All     | Progressive Auth (Clerk)           | P0       |
+| Persona | Feature                            | Priority | Status |
+| ------- | ---------------------------------- | -------- | ------ |
+| Sarah   | Mood-Sieve Engine                  | P0       | Built |
+| Sarah   | Recently-viewed dashboard          | P1       | Built (was Smart-Resume) |
+| Kevin   | Region-accurate where-to-watch     | P0       | Built |
+| Kevin   | Lightweight page weight            | P1       | Not met — 228 kB gzipped |
+| Amara   | Visual metadata / Aura collections | P1       | Not built |
+| All     | Progressive Auth (Clerk)           | P0       | Built |
+
+Dropped: **Dynamic Quality Selector** and **Adaptive Bitrate Streaming**. Both
+assumed we serve the video. We do not.
 
 ### Features We Avoid (Out of Scope)
 
@@ -155,18 +162,26 @@ const vibeMappings = {
 
 ---
 
-## 4. Adaptive Player Specifications
+## 4. Where-to-Watch Specification
 
-For Kevin's data-conscious needs:
+Availability comes from TMDB's `/watch/providers` endpoint (JustWatch data),
+scoped to the viewer's region.
 
-| Quality  | Resolution | Bitrate  | Est. Data/hr |
-| -------- | ---------- | -------- | ------------ |
-| Eco      | 480p       | 1 Mbps   | ~450 MB      |
-| Standard | 720p       | 2.5 Mbps | ~1.1 GB      |
-| High     | 1080p      | 5 Mbps   | ~2.2 GB      |
-| Ultra    | 4K         | 15 Mbps  | ~6.7 GB      |
+| Element | Behaviour |
+|---|---|
+| Region | Detected from browser locale, user-overridable, persisted in `localStorage` |
+| Grouping | Included with subscription / Rent / Buy |
+| Links | TMDB-supplied JustWatch deep link, used as-is — no affiliate parameters until a programme approves us |
+| Attribution | "Availability data by JustWatch", required by TMDB's terms |
 
-**Smart Start**: Prioritize low-latency start times over high-resolution pre-loading
+### The empty state is a primary case, not an error
+
+In a sample of 10 well-known Nollywood titles, **6 had provider data for Nigeria
+and Cameroon**. Roughly 4 in 10 lookups return nothing. The UI says so plainly and
+offers a region switch, rather than presenting it as a failure.
+
+This is the honest ceiling on Amara's and Kevin's experience today, and the rate
+should be measured rather than hidden.
 
 ---
 
@@ -174,7 +189,8 @@ For Kevin's data-conscious needs:
 
 Minimalist home screen that puts:
 
-1. **Continue Watching** (top priority)
+1. **Recently viewed** (top priority — was "Continue Watching"; there is no
+   playback to resume, so this now tracks titles you looked at)
 2. **"Your Current Mood"** - personalized row based on time of day
 3. **Quick Picks** - "45 mins or less" shortcuts
 4. **New Arrivals** (limited to 5 items)
@@ -187,7 +203,7 @@ Minimalist home screen that puts:
 | ------------------- | ------ | ----------------------------- |
 | Initial Page Weight | <50KB  | Kevin's data consciousness    |
 | Time to Interactive | <1.2s  | Sarah's time constraints      |
-| Video Start Time    | <2s    | Kevin's buffering frustration |
+| Availability lookup | <500ms | Answers Kevin's question before he opens another app |
 | API Response        | <200ms | Smooth browsing               |
 
 ---
@@ -204,7 +220,7 @@ Minimalist home screen that puts:
 ### Clerk Integration
 
 ```
-VITE_CLERK_PUBLISHABLE_KEY=  # Clerk public key
+VITE_CLERK_PUBLISHABLE_KEY=  # Clerk publishable key (client-side by design)
 ```
 
 ---

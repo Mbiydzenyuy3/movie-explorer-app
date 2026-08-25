@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { MoviesContext } from "../context/movieContext";
+import { MoviesContext } from "../context/MoviesContextObject";
 import { useContext } from "react";
 import { Play, Bookmark, Film, Trash2 } from "lucide-react";
 import Header from "../components/Navigations/header";

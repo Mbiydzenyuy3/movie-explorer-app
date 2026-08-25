@@ -3,13 +3,12 @@ import useFetchMovies from "../../hook/useMoviesFetch";
 import PropTypes from "prop-types";
 
 export default function TopSearches({
-  API_KEY,
   BASE_URL,
   IMAGE_PATH,
   path,
   detail,
 }) {
-  const popularUrl = `${BASE_URL}/movie/${path}?api_key=${API_KEY}`;
+  const popularUrl = `${BASE_URL}/movie/${path}`;
 
   const { movies: latestMovies, loading, error } = useFetchMovies(popularUrl);
 
@@ -54,7 +53,6 @@ export default function TopSearches({
 }
 
 TopSearches.propTypes = {
-  API_KEY: PropTypes.string.isRequired,
   BASE_URL: PropTypes.string.isRequired,
   IMAGE_PATH: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,

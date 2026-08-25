@@ -1,6 +1,5 @@
 import {
   createContext,
-  useContext,
   useState,
   useEffect,
   useCallback
@@ -129,16 +128,6 @@ export const AccessibilityProvider = ({ children }) => {
 
 AccessibilityProvider.propTypes = {
   children: PropTypes.node.isRequired
-};
-
-export const useAccessibility = () => {
-  const context = useContext(AccessibilityContext);
-  if (!context) {
-    throw new Error(
-      "useAccessibility must be used within an AccessibilityProvider"
-    );
-  }
-  return context;
 };
 
 export default AccessibilityContext;

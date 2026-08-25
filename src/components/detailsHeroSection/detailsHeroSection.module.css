@@ -762,3 +762,15 @@
   font-style: italic;
   margin: 0;
 }
+
+/* Where-to-watch block (replaces the former in-app player area) */
+.watchProvidersWrapper {
+  margin: 22px 0 8px;
+  max-width: 560px;
+}
+
+@media (max-width: 640px) {
+  .watchProvidersWrapper {
+    max-width: 100%;
+  }
+}

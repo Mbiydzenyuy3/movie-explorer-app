@@ -1,12 +1,12 @@
 import Header from "../components/Navigations/header";
 import Footer from "../components/Navigations/footer";
 import MovieSection from "../components/MovieSection/MovieSection";
-import { MoviesContext } from "../context/movieContext";
+import { MoviesContext } from "../context/MoviesContextObject";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
 
 export default function MoviesPage() {
-  const { setSelectedMovie, apiKey, baseUrl, IMAGE_PATH } =
+  const { setSelectedMovie, baseUrl, IMAGE_PATH } =
     useContext(MoviesContext);
   const navigate = useNavigate();
 
@@ -20,7 +20,6 @@ export default function MoviesPage() {
       <Header />
       <div style={{ paddingTop: "80px" }}>
         <MovieSection
-          API_KEY={apiKey}
           BASE_URL={baseUrl}
           IMAGE_PATH={IMAGE_PATH}
           title='Popular Movies'
@@ -28,7 +27,6 @@ export default function MoviesPage() {
           detail={handleMovieDetail}
         />
         <MovieSection
-          API_KEY={apiKey}
           BASE_URL={baseUrl}
           IMAGE_PATH={IMAGE_PATH}
           title='Top Rated Movies'
@@ -36,7 +34,6 @@ export default function MoviesPage() {
           detail={handleMovieDetail}
         />
         <MovieSection
-          API_KEY={apiKey}
           BASE_URL={baseUrl}
           IMAGE_PATH={IMAGE_PATH}
           title='Upcoming Movies'
@@ -44,7 +41,6 @@ export default function MoviesPage() {
           detail={handleMovieDetail}
         />
         <MovieSection
-          API_KEY={apiKey}
           BASE_URL={baseUrl}
           IMAGE_PATH={IMAGE_PATH}
           title='Now Playing Movies'

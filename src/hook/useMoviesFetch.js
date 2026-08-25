@@ -6,19 +6,34 @@ const useFetchMovies = (url) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const getMovies = (url) => {
-    fetchMovies(url).then((data) => {
-      if (data) {
-        setMovies(data);
-        setLoading(false);
-      }
-      setError(error);
-    });
-  };
-
   useEffect(() => {
-    getMovies(url);
-  }, [url]); // Re-run effect when the URL changes
+    if (!url) return;
+
+    // Guards against a slow response for a previous url overwriting the
+    // results of a newer one.
+    let cancelled = false;
+
+    setLoading(true);
+    setError(null);
+
+    fetchMovies(url)
+      .then((data) => {
+        if (cancelled) return;
+        setMovies(data || []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Error fetching movies:", err);
+        setError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
 
   return { movies, loading, error };
 };

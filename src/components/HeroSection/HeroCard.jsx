@@ -6,12 +6,10 @@ import { Play, Info, Star, ChevronDown } from "lucide-react";
 
 export default function HeroSection({ movies, storage, IMAGE_PATH }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
 
   useEffect(() => {
     if (movies.length === 0) return;
     const interval = setInterval(() => {
-      setDirection(1);
       setCurrentIndex((prev) => (prev + 1) % movies.length);
     }, 8000);
     return () => clearInterval(interval);
@@ -27,10 +25,7 @@ export default function HeroSection({ movies, storage, IMAGE_PATH }) {
   const handleWatchClick = () => storage?.(currentMovie);
   const handleInfoClick = () => storage?.(currentMovie);
 
-  const goToSlide = (index) => {
-    setDirection(index > currentIndex ? 1 : -1);
-    setCurrentIndex(index);
-  };
+  const goToSlide = (index) => setCurrentIndex(index);
 
   const rating = currentMovie.vote_average?.toFixed(1);
 

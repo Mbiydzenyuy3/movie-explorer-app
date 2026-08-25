@@ -12,7 +12,7 @@ import {
   Moon,
   Clock
 } from "lucide-react";
-import { useMood } from "../../context/MoodContext";
+import { useMood } from "../../hooks/useMood";
 import { useNavigate } from "react-router";
 import styles from "./VibeSelector.module.css";
 

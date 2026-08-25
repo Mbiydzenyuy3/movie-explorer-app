@@ -1,19 +1,19 @@
 // movieContext.jsx
-import { createContext, useState } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 
-export const MoviesContext = createContext();
+import { MoviesContext } from "./MoviesContextObject";
 
 export const DetailMovieData = ({ children }) => {
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const apiKey = import.meta.env.VITE_API_KEY;
-  const baseUrl = import.meta.env.VITE_BASE_BASE_URL;
+  // All TMDB traffic goes through our own proxy, which holds the API key
+  // server-side. Nothing secret reaches the browser from here.
+  const baseUrl = "/api/tmdb";
   const IMAGE_PATH = import.meta.env.VITE_BASE_IMG_PATH;
 
-  console.log(apiKey);
   return (
     <MoviesContext.Provider
-      value={{ selectedMovie, setSelectedMovie, apiKey, baseUrl, IMAGE_PATH }}
+      value={{ selectedMovie, setSelectedMovie, baseUrl, IMAGE_PATH }}
     >
       {children}
     </MoviesContext.Provider>

@@ -1,4 +1,4 @@
-import { MoviesContext } from "../context/movieContext";
+import { MoviesContext } from "../context/MoviesContextObject";
 import { useParams } from "react-router";
 import { useContext, useState, useEffect } from "react";
 import MovieCast from "../components/Cast/movieCast";
@@ -8,15 +8,18 @@ import { useNavigate } from "react-router";
 import Header from "../components/Navigations/header";
 import Footer from "../components/Navigations/footer";
 import styles from "../components/SimilarMovies/SimilarMovies.module.css";
+import { useAuth } from "../hooks/useAuth";
+import WatchHistoryService from "../services/WatchHistoryService";
 
 export default function DetailPage() {
-  const { selectedMovie, setSelectedMovie, apiKey, baseUrl, IMAGE_PATH } =
+  const { selectedMovie, setSelectedMovie, baseUrl, IMAGE_PATH } =
     useContext(MoviesContext);
   const { id } = useParams();
   const [cast, setCast] = useState([]);
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user, getToken } = useAuth();
 
   // Fetch movie details if not available in context
   useEffect(() => {
@@ -32,7 +35,7 @@ export default function DetailPage() {
       try {
         setLoading(true);
         const response = await fetch(
-          `${baseUrl}/movie/${id}?api_key=${apiKey}`
+          `${baseUrl}/movie/${id}`
         );
         const data = await response.json();
         setMovie(data);
@@ -44,13 +47,32 @@ export default function DetailPage() {
       }
     };
 
-    if (id && apiKey && baseUrl) {
+    if (id && baseUrl) {
       fetchMovieDetails();
     }
-  }, [id, apiKey, baseUrl, selectedMovie, setSelectedMovie]);
+  }, [id, baseUrl, selectedMovie, setSelectedMovie]);
+
+  // Record the visit so the home dashboard can show "Recently viewed".
+  // Fire-and-forget: a failed write must never block the page.
+  useEffect(() => {
+    if (!user || !movie?.id) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await getToken();
+        if (!cancelled) await WatchHistoryService.recordView(token, user.id, movie);
+      } catch (err) {
+        console.error("Error recording view:", err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, getToken, movie]);
 
   const handleMovieDetail = (movie) => {
-    console.log(movie);
     setSelectedMovie(movie);
     navigate(`/details/${movie.id}`);
   };
@@ -76,20 +98,25 @@ export default function DetailPage() {
 
   // Fetch Cast Data
   useEffect(() => {
+    if (!id || !baseUrl) return;
+
     const fetchCast = async () => {
       try {
-        const response = await fetch(
-          `${baseUrl}/movie/${id}/credits?api_key=${apiKey}`
-        );
+        const response = await fetch(`${baseUrl}/movie/${id}/credits`);
+        if (!response.ok) throw new Error(`Credits request failed: ${response.status}`);
+
         const data = await response.json();
-        setCast(data.cast.slice(0, 6));
+        // An upstream error returns an object with no `cast` array, which
+        // previously threw on .slice() and blanked the section.
+        setCast(Array.isArray(data.cast) ? data.cast.slice(0, 6) : []);
       } catch (error) {
         console.error("Error fetching cast:", error);
+        setCast([]);
       }
     };
 
     fetchCast();
-  }, [id]);
+  }, [id, baseUrl]);
 
   // Check if we have movie data (from context or API)
   const currentMovie = movie || selectedMovie;
@@ -135,7 +162,6 @@ export default function DetailPage() {
         title={currentMovie.title}
         storage={handleStorage}
         movie={currentMovie}
-        apiKey={apiKey}
         baseUrl={baseUrl}
       />
       <MovieCast cast={cast} />
@@ -160,7 +186,6 @@ export default function DetailPage() {
       </div>
 
       <SimilarMovies
-        API_KEY={apiKey}
         BASE_URL={baseUrl}
         IMAGE_PATH={IMAGE_PATH}
         genre={currentMovie.genres?.[0]?.id || currentMovie.genre_ids?.[0]}
@@ -168,7 +193,6 @@ export default function DetailPage() {
       />
 
       <SimilarMovies
-        API_KEY={apiKey}
         BASE_URL={baseUrl}
         IMAGE_PATH={IMAGE_PATH}
         genre={currentMovie.genres?.[1]?.id || currentMovie.genre_ids?.[1]}

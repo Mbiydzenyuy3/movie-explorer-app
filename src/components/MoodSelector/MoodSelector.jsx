@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useMood } from "../../context/MoodContext";
+import { useMood } from "../../hooks/useMood";
 import { moodConfig, timeOptions, energyLevels } from "../../lib/moodConfig";
 import {
   Sparkles,

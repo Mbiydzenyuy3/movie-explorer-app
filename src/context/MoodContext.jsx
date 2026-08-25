@@ -1,6 +1,5 @@
 import {
   createContext,
-  useContext,
   useState,
   useCallback,
   useMemo
@@ -79,14 +78,6 @@ export const MoodProvider = ({ children }) => {
 
 MoodProvider.propTypes = {
   children: PropTypes.node.isRequired
-};
-
-export const useMood = () => {
-  const context = useContext(MoodContext);
-  if (!context) {
-    throw new Error("useMood must be used within a MoodProvider");
-  }
-  return context;
 };
 
 export default MoodContext;

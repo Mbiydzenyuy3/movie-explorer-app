@@ -1,16 +1,16 @@
 import Header from "../components/Navigations/header";
 import Footer from "../components/Navigations/footer";
-import { MoviesContext } from "../context/movieContext";
+import { MoviesContext } from "../context/MoviesContextObject";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
 import useFetchGenres from "../hook/useFetchGenres";
 import styles from "./CategoriesPage.module.css";
 
 export default function CategoriesPage() {
-  const { apiKey, baseUrl } = useContext(MoviesContext);
+  const { baseUrl } = useContext(MoviesContext);
   const navigate = useNavigate();
 
-  const genresUrl = `${baseUrl}/genre/movie/list?api_key=${apiKey}`;
+  const genresUrl = `${baseUrl}/genre/movie/list`;
   const { genres, loading, error } = useFetchGenres(genresUrl);
 
   const handleGenreClick = (genreId) => {

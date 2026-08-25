@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 import PropTypes from "prop-types";
 import { useUser, useAuth as useClerkAuth } from "@clerk/clerk-react";
 
@@ -41,17 +41,6 @@ export const AuthProvider = ({ children }) => {
 
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired
-};
-
-/**
- * Hook to use auth context
- */
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };
 
 export default AuthContext;

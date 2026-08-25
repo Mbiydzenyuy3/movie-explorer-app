@@ -3,7 +3,6 @@ import useFetchMovies from "../../hook/useMoviesFetch";
 import PropTypes from "prop-types";
 
 export default function MoviesLayout({
-  API_KEY,
   BASE_URL,
   IMAGE_PATH,
   title,
@@ -11,7 +10,7 @@ export default function MoviesLayout({
   detail,
   type = "movie"
 }) {
-  const url = `${BASE_URL}/discover/${type}?api_key=${API_KEY}&with_genres=${genre}`;
+  const url = `${BASE_URL}/discover/${type}?with_genres=${genre}`;
   const { movies: latestMovies, loading, error } = useFetchMovies(url);
 
   if (loading)
@@ -65,7 +64,6 @@ export default function MoviesLayout({
 }
 
 MoviesLayout.propTypes = {
-  API_KEY: PropTypes.string.isRequired,
   BASE_URL: PropTypes.string.isRequired,
   IMAGE_PATH: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,

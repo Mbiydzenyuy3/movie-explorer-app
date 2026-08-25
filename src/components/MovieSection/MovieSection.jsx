@@ -3,14 +3,13 @@ import useFetchMovies from "../../hook/useMoviesFetch";
 import PropTypes from "prop-types";
 
 export default function MovieSection({
-  API_KEY,
   BASE_URL,
   IMAGE_PATH,
   title,
   url,
   detail
 }) {
-  const fullUrl = `${BASE_URL}${url}?api_key=${API_KEY}`;
+  const fullUrl = `${BASE_URL}${url}`;
   const { movies: sectionMovies, loading, error } = useFetchMovies(fullUrl);
 
   if (loading)
@@ -55,7 +54,6 @@ export default function MovieSection({
 }
 
 MovieSection.propTypes = {
-  API_KEY: PropTypes.string.isRequired,
   BASE_URL: PropTypes.string.isRequired,
   IMAGE_PATH: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,

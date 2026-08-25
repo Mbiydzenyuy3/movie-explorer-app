@@ -1,147 +1,117 @@
-import { describe, it, expect, vi } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
-import { AuthProvider, useAuth } from "../context/AuthContext";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook } from "@testing-library/react";
 
-// Mock localStorage
-const localStorageMock = (() => {
-  let store = {};
-  return {
-    getItem: vi.fn((key) => store[key] || null),
-    setItem: vi.fn((key, value) => {
-      store[key] = value;
-    }),
-    removeItem: vi.fn((key) => {
-      delete store[key];
-    }),
-    clear: vi.fn(() => {
-      store = {};
-    })
-  };
-})();
+// AuthContext is a thin adapter over Clerk, so Clerk's hooks are the seam we mock.
+const mockUseUser = vi.fn();
+const mockSignOut = vi.fn();
+const mockGetToken = vi.fn();
 
-Object.defineProperty(window, "localStorage", { value: localStorageMock });
+vi.mock("@clerk/clerk-react", () => ({
+  useUser: () => mockUseUser(),
+  useAuth: () => ({ getToken: mockGetToken, signOut: mockSignOut })
+}));
+
+const { AuthProvider } = await import("../context/AuthContext");
+const { useAuth } = await import("../hooks/useAuth");
+
+const clerkUser = (overrides = {}) => ({
+  id: "user_123",
+  primaryEmailAddress: { emailAddress: "sarah@example.com" },
+  fullName: "Sarah A",
+  username: "sarah",
+  imageUrl: "https://img.clerk.com/sarah.png",
+  publicMetadata: {},
+  ...overrides
+});
 
 describe("Auth Context", () => {
   beforeEach(() => {
-    localStorage.clear();
     vi.clearAllMocks();
   });
 
-  it("should provide initial unauthenticated state", async () => {
-    const { result } = renderHook(() => useAuth(), {
-      wrapper: AuthProvider
-    });
+  it("reports loading until Clerk has loaded", () => {
+    mockUseUser.mockReturnValue({ isLoaded: false, isSignedIn: false, user: null });
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
 
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it("provides an unauthenticated state when nobody is signed in", () => {
+    mockUseUser.mockReturnValue({ isLoaded: true, isSignedIn: false, user: null });
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.user).toBeNull();
-  });
-
-  it("should login with valid credentials", async () => {
-    const { result } = renderHook(() => useAuth(), {
-      wrapper: AuthProvider
-    });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    await act(async () => {
-      const response = await result.current.login(
-        "demo@streamx.com",
-        "demo123"
-      );
-      expect(response.success).toBe(true);
-      expect(response.user).toBeDefined();
-    });
-
-    expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.user).toBeDefined();
-  });
-
-  it("should fail login with invalid credentials", async () => {
-    const { result } = renderHook(() => useAuth(), {
-      wrapper: AuthProvider
-    });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    let response;
-    await act(async () => {
-      response = await result.current.login("invalid@test.com", "wrong");
-    });
-
-    expect(response.success).toBe(false);
-    expect(response.error).toBe("Invalid email or password");
-  });
-
-  it("should logout successfully", async () => {
-    const { result } = renderHook(() => useAuth(), {
-      wrapper: AuthProvider
-    });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    // First login
-    await act(async () => {
-      await result.current.login("demo@streamx.com", "demo123");
-    });
-
-    expect(result.current.isAuthenticated).toBe(true);
-
-    // Then logout
-    await act(async () => {
-      result.current.logout();
-    });
-
-    expect(result.current.isAuthenticated).toBe(false);
-    expect(result.current.user).toBeNull();
-  });
-
-  it("should check isPro status correctly", async () => {
-    const { result } = renderHook(() => useAuth(), {
-      wrapper: AuthProvider
-    });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    // Login as free user
-    await act(async () => {
-      await result.current.login("demo@streamx.com", "demo123");
-    });
-
     expect(result.current.isPro).toBe(false);
+  });
 
-    // Logout
-    await act(() => {
-      result.current.logout();
+  it("maps a Clerk user onto the app's user shape", () => {
+    mockUseUser.mockReturnValue({ isLoaded: true, isSignedIn: true, user: clerkUser() });
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.user).toEqual({
+      id: "user_123",
+      email: "sarah@example.com",
+      name: "Sarah A",
+      imageUrl: "https://img.clerk.com/sarah.png",
+      plan: "free"
+    });
+  });
+
+  it("falls back to username when the user has no full name", () => {
+    mockUseUser.mockReturnValue({
+      isLoaded: true,
+      isSignedIn: true,
+      user: clerkUser({ fullName: null })
     });
 
-    // Login as pro user
-    await act(async () => {
-      await result.current.login("pro@streamx.com", "pro123");
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    expect(result.current.user.name).toBe("sarah");
+  });
+
+  it("derives isPro from Clerk public metadata", () => {
+    mockUseUser.mockReturnValue({
+      isLoaded: true,
+      isSignedIn: true,
+      user: clerkUser({ publicMetadata: { plan: "pro" } })
     });
 
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    expect(result.current.user.plan).toBe("pro");
     expect(result.current.isPro).toBe(true);
   });
 
-  it("should throw error when useAuth is used outside provider", () => {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+  it("delegates logout to Clerk", () => {
+    mockUseUser.mockReturnValue({ isLoaded: true, isSignedIn: true, user: clerkUser() });
 
-    expect(() => {
-      renderHook(() => useAuth());
-    }).toThrow("useAuth must be used within an AuthProvider");
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+    result.current.logout();
+
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
+  });
+
+  it("exposes Clerk's getToken for authenticated Supabase calls", () => {
+    mockUseUser.mockReturnValue({ isLoaded: true, isSignedIn: true, user: clerkUser() });
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    expect(result.current.getToken).toBe(mockGetToken);
+  });
+
+  it("throws when useAuth is used outside the provider", () => {
+    mockUseUser.mockReturnValue({ isLoaded: true, isSignedIn: false, user: null });
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    expect(() => renderHook(() => useAuth())).toThrow(
+      "useAuth must be used within an AuthProvider"
+    );
 
     consoleError.mockRestore();
   });

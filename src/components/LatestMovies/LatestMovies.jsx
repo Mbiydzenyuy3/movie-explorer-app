@@ -3,12 +3,11 @@ import useFetchMovies from "../../hook/useMoviesFetch";
 import PropTypes from "prop-types";
 
 export default function LatestMovies({
-  API_KEY,
   BASE_URL,
   IMAGE_PATH,
   detail,
 }) {
-  const latestUrl = `${BASE_URL}/movie/now_playing?api_key=${API_KEY}`;
+  const latestUrl = `${BASE_URL}/movie/now_playing`;
 
   const { movies: latestMovies, loading, error } = useFetchMovies(latestUrl);
 
@@ -46,7 +45,6 @@ export default function LatestMovies({
 }
 
 LatestMovies.propTypes = {
-  API_KEY: PropTypes.string.isRequired,
   BASE_URL: PropTypes.string.isRequired,
   IMAGE_PATH: PropTypes.string.isRequired,
   detail: PropTypes.func,

@@ -9,7 +9,7 @@ import {
   X,
   Check
 } from "lucide-react";
-import { useAccessibility } from "../../context/AccessibilityContext";
+import { useAccessibility } from "../../hooks/useAccessibility";
 import styles from "./AccessibilityMenu.module.css";
 
 export default function AccessibilityMenu() {

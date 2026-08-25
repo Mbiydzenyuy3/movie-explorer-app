@@ -14,8 +14,8 @@ export default function Footer() {
             <span className={styles.logoText}>VibeBox</span>
           </Link>
           <p className={styles.tagline}>
-            Your destination for premium entertainment. Discover, stream, and
-            enjoy unlimited movies and shows.
+            Find something worth watching, in your mood and your time budget —
+            then we point you to where it&apos;s legally streaming.
           </p>
         </div>
 

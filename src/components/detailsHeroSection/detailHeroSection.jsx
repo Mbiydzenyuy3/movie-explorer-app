@@ -1,20 +1,15 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Play, Plus, Check, X, ChevronDown, Loader2, ExternalLink, Tv, RotateCcw } from "lucide-react";
+import { Play, Plus, Check, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "../detailsHeroSection/detailsHeroSection.module.css";
-import HLSPlayer from "../HLSPlayer/HLSPlayer";
-import AffiliateLink from "../Monetization/AffiliateLink";
-import { getMovieStream } from "../../services/streaming-service";
-import { useAuth } from "../../context/AuthContext";
-import WatchHistoryService from "../../services/WatchHistoryService";
+import WatchProviders from "../WatchProviders/WatchProviders";
 
 export default function DetailsHeroSection({
   title,
   backgroundImage,
   description,
   movie,
-  apiKey,
   baseUrl
 }) {
   const [trailerKey, setTrailerKey] = useState(null);
@@ -22,29 +17,15 @@ export default function DetailsHeroSection({
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [isPlayingTrailer, setIsPlayingTrailer] = useState(false);
-  
-  // Native streaming state
-  const [streamUrl, setStreamUrl] = useState(null);
-  const [loadingStream, setLoadingStream] = useState(false);
-  const [streamError, setStreamError] = useState(null);
-  const [useNativePlayer, setUseNativePlayer] = useState(false);
-  
-  // Watch Persistence State
-  const { user, getToken } = useAuth();
-  const [initialProgress, setInitialProgress] = useState(0);
-  const [currentProgress, setCurrentProgress] = useState(0);
-  const [totalDuration, setTotalDuration] = useState(0);
-  const lastSavedTimeRef = useRef(0);
-  const [isResuming, setIsResuming] = useState(false);
 
   // Fetch trailer
   useEffect(() => {
     const fetchTrailer = async () => {
-      if (!movie?.id || !apiKey || !baseUrl) return;
+      if (!movie?.id || !baseUrl) return;
 
       try {
         const response = await fetch(
-          `${baseUrl}/movie/${movie.id}/videos?api_key=${apiKey}`
+          `${baseUrl}/movie/${movie.id}/videos`
         );
         const data = await response.json();
 
@@ -61,112 +42,25 @@ export default function DetailsHeroSection({
     };
 
     fetchTrailer();
-  }, [movie?.id, apiKey, baseUrl]);
+  }, [movie?.id, baseUrl]);
 
-  // Check watchlist and fetch initial progress
+  // Check watchlist
   useEffect(() => {
     if (movie?.id) {
       const watchlist = JSON.parse(localStorage.getItem("watchlist") || "[]");
       setIsInWatchlist(watchlist.some((item) => item.id === movie.id));
-
-      const fetchSavedProgress = async () => {
-        if (!user) return;
-        const token = await getToken();
-        const history = await WatchHistoryService.getRecentHistory(token, user.id);
-        const entry = history.find(h => h.movie_id === movie.id);
-        if (entry) {
-          setInitialProgress(entry.progress_seconds);
-          setIsResuming(true);
-        }
-      };
-      fetchSavedProgress();
     }
-  }, [movie?.id, user, getToken]);
-
-  // Fetch stream URL using Consumet API
-  const fetchStreamUrl = useCallback(async () => {
-    if (!movie?.id) return;
-    
-    setLoadingStream(true);
-    setStreamError(null);
-    
-    try {
-      const mediaType = movie?.media_type || "movie";
-      const streamData = await getMovieStream(movie.id);
-      
-      if (streamData?.url) {
-        setStreamUrl(streamData.url);
-        setUseNativePlayer(true);
-      } else {
-        // Fallback to embed if Consumet fails
-        setStreamError("Direct stream unavailable. Using fallback player.");
-        setUseNativePlayer(false);
-      }
-    } catch (error) {
-      console.error("Error fetching stream:", error);
-      setStreamError("Failed to load stream");
-      setUseNativePlayer(false);
-    } finally {
-      setLoadingStream(false);
-    }
-  }, [movie?.id, movie?.media_type]);
-
-  // Handle Watch Full Movie - try native player first
-  const handleWatchFullMovie = async () => {
-    setIsPlayingTrailer(false);
-    setShowPlayer(true);
-    
-    // Try native player with Consumet API
-    await fetchStreamUrl();
-  };
+  }, [movie?.id]);
 
   // Handle Watch Trailer
   const handlePlayTrailer = () => {
-    setUseNativePlayer(false);
-    setStreamUrl(null);
     setIsPlayingTrailer(true);
     setShowPlayer(true);
   };
 
-  const handleClosePlayer = async () => {
-    // Save final progress before closing
-    if (user && currentProgress > 0) {
-      const token = await getToken();
-      await WatchHistoryService.updateProgress(
-        token, 
-        user.id, 
-        movie, 
-        currentProgress, 
-        totalDuration || 0
-      );
-    }
-    
+  const handleClosePlayer = () => {
     setShowPlayer(false);
     setIsPlayingTrailer(false);
-    setStreamUrl(null);
-    setUseNativePlayer(false);
-    setIsResuming(false);
-  };
-
-  const handleTimeUpdate = (time) => {
-    setCurrentProgress(time);
-    
-    // Throttle updates to Supabase - every 10 seconds
-    if (user && Math.abs(time - lastSavedTimeRef.current) > 10) {
-      lastSavedTimeRef.current = time;
-      saveProgress(time);
-    }
-  };
-
-  const saveProgress = async (time) => {
-    const token = await getToken();
-    await WatchHistoryService.updateProgress(
-      token,
-      user.id,
-      movie,
-      time,
-      totalDuration
-    );
   };
 
   const handleWatchlist = () => {
@@ -218,31 +112,8 @@ export default function DetailsHeroSection({
                 <X size={24} />
               </button>
 
-              {/* Loading State */}
-              {loadingStream && (
-                <div className={styles.loadingStream}>
-                  <Loader2 className={styles.spinner} size={48} />
-                  <span>Finding best stream...</span>
-                  <p>This may take a few seconds</p>
-                </div>
-              )}
-
-              {/* Native HLS Player — Ad-free on-platform experience */}
-              {useNativePlayer && streamUrl && !loadingStream && (
-                <HLSPlayer
-                  src={streamUrl}
-                  poster={`https://image.tmdb.org/t/p/original${backgroundImage}`}
-                  title={title}
-                  onClose={handleClosePlayer}
-                  onTimeUpdate={handleTimeUpdate}
-                  onLoadedMetadata={setTotalDuration}
-                  autoPlay={true}
-                  startOffset={initialProgress}
-                />
-              )}
-
               {/* Trailer Player — YouTube nocookie (no tracking/ad targeting) */}
-              {isPlayingTrailer && !loadingStream && (
+              {isPlayingTrailer && (
                 <div className={styles.embedContainer}>
                   <iframe
                     src={getTrailerEmbedUrl()}
@@ -255,47 +126,6 @@ export default function DetailsHeroSection({
                 </div>
               )}
 
-              {/* Clean No-Stream Fallback — NO third-party ad iframes by default */}
-              {!useNativePlayer && !isPlayingTrailer && !loadingStream && (
-                <div className={styles.noStreamFallback}>
-                  <div className={styles.noStreamIcon}>
-                    <Tv size={48} />
-                  </div>
-                  <h3 className={styles.noStreamTitle}>Direct stream unavailable</h3>
-                  <p className={styles.noStreamSubline}>
-                    We couldn&apos;t establish a direct high-speed link for this title yet. 
-                    Try our premium backup player or find it on another service:
-                  </p>
-                  
-                  <div className={styles.fallbackActions}>
-                    <button 
-                      className={styles.backupBtn}
-                      onClick={() => {
-                        const id = movie.id;
-                        const type = movie.media_type === "tv" ? "tv" : "movie";
-                        const url = `https://vidsrc.me/embed/${type}?tmdb=${id}`;
-                        window.open(url, "_blank", "noopener,noreferrer");
-                      }}
-                    >
-                      <ExternalLink size={18} />
-                      <span>Try Premium Backup</span>
-                    </button>
-                    
-                    <div className={styles.divider}>
-                      <span>OR</span>
-                    </div>
-
-                    <AffiliateLink
-                      movieTitle={title}
-                      className={styles.noStreamAffiliate}
-                    />
-                  </div>
-
-                  {streamError && (
-                    <p className={styles.streamErrorNote}>{streamError}</p>
-                  )}
-                </div>
-              )}
             </motion.div>
           </motion.div>
         )}
@@ -336,38 +166,15 @@ export default function DetailsHeroSection({
           {/* Action Buttons */}
           <div className={styles.heroBtns}>
             <div className={styles.heroBtn}>
-              {/* Watch Full Movie / Resume Button */}
-              <button 
-                className={styles.playBtn} 
-                onClick={handleWatchFullMovie}
-              >
-                {isResuming ? <Play size={22} fill='currentColor' /> : <Play size={24} fill='currentColor' />}
-                <span>{isResuming ? "Resume" : "Watch Now"}</span>
-              </button>
-
-              {/* Restart Button (only if resuming) */}
-              {isResuming && (
-                <button 
-                  className={styles.restartBtn} 
-                  onClick={() => {
-                    setInitialProgress(0);
-                    setIsResuming(false);
-                    handleWatchFullMovie();
-                  }}
-                  title="Watch from beginning"
-                >
-                  <RotateCcw size={20} />
-                </button>
-              )}
-
-              {/* Watch Trailer Button */}
+              {/* Trailer is the only thing we can play ourselves; everything
+                  else routes out to a licensed provider via WatchProviders. */}
               <button
-                className={styles.trailerBtn}
+                className={styles.playBtn}
                 onClick={handlePlayTrailer}
                 disabled={!trailerKey}
               >
-                <Play size={20} fill='currentColor' />
-                <span>Trailer</span>
+                <Play size={24} fill='currentColor' />
+                <span>{trailerKey ? "Play Trailer" : "No Trailer"}</span>
               </button>
 
               {/* Watchlist Button */}
@@ -403,6 +210,17 @@ export default function DetailsHeroSection({
               </button>
             )}
           </div>
+
+          {/* Where to watch — legitimate availability, replaces in-app playback */}
+          {movie?.id && (
+            <div className={styles.watchProvidersWrapper}>
+              <WatchProviders
+                tmdbId={movie.id}
+                mediaType={movie.media_type === "tv" ? "tv" : "movie"}
+                title={title}
+              />
+            </div>
+          )}
 
           {/* Additional Info */}
           <div className={styles.additionalInfo}>
@@ -443,6 +261,5 @@ DetailsHeroSection.propTypes = {
   title: PropTypes.string,
   movie: PropTypes.object,
   storage: PropTypes.func,
-  apiKey: PropTypes.string,
   baseUrl: PropTypes.string
 };

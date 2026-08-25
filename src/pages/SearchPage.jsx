@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router";
-import { MoviesContext } from "../context/movieContext";
+import { MoviesContext } from "../context/MoviesContextObject";
 import { useContext } from "react";
 import {
   Play,
@@ -27,7 +27,7 @@ export default function SearchPage() {
 
   const timeLimit = parseInt(timeParam, 10);
 
-  const { apiKey, baseUrl, IMAGE_PATH, setSelectedMovie } =
+  const { baseUrl, IMAGE_PATH, setSelectedMovie } =
     useContext(MoviesContext);
 
   const [movies, setMovies] = useState([]);
@@ -70,7 +70,7 @@ export default function SearchPage() {
           };
 
           const genreId = vibeGenreMap[vibe] || 28;
-          url = `${baseUrl}/discover/movie?api_key=${apiKey}&with_genres=${genreId}&sort_by=popularity.desc`;
+          url = `${baseUrl}/discover/movie?with_genres=${genreId}&sort_by=popularity.desc`;
 
           // Add runtime filter if time limit is specified
           if (timeLimit > 0) {
@@ -78,7 +78,7 @@ export default function SearchPage() {
           }
         } else {
           // Regular text search
-          url = `${baseUrl}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+          url = `${baseUrl}/search/movie?query=${encodeURIComponent(query)}`;
         }
 
         const response = await fetch(url);
@@ -98,10 +98,10 @@ export default function SearchPage() {
       }
     };
 
-    if (apiKey && baseUrl) {
+    if (baseUrl) {
       fetchSearchResults();
     }
-  }, [query, vibe, timeLimit, apiKey, baseUrl]);
+  }, [query, vibe, timeLimit, baseUrl]);
 
   const handleMovieClick = (movie) => {
     setSelectedMovie(movie);

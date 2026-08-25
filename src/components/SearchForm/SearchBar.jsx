@@ -1,14 +1,13 @@
 import styles from "./Search.module.css";
 import { useNavigate } from "react-router";
 import { useState, useContext } from "react";
-import { MoviesContext } from "../../context/movieContext";
+import { MoviesContext } from "../../context/MoviesContextObject";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
   const [searchedMovie, setSearchedMovie] = useState([]);
   const navigate = useNavigate();
-  const apiKey = import.meta.env.VITE_API_KEY;
-  const baseUrl = import.meta.env.VITE_BASE_BASE_URL;
+  const baseUrl = "/api/tmdb";
   const IMAGE_PATH = import.meta.env.VITE_BASE_IMG_PATH;
   const { setSelectedMovie } = useContext(MoviesContext);
 
@@ -18,7 +17,7 @@ export default function SearchBar() {
 
     if (searchTerm.length > 1) {
       const response = await fetch(
-        `${baseUrl}/search/movie?api_key=${apiKey}&query=${searchTerm}`
+        `${baseUrl}/search/movie?query=${encodeURIComponent(searchTerm)}`
       );
       const data = await response.json();
       setSearchedMovie(data.results);

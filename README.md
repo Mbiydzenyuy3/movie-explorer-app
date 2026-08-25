@@ -96,6 +96,29 @@ It does not host, stream, proxy or embed video. Earlier revisions pulled streams
 
 ---
 
+## Running the demand test
+
+The landing page lives at `/early-access`. Tag every link you share so cold
+traffic can be told apart from your own network:
+
+```
+/early-access?utm_source=whatsapp-groups
+/early-access?utm_source=x-twitter
+/early-access?utm_source=linkedin
+```
+
+| File | Run |
+|---|---|
+| `supabase/schema.sql` | Once. Creates profiles + watch_history with RLS. |
+| `supabase/waitlist.sql` | Once. Creates waitlist + landing_events with RLS. |
+| `supabase/queries.sql` | Any time. Read-only reporting. |
+
+The app has no read access to the waitlist: RLS grants anonymous visitors
+INSERT but not SELECT, so the email list cannot be pulled from the public API.
+Read results in the Supabase SQL Editor, which bypasses RLS.
+
+---
+
 ## Layout
 
 ```

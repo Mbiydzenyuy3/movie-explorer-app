@@ -6,7 +6,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className={styles.footer}>
+    <footer className={`site-footer ${styles.footer}`}>
       <div className={styles.container}>
         {/* Brand Section */}
         <div className={styles.brand}>

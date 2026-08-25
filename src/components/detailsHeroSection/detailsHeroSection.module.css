@@ -17,7 +17,10 @@
   bottom: 0;
   justify-content: center;
   align-items: center;
-  height: 800px;
+  /* Was a hard `height: 800px`, which silently overflowed onto the Top Cast
+     section once the where-to-watch block was added. A minimum keeps the tall
+     hero but lets it grow with its content. */
+  min-height: 800px;
   margin-bottom: 32px;
 
   h1 {

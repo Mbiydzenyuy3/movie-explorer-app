@@ -1,3 +1,19 @@
+:root {
+  /* These two were referenced by ~10 CSS modules but never defined, so every
+     font-family: var(--primary-font) resolved to nothing and the whole app
+     fell back to Times New Roman.
+
+     A system stack rather than a webfont: it costs zero bytes and zero
+     round-trips, which matters for the metered-connection users in
+     USER_PERSONAS.md. Swap in a hosted face later if the brand needs one. */
+  --primary-font:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --secondary-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,6 +23,8 @@
 body {
   background-color: #000;
   overflow-x: hidden;
+  font-family: var(--secondary-font);
+  -webkit-font-smoothing: antialiased;
 }
 
 @keyframes spin {
@@ -152,8 +170,9 @@ section.movie-section {
   align-items: center;
 }
 
-/* footer */
-footer {
+/* footer — scoped: a bare `footer {}` also hit unrelated pages such as
+   /early-access, painting a black band behind their content. */
+footer.site-footer {
   background-color: black;
   color: #fff;
 }

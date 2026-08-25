@@ -16,6 +16,7 @@ import CategoriesPage from "./pages/CategoriesPage";
 import GenrePage from "./pages/GenrePage";
 import SearchPage from "./pages/SearchPage";
 import WatchlistPage from "./pages/WatchlistPage";
+import EarlyAccessPage from "./pages/EarlyAccessPage";
 
 import PropTypes from "prop-types";
 import { DetailMovieData } from "./context/movieContext";
@@ -52,6 +53,7 @@ function App() {
                         <Route path='/details/:id' element={<DetailPage />} />
                         <Route path='/search' element={<SearchPage />} />
                         <Route path='/watchlist' element={<WatchlistPage />} />
+                        <Route path='/early-access' element={<EarlyAccessPage />} />
                       </Routes>
                     </main>
                   </BrowserRouter>

@@ -1,34 +1,43 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
-import { Search, MapPin, Clock, Check, Loader2, ArrowRight } from "lucide-react";
+import { Check, Loader2, ArrowRight, ExternalLink } from "lucide-react";
 import { joinWaitlist, addWaitlistDetails, trackEvent } from "../services/waitlist";
 import { getWatchRegion } from "../lib/region";
 import styles from "./EarlyAccessPage.module.css";
 
-const PROMISES = [
+const STEPS = [
   {
-    icon: Search,
-    title: "One search, every service",
-    body: "Netflix, Prime, IROKOTV, Apple TV — find which one actually has the film, instead of opening four apps to find out."
+    n: "1",
+    title: "Say what you're after",
+    body: "A mood, and how much time you have. Nothing more to fill in."
   },
   {
-    icon: MapPin,
-    title: "Accurate for where you are",
-    body: "Availability is different in Lagos than it is in London. We check your country, not America's."
+    n: "2",
+    title: "Get one good suggestion",
+    body: "Films that fit the time you've actually got, including African cinema the big apps bury."
   },
   {
-    icon: Clock,
-    title: "Built for the time you've got",
-    body: "Tell us your mood and how long you have. We'll pick something that fits, so you watch instead of scroll."
+    n: "3",
+    title: "See where it's streaming",
+    body: "In your country, on the services that legally have it. No more opening four apps to check."
   }
 ];
+
+// Mirrors what the real "Where to watch" panel shows, so people can see the
+// point of the product before deciding whether to hand over an email.
+const SAMPLE = {
+  title: "King of Boys",
+  year: "2018",
+  region: "Nigeria",
+  providers: ["Netflix", "IROKOTV"]
+};
 
 export default function EarlyAccessPage() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
   const [error, setError] = useState(null);
-  const [followUpSent, setFollowUpSent] = useState(false);
+  const [answered, setAnswered] = useState(false);
 
   useEffect(() => {
     trackEvent("view");
@@ -51,57 +60,79 @@ export default function EarlyAccessPage() {
     }
   };
 
-  const handleFollowUp = async (wouldPay) => {
-    setFollowUpSent(true);
-    // Region is inferred from the browser rather than asked: it costs the
-    // visitor nothing and tells us which markets the interest comes from.
-    await addWaitlistDetails(email, { region: getWatchRegion(), wouldPay });
+  const handleAnswer = async (usageIntent) => {
+    setAnswered(true);
+    await addWaitlistDetails(email, { region: getWatchRegion(), usageIntent });
   };
 
   return (
-    <main className={styles.page}>
-      <div className={styles.inner}>
-        <header className={styles.header}>
-          <span className={styles.wordmark}>VibeBox</span>
-        </header>
+    <div className={styles.page}>
+      <header className={styles.topBar}>
+        <span className={styles.wordmark}>VibeBox</span>
+        <Link to="/" className={styles.topLink} onClick={() => trackEvent("explore_click")}>
+          Open the app
+          <ExternalLink size={14} />
+        </Link>
+      </header>
 
+      <main className={styles.main}>
+        {/* ---------------------------------------------------------- hero */}
         <section className={styles.hero}>
-          <motion.h1
-            className={styles.headline}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          >
-            Where can you actually watch it?
-          </motion.h1>
+          <p className={styles.eyebrow}>Free while we build it</p>
 
-          <motion.p
-            className={styles.subhead}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-          >
-            Nollywood, African cinema and everything else — find what&apos;s streaming
-            in Nigeria, Cameroon, Ghana and Kenya. One search, not four apps.
-          </motion.p>
+          <h1 className={styles.headline}>Where can you actually watch it?</h1>
 
-          <AnimatePresence mode="wait">
+          <p className={styles.subhead}>
+            You find a film worth watching, then spend ten minutes working out which
+            service has it in your country. VibeBox answers that in one search, with
+            proper coverage of Nollywood and African cinema.
+          </p>
+
+          {/* Show the result before asking for anything. */}
+          <div className={styles.sample} aria-label="Example of a result">
+            <div className={styles.sampleHead}>
+              <div>
+                <p className={styles.sampleTitle}>{SAMPLE.title}</p>
+                <p className={styles.sampleMeta}>{SAMPLE.year}</p>
+              </div>
+              <span className={styles.sampleRegion}>{SAMPLE.region}</span>
+            </div>
+            <p className={styles.sampleLabel}>Streaming on</p>
+            <div className={styles.sampleProviders}>
+              {SAMPLE.providers.map((name) => (
+                <span key={name} className={styles.sampleChip}>
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------------------------------------- signup */}
+        <section className={styles.signup} aria-labelledby="signup-heading">
+          <h2 id="signup-heading" className={styles.signupHeading}>
+            Get it when it launches
+          </h2>
+
+          <AnimatePresence mode="wait" initial={false}>
             {status !== "done" ? (
               <motion.form
                 key="form"
                 className={styles.form}
                 onSubmit={handleSubmit}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.35 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                <label htmlFor="email" className={styles.srOnly}>
-                  Email address
+                <label htmlFor="email" className={styles.label}>
+                  Your email
                 </label>
+
                 <div className={styles.inputRow}>
                   <input
                     id="email"
+                    name="email"
                     type="email"
                     required
                     autoComplete="email"
@@ -109,66 +140,66 @@ export default function EarlyAccessPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={styles.input}
-                    aria-describedby={error ? "email-error" : undefined}
-                    aria-invalid={status === "error"}
+                    aria-describedby={error ? "email-error" : "email-hint"}
+                    aria-invalid={status === "error" || undefined}
                   />
-                  <button
-                    type="submit"
-                    className={styles.submit}
-                    disabled={status === "sending"}
-                  >
+                  <button type="submit" className={styles.submit} disabled={status === "sending"}>
                     {status === "sending" ? (
                       <>
-                        <Loader2 size={16} className={styles.spinner} />
-                        <span>Joining</span>
+                        <Loader2 size={16} className={styles.spinner} aria-hidden="true" />
+                        Joining
                       </>
                     ) : (
                       <>
-                        <span>Get early access</span>
-                        <ArrowRight size={16} />
+                        Join the list
+                        <ArrowRight size={16} aria-hidden="true" />
                       </>
                     )}
                   </button>
                 </div>
+
+                <p id="email-hint" className={styles.hint}>
+                  One email when it launches. No newsletter, no sharing your address.
+                </p>
 
                 {error && (
                   <p id="email-error" className={styles.error} role="alert">
                     {error}
                   </p>
                 )}
-
-                <p className={styles.reassure}>
-                  One email when it&apos;s ready. Nothing else, ever.
-                </p>
               </motion.form>
             ) : (
               <motion.div
                 key="done"
                 className={styles.done}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
               >
                 <p className={styles.doneHeading}>
-                  <Check size={18} /> You&apos;re on the list.
+                  <Check size={18} aria-hidden="true" />
+                  You&apos;re on the list
+                </p>
+                <p className={styles.doneBody}>
+                  We&apos;ll email {email} once it launches. Nothing before then.
                 </p>
 
-                {!followUpSent ? (
-                  <div className={styles.followUp}>
-                    <p className={styles.followUpQ}>
-                      One optional question — would you pay for this?
+                {!answered ? (
+                  <div className={styles.question}>
+                    <p className={styles.questionText}>
+                      One quick question: would you use this every week?
                     </p>
-                    <div className={styles.followUpRow}>
+                    <div className={styles.answers}>
                       {[
                         ["yes", "Yes"],
                         ["maybe", "Maybe"],
-                        ["no", "No, only if free"]
+                        ["no", "Probably not"]
                       ].map(([value, label]) => (
                         <button
                           key={value}
                           type="button"
-                          className={styles.chip}
-                          onClick={() => handleFollowUp(value)}
+                          className={styles.answer}
+                          onClick={() => handleAnswer(value)}
                         >
                           {label}
                         </button>
@@ -176,49 +207,63 @@ export default function EarlyAccessPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className={styles.thanks}>Thank you — that genuinely helps.</p>
+                  <p className={styles.thanks} role="status">
+                    Thank you. That genuinely helps.
+                  </p>
                 )}
               </motion.div>
             )}
           </AnimatePresence>
         </section>
 
-        <section className={styles.promises}>
-          {PROMISES.map(({ icon: Icon, title, body }, i) => (
-            <motion.div
-              key={title}
-              className={styles.promise}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.15 + i * 0.08 }}
-            >
-              <Icon size={20} className={styles.promiseIcon} />
-              <h2 className={styles.promiseTitle}>{title}</h2>
-              <p className={styles.promiseBody}>{body}</p>
-            </motion.div>
-          ))}
+        {/* --------------------------------------------------------- steps */}
+        <section className={styles.steps} aria-labelledby="how-heading">
+          <h2 id="how-heading" className={styles.sectionHeading}>
+            How it works
+          </h2>
+          <ol className={styles.stepList}>
+            {STEPS.map(({ n, title, body }) => (
+              <li key={n} className={styles.step}>
+                <span className={styles.stepNum} aria-hidden="true">
+                  {n}
+                </span>
+                <div>
+                  <h3 className={styles.stepTitle}>{title}</h3>
+                  <p className={styles.stepBody}>{body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </section>
 
+        {/* ----------------------------------------------------- try it now */}
         <section className={styles.tryIt}>
-          <p className={styles.tryItText}>
-            There&apos;s a working version already. Have a look before you decide.
-          </p>
+          <div>
+            <h2 className={styles.tryItHeading}>It already works. Go and look.</h2>
+            <p className={styles.tryItBody}>
+              An early version is live right now. No account needed, nothing to install.
+            </p>
+          </div>
           <Link
             to="/"
-            className={styles.tryItLink}
+            className={styles.tryItBtn}
             onClick={() => trackEvent("explore_click")}
           >
-            Try it now <ArrowRight size={15} />
+            Open the app
+            <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </section>
+      </main>
 
-        <footer className={styles.footer}>
-          <p>
-            We don&apos;t stream anything. We point you to the services that legally
-            do. Availability data by JustWatch.
-          </p>
-        </footer>
-      </div>
-    </main>
+      <footer className={styles.footer}>
+        <p className={styles.footerNote}>
+          <strong>We don&apos;t stream films.</strong> VibeBox tells you which legal
+          service has a title in your country, then sends you there.
+        </p>
+        <p className={styles.footerFine}>
+          Availability data by JustWatch. Film information from TMDB.
+        </p>
+      </footer>
+    </div>
   );
 }

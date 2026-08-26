@@ -128,7 +128,7 @@ export default function DetailPage() {
         className='error-container'
         style={{ color: "white", textAlign: "center", padding: "100px" }}
       >
-        <h1>Loading...</h1>
+        <h1 className={styles.pageTitle}>Loading...</h1>
       </div>
     );
   }
@@ -137,7 +137,7 @@ export default function DetailPage() {
   if (!currentMovie || !currentMovie.id) {
     return (
       <div className='error-container'>
-        <h1>Movie Not Found</h1>
+        <h1 className={styles.pageTitle}>Movie Not Found</h1>
         <p>
           The movie you are looking for does not exist. Please go back and
           select a valid movie.

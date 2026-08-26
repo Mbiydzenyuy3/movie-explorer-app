@@ -32,7 +32,9 @@
   object-position: top;
 }
 
-h1 {
+/* Scoped to a class on purpose. CSS Modules only scopes class selectors,
+   so a bare `h1 {}` here leaked to every heading in the app. */
+.pageTitle {
   font-family: var(--secondary-font);
   font-weight: 500;
   font-size: 28px;

@@ -117,7 +117,7 @@ export default function DetailsHeroSection({
                 <div className={styles.embedContainer}>
                   <iframe
                     src={getTrailerEmbedUrl()}
-                    title={`${title} — Official Trailer`}
+                    title={`${title}: Official Trailer`}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen

@@ -45,11 +45,22 @@ export const buildTmdbUrl = (path, search, apiKey) => {
  *
  * @returns {Promise<{ok: true, response: Response} | {ok: false, timedOut: boolean, detail: string}>}
  */
-export const fetchTmdb = async (url, { timeoutMs = 8000, retries = 1 } = {}) => {
+export const fetchTmdb = async (
+  url,
+  { timeoutMs = 10000, retries = 2, backoffMs = 300 } = {}
+) => {
   let lastDetail = "unknown error";
   let lastTimedOut = false;
 
   for (let attempt = 0; attempt <= retries; attempt += 1) {
+    // Retrying instantly just hits the same blip: a transient failure was
+    // observed to fail twice back-to-back inside 2.5s. A short, growing pause
+    // lets the connection recover, which matters most on the slow mobile
+    // links described in USER_PERSONAS.md.
+    if (attempt > 0) {
+      await new Promise((resolve) => setTimeout(resolve, backoffMs * attempt));
+    }
+
     try {
       const response = await fetch(url, {
         headers: { Accept: "application/json" },

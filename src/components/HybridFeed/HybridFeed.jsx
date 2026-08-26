@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Play, Clock, Film, ChevronRight, Sparkles } from "lucide-react";
+import { MapPin, Clock, Film, ChevronRight, Sparkles } from "lucide-react";
 import { usePopularMovies, useTrendingDaily } from "../../hooks/useQueries";
 import styles from "./HybridFeed.module.css";
 
@@ -143,11 +143,14 @@ const HybridFeed = ({ onItemClick, title = "Discover" }) => {
               </h3>
               <p className={styles.movieSubtitle}>{item.subtitle}</p>
 
-              {/* Action */}
-              <button className={styles.playBtn}>
-                <Play size={18} fill='white' />
-                <span>{item.type === "short" ? "Watch Now" : "Play"}</span>
-              </button>
+              {/* Visual affordance only: the whole card is the click target,
+                  so a nested <button> with no handler was both misleading and
+                  a nested-interactive accessibility problem. The old label
+                  ("Watch Now" / "Play") promised playback we do not provide. */}
+              <span className={styles.playBtn} aria-hidden='true'>
+                <MapPin size={17} />
+                <span>Where to watch</span>
+              </span>
             </div>
 
             {/* Short Badge */}

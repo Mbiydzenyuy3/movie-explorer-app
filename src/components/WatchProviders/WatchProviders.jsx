@@ -91,8 +91,8 @@ export default function WatchProviders({ tmdbId, mediaType, title }) {
         <div className={styles.notice}>
           <Info size={15} />
           <span>
-            No streaming availability listed for {regionName(region)}. Try another region — the
-            data is patchy for some titles.
+            No streaming availability listed for {regionName(region)}. The data is patchy
+            for some titles, so try another region.
           </span>
         </div>
       )}

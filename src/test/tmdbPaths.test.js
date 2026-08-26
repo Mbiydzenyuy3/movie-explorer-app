@@ -83,14 +83,31 @@ describe("fetchTmdb", () => {
     expect(result).toEqual({ ok: true, response });
   });
 
-  it("retries once before giving up", async () => {
+  it("retries before giving up", async () => {
     global.fetch = vi.fn().mockRejectedValue(new Error("fetch failed"));
 
-    const result = await fetchTmdb("https://x", { retries: 1, timeoutMs: 10 });
+    const result = await fetchTmdb("https://x", {
+      retries: 2,
+      timeoutMs: 10,
+      backoffMs: 0
+    });
 
-    expect(global.fetch).toHaveBeenCalledTimes(2);
+    expect(global.fetch).toHaveBeenCalledTimes(3);
     expect(result.ok).toBe(false);
     expect(result.timedOut).toBe(false);
+  });
+
+  // Retrying instantly hits the same transient failure; the pause is the point.
+  it("waits between attempts", async () => {
+    global.fetch = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("fetch failed"))
+      .mockResolvedValueOnce({ status: 200 });
+
+    const start = Date.now();
+    await fetchTmdb("https://x", { retries: 1, backoffMs: 60 });
+
+    expect(Date.now() - start).toBeGreaterThanOrEqual(55);
   });
 
   it("succeeds if the retry works", async () => {
@@ -100,7 +117,7 @@ describe("fetchTmdb", () => {
       .mockRejectedValueOnce(new Error("fetch failed"))
       .mockResolvedValueOnce(response);
 
-    const result = await fetchTmdb("https://x", { retries: 1 });
+    const result = await fetchTmdb("https://x", { retries: 1, backoffMs: 0 });
 
     expect(result).toEqual({ ok: true, response });
   });
@@ -110,7 +127,7 @@ describe("fetchTmdb", () => {
     const timeout = Object.assign(new Error("timed out"), { name: "TimeoutError" });
     global.fetch = vi.fn().mockRejectedValue(timeout);
 
-    const result = await fetchTmdb("https://x", { retries: 0, timeoutMs: 50 });
+    const result = await fetchTmdb("https://x", { retries: 0, timeoutMs: 50, backoffMs: 0 });
 
     expect(result.ok).toBe(false);
     expect(result.timedOut).toBe(true);

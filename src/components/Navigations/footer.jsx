@@ -14,8 +14,8 @@ export default function Footer() {
             <span className={styles.logoText}>VibeBox</span>
           </Link>
           <p className={styles.tagline}>
-            Find something worth watching, in your mood and your time budget —
-            then we point you to where it&apos;s legally streaming.
+            Find something worth watching, in your mood and your time
+            budget. Then we point you to where it&apos;s legally streaming.
           </p>
         </div>
 

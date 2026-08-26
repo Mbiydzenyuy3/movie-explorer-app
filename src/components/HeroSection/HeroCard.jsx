@@ -2,7 +2,7 @@ import styles from "../HeroSection/HeroSection.module.css";
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Info, Star, ChevronDown } from "lucide-react";
+import { MapPin, Info, Star, ChevronDown } from "lucide-react";
 
 export default function HeroSection({ movies, storage, IMAGE_PATH }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -22,8 +22,10 @@ export default function HeroSection({ movies, storage, IMAGE_PATH }) {
     ? `${IMAGE_PATH.replace("w500", "original")}${currentMovie.backdrop_path}`
     : `${IMAGE_PATH}${currentMovie.poster_path}`;
 
-  const handleWatchClick = () => storage?.(currentMovie);
-  const handleInfoClick = () => storage?.(currentMovie);
+  // Both open the details page, which is where availability and info live.
+  // The primary button used to say "Watch Now", which promised playback this
+  // app deliberately does not provide.
+  const openDetails = () => storage?.(currentMovie);
 
   const goToSlide = (index) => setCurrentIndex(index);
 
@@ -98,17 +100,17 @@ export default function HeroSection({ movies, storage, IMAGE_PATH }) {
             >
               <motion.button
                 className={styles.watchBtn}
-                onClick={handleWatchClick}
+                onClick={openDetails}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
               >
-                <Play size={20} fill="currentColor" />
-                <span>Watch Now</span>
+                <MapPin size={19} />
+                <span>Where to watch</span>
               </motion.button>
 
               <motion.button
                 className={styles.infoBtn}
-                onClick={handleInfoClick}
+                onClick={openDetails}
                 whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.2)" }}
                 whileTap={{ scale: 0.97 }}
               >

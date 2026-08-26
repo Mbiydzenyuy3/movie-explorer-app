@@ -136,12 +136,26 @@ describe("addWaitlistDetails", () => {
   });
 
   it("attaches answers to the matching row", async () => {
-    await addWaitlistDetails("Sarah@Example.com", { region: "NG", wouldPay: "yes" });
+    await addWaitlistDetails("Sarah@Example.com", { region: "NG", usageIntent: "yes" });
 
     expect(mockUpdate).toHaveBeenCalledWith(
-      { region: "NG", would_pay: "yes" },
+      { region: "NG", usage_intent: "yes" },
       { returning: "minimal" }
     );
     expect(mockEq).toHaveBeenCalledWith("email", "sarah@example.com");
   });
+  it("reports failure when the database rejects the update", async () => {
+    // supabase-js surfaces db failures on `error` instead of throwing; this
+    // previously fell through to a success result.
+    mockEq.mockResolvedValue({ error: { code: "42703", message: "column does not exist" } });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const result = await addWaitlistDetails("sarah@example.com", {
+      region: "NG",
+      usageIntent: "yes"
+    });
+
+    expect(result.ok).toBe(false);
+  });
+
 });

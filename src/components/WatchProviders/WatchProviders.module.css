@@ -48,6 +48,23 @@
   outline-offset: 2px;
 }
 
+/* The native dropdown popup paints its own white background, but the options
+   inherited the white text set on .regionSelect above, so the list was
+   invisible until the OS highlight moved over an item. Options need their own
+   colours stated explicitly. */
+.regionSelect option {
+  background-color: #ffffff;
+  color: #111111;
+  padding: 6px 10px;
+}
+
+/* Currently selected row, and the row under the pointer or arrow keys. */
+.regionSelect option:checked,
+.regionSelect option:hover {
+  background-color: #1d4ed8;
+  color: #ffffff;
+}
+
 .group {
   display: flex;
   flex-direction: column;

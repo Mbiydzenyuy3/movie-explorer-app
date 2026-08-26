@@ -17,7 +17,7 @@ export default function TopSearches({
   return (
     <>
       <div className={styles.headerCarousel}>
-        <h1>Top Searches</h1>
+        <h1 className={styles.sectionTitle}>Top Searches</h1>
       </div>
 
       {loading ? (

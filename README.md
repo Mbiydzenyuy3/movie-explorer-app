@@ -107,11 +107,39 @@ traffic can be told apart from your own network:
 /early-access?utm_source=linkedin
 ```
 
-| File | Run |
+### Database changes
+
+Schema lives in `supabase/migrations/` and is applied with the Supabase CLI, so
+no copy-pasting into the dashboard.
+
+One-time setup:
+
+```bash
+npx supabase login                      # opens a browser, stores an access token
+export SUPABASE_PROJECT_REF=<your-ref>  # the subdomain of your project URL
+npm run db:link                         # asks for your database password
+```
+
+Because the first two migrations were originally applied by hand, tell the CLI
+they are already done (once only):
+
+```bash
+npx supabase migration repair --status applied 20260825000100
+npx supabase migration repair --status applied 20260825000200
+```
+
+Then, from now on:
+
+```bash
+npm run db:new add_something   # creates a timestamped migration file
+npm run db:push                # applies pending migrations
+npm run db:status              # shows local vs remote
+```
+
+| Path | Purpose |
 |---|---|
-| `supabase/schema.sql` | Once. Creates profiles + watch_history with RLS. |
-| `supabase/waitlist.sql` | Once. Creates waitlist + landing_events with RLS. |
-| `supabase/queries.sql` | Any time. Read-only reporting. |
+| `supabase/migrations/` | Schema history. Applied with `npm run db:push`. |
+| `supabase/queries.sql` | Read-only reporting. Paste into the SQL Editor. |
 
 The app has no read access to the waitlist: RLS grants anonymous visitors
 INSERT but not SELECT, so the email list cannot be pulled from the public API.

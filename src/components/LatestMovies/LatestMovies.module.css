@@ -68,7 +68,9 @@
   cursor: pointer;
 }
 
-h1 {
+/* Scoped to a class on purpose. CSS Modules only scopes class selectors,
+   so a bare `h1 {}` here leaked to every heading in the app. */
+.sectionTitle {
   font-family: var(--secondary-font);
   font-weight: 500;
   font-size: 28px;

@@ -90,7 +90,12 @@
   align-items: center;
 }
 
-h1 {
+/* Scoped to a class on purpose. CSS Modules only scopes class selectors,
+   so a bare `h1 {}` here leaked to every heading in the app. */
+.sectionTitle {
+  /* Matches the 47px inset of the poster row below it. This used to arrive by
+     accident from another module's leaking `h1 {}` rule; now it is stated. */
+  padding-left: 47px;
   font-family: var(--secondary-font);
   font-weight: 500;
   font-size: 28px;

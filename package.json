@@ -10,7 +10,11 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "db:link": "supabase link --project-ref $SUPABASE_PROJECT_REF",
+    "db:push": "supabase db push",
+    "db:status": "supabase migration list",
+    "db:new": "supabase migration new"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.4",
@@ -36,6 +40,7 @@
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
     "jsdom": "^28.1.0",
+    "supabase": "^2.115.0",
     "vite": "^6.1.0",
     "vitest": "^4.0.18"
   }

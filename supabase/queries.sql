@@ -48,16 +48,16 @@ order by views desc;
 
 
 -- ===========================================================================
--- 2. Willingness to pay
+-- 2. Would they use it weekly? (habit intent)
 -- ===========================================================================
--- Weaker than a real payment, stronger than a signup alone. "no" answers are
--- the useful ones: they say the thing works but not at a price.
+-- Habit is what has to be true before any price can be set. "Probably not"
+-- answers are the useful ones: they liked the pitch but not enough to return.
 select
-  coalesce(would_pay, '(did not answer)') as answer,
+  coalesce(usage_intent, '(did not answer)') as answer,
   count(*)                                as people,
   round(100.0 * count(*) / sum(count(*)) over (), 1) as pct
 from public.waitlist
-group by would_pay
+group by usage_intent
 order by people desc;
 
 
@@ -94,7 +94,7 @@ order by day desc, signups desc;
 -- ===========================================================================
 select
   (select count(*) from public.waitlist)                                   as total_signups,
-  (select count(*) from public.waitlist where would_pay = 'yes')           as would_pay_yes,
+  (select count(*) from public.waitlist where usage_intent = 'yes')           as usage_intent_yes,
   (select count(distinct session_id) from public.landing_events
      where event = 'view')                                                 as unique_visitors,
   (select count(*) from public.landing_events where event = 'explore_click') as clicked_into_app,
@@ -109,6 +109,6 @@ select
 -- ===========================================================================
 -- 6. The actual list, when you are ready to email people
 -- ===========================================================================
-select email, region, would_pay, source, created_at
+select email, region, usage_intent, source, created_at
 from public.waitlist
 order by created_at desc;

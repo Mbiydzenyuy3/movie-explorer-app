@@ -87,12 +87,20 @@ export const joinWaitlist = async (email) => {
  * Attaches the optional follow-up answers to an existing row.
  * Best-effort: these are a bonus signal, never a blocker.
  */
-export const addWaitlistDetails = async (email, { region, wouldPay }) => {
+export const addWaitlistDetails = async (email, { region, usageIntent }) => {
   try {
-    await supabase
+    // supabase-js reports database failures on the returned `error` property
+    // rather than by throwing, so the catch below only covers network faults.
+    // Without checking `error` here, a rejected update reported success.
+    const { error } = await supabase
       .from("waitlist")
-      .update({ region, would_pay: wouldPay }, MINIMAL)
+      .update({ region, usage_intent: usageIntent }, MINIMAL)
       .eq("email", email.trim().toLowerCase());
+
+    if (error) {
+      console.error("Waitlist detail update failed:", error);
+      return { ok: false };
+    }
     return { ok: true };
   } catch (err) {
     console.error("Waitlist detail update failed:", err);

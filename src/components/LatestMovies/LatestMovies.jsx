@@ -16,7 +16,7 @@ export default function LatestMovies({
   return (
     <>
       <div className={styles.headerCarousel}>
-        <h1>Latest & Trending</h1>
+        <h1 className={styles.sectionTitle}>Latest & Trending</h1>
       </div>
       {loading ? (
         <div className={styles.loadingSpinner}>

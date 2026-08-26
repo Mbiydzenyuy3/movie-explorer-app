@@ -23,7 +23,7 @@ export default function MovieSection({
   return (
     <>
       <div className={styles.headerCarousel}>
-        <h1>{title}</h1>
+        <h1 className={styles.sectionTitle}>{title}</h1>
       </div>
       <div className={styles.carouselCommon}>
         {sectionMovies.map((movie) => (

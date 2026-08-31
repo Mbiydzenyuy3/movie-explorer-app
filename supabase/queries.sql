@@ -3,8 +3,8 @@
 -- These are READ-ONLY and safe to run any time. Paste whichever one you need
 -- into the Supabase SQL Editor.
 --
--- Not to be confused with schema.sql and waitlist.sql, which are DDL and were
--- run once to create the tables. Do not re-run those.
+-- Not to be confused with supabase/migrations/, which is DDL and is applied
+-- with `npm run db:push`. This file is reporting only.
 --
 -- The app has no SELECT access to these tables by design: RLS grants anonymous
 -- visitors INSERT only, so the email list cannot be read from the public API.
@@ -112,3 +112,62 @@ select
 select email, region, usage_intent, source, created_at
 from public.waitlist
 order by created_at desc;
+
+-- ===========================================================================
+-- 7. THE GATE — the pass/fail decision from ADR 0002
+-- ===========================================================================
+-- docs/decisions/0002-demand-test-thresholds.md. The thresholds below were
+-- fixed before any data was collected and are not to be lowered afterwards.
+--
+-- Cold traffic only. A source is COLD unless it is 'direct' or carries a
+-- '-warm' suffix, which is how links shared into your own network are tagged.
+-- Warm signups measure politeness, not demand.
+--
+-- weekly_yes_pct is measured against ALL cold signups, not only those who
+-- answered. The follow-up is one tap on the confirmation screen; skipping it
+-- is itself a weak signal, so non-answers count against.
+--
+-- If 21 days have passed since the first link was shared and this still
+-- reports INCOMPLETE, the verdict is FAIL: the distribution problem is bigger
+-- than the product problem. Do not extend the window.
+with cold_events as (
+  select *
+  from public.landing_events
+  where source is not null
+    and source <> 'direct'
+    and source not like '%-warm'
+),
+cold_signups as (
+  select *
+  from public.waitlist
+  where source is not null
+    and source <> 'direct'
+    and source not like '%-warm'
+),
+m as (
+  select
+    (select count(distinct session_id) from cold_events where event = 'view')  as cold_visitors,
+    (select count(*) from cold_events where event = 'explore_click')           as opened_the_app,
+    (select count(*) from cold_signups)                                        as signups,
+    (select count(*) from cold_signups where usage_intent = 'yes')             as weekly_yes,
+    (select count(*) from cold_signups where usage_intent is not null)         as answered_the_question
+)
+select
+  cold_visitors,
+  signups,
+  round(100.0 * signups / nullif(cold_visitors, 0), 1)  as conversion_pct,      -- gate: >= 10
+  weekly_yes,
+  round(100.0 * weekly_yes / nullif(signups, 0), 1)     as weekly_yes_pct,      -- gate: >= 40
+  answered_the_question,
+  opened_the_app,                                                               -- context, not a gate
+  case
+    when cold_visitors < 100
+      then 'INCOMPLETE — under 100 cold visitors (FAIL if 21 days are up)'
+    when 100.0 * signups / cold_visitors >= 10
+     and 100.0 * weekly_yes / nullif(signups, 0) >= 40
+      then 'PASS — proceed; next work is in-app analytics, not features'
+    when 100.0 * signups / cold_visitors < 5
+      then 'FAIL — stop feature work, go and talk to ten people'
+    else 'RETRY (once) — rewrite the pitch, not the product'
+  end as verdict
+from m;

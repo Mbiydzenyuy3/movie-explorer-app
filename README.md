@@ -98,14 +98,28 @@ It does not host, stream, proxy or embed video. Earlier revisions pulled streams
 
 ## Running the demand test
 
-The landing page lives at `/early-access`. Tag every link you share so cold
-traffic can be told apart from your own network:
+The landing page lives at `/early-access`. **What counts as a pass is already
+decided** — see [ADR 0002](docs/decisions/0002-demand-test-thresholds.md). Read
+it before sharing the first link, not after the numbers arrive.
+
+Tag every link you share, and mark anything going to people who know you with a
+`-warm` suffix. Only cold traffic counts toward the gate; a signup from a friend
+measures politeness, not demand.
 
 ```
-/early-access?utm_source=whatsapp-groups
+# cold — counts
+/early-access?utm_source=reddit-nollywood
 /early-access?utm_source=x-twitter
-/early-access?utm_source=linkedin
+/early-access?utm_source=nairaland
+
+# warm — recorded, but excluded from the decision
+/early-access?utm_source=whatsapp-groups-warm
+/early-access?utm_source=linkedin-warm
 ```
+
+The gate: **100 cold unique visitors or 21 days**, then run query §7 of
+`supabase/queries.sql` **once**. It prints the verdict itself — PASS, RETRY or
+FAIL — so there is nothing left to interpret in the moment.
 
 ### Database changes
 
@@ -139,7 +153,8 @@ npm run db:status              # shows local vs remote
 | Path | Purpose |
 |---|---|
 | `supabase/migrations/` | Schema history. Applied with `npm run db:push`. |
-| `supabase/queries.sql` | Read-only reporting. Paste into the SQL Editor. |
+| `supabase/queries.sql` | Read-only reporting, including §7, the gate. Paste into the SQL Editor. |
+| `docs/decisions/0002-demand-test-thresholds.md` | What passes, what fails, and the rules that stop the numbers being renegotiated. |
 
 The app has no read access to the waitlist: RLS grants anonymous visitors
 INSERT but not SELECT, so the email list cannot be pulled from the public API.

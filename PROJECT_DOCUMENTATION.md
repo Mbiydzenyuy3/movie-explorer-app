@@ -228,7 +228,7 @@ accessibility 90+.
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| **Nobody wants this** | Existential | Landing-page test before building further. Currently unmitigated. |
+| **Nobody wants this** | Existential | Landing page built and instrumented; pass/fail thresholds fixed in [ADR 0002](docs/decisions/0002-demand-test-thresholds.md). Not yet run. |
 | Provider coverage gaps | High | Honest empty states; measure the rate; consider supplementing |
 | TMDB policy change / JustWatch data withdrawal | High | Single supply dependency. No fallback today. |
 | Differentiation copied | High | Only defence is depth in African catalogue curation |
@@ -245,7 +245,11 @@ accessibility 90+.
 2. **Rotate the TMDB key.** The old key shipped in a built bundle before the proxy
    existed and must be treated as compromised.
 3. **Add analytics.** Without click-through data, none of §9 can be answered.
-4. **Landing-page demand test.** The gating question before further building.
+4. **Run the landing-page demand test.** The gating question before further
+   building. Thresholds are fixed in
+   [ADR 0002](docs/decisions/0002-demand-test-thresholds.md) and read with query
+   §7 of `supabase/queries.sql`. Blocked on: the `usage_intent` rename migration
+   not yet applied to the live database, and no public deployment.
 5. Code splitting for the 768 kB bundle.
 6. Three pre-existing lint errors.
 

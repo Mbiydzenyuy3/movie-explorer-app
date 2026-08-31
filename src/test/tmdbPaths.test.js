@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 import {
   isAllowedTmdbPath,
   buildTmdbUrl,
-  fetchTmdb
+  fetchTmdb,
+  parseTmdbRequest
 } from "../../shared/tmdb-paths.js";
 
 // This allowlist is the only thing stopping the proxy being an open relay to
@@ -132,5 +133,50 @@ describe("fetchTmdb", () => {
     expect(result.ok).toBe(false);
     expect(result.timedOut).toBe(true);
     expect(result.detail).toContain("50ms");
+  });
+});
+
+
+// Both call sites feed this: the dev middleware sees a real path, production
+// sees the path as a query param because vercel.json rewrites it there. The
+// rewrite exists because a bracketed filename is a dynamic route, and Vercel
+// resolves those after vercel.json rewrites — so the old catch-all function
+// was deployed but unreachable, answering 404 in production while working in
+// dev. Getting this wrong is invisible until it is live, hence the coverage.
+describe("parseTmdbRequest", () => {
+  it("reads a real path, as the dev middleware supplies it", () => {
+    expect(parseTmdbRequest("/movie/550?page=2")).toEqual({
+      path: "movie/550",
+      search: "page=2"
+    });
+  });
+
+  it("reads the path from the query, as the production rewrite supplies it", () => {
+    expect(parseTmdbRequest("/api/tmdb?path=movie/550&page=2")).toEqual({
+      path: "movie/550",
+      search: "page=2"
+    });
+  });
+
+  it("handles a full absolute URL, which the edge runtime passes", () => {
+    expect(parseTmdbRequest("https://example.com/api/tmdb/movie/550/credits")).toEqual({
+      path: "movie/550/credits",
+      search: ""
+    });
+  });
+
+  // Forwarding it would land on TMDB as a stray filter on every request.
+  it("never forwards the path parameter upstream", () => {
+    expect(parseTmdbRequest("/api/tmdb?path=discover/movie&sort_by=popularity").search)
+      .toBe("sort_by=popularity");
+  });
+
+  it("returns an empty path when there is nothing to proxy", () => {
+    expect(parseTmdbRequest("/api/tmdb").path).toBe("");
+    expect(parseTmdbRequest("/api/tmdb/").path).toBe("");
+  });
+
+  it("strips stray slashes rather than passing them to the allowlist", () => {
+    expect(parseTmdbRequest("/api/tmdb?path=/movie/550/").path).toBe("movie/550");
   });
 });

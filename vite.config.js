@@ -4,6 +4,7 @@ import {
   isAllowedTmdbPath,
   buildTmdbUrl,
   fetchTmdb,
+  parseTmdbRequest,
 } from "./shared/tmdb-paths.js";
 
 /**
@@ -19,8 +20,9 @@ const tmdbProxyDev = (apiKey) => {
       res.end(JSON.stringify(body));
     };
 
-    const [rawPath, search = ""] = req.url.split("?");
-    const path = rawPath.replace(/^\/+|\/+$/g, "");
+    // Same parser as the edge function, so dev and production cannot disagree
+    // about what counts as a path.
+    const { path, search } = parseTmdbRequest(req.url);
 
     if (!path) return send(400, { error: "Missing TMDB path" });
     if (!isAllowedTmdbPath(path))

@@ -1,11 +1,25 @@
 // Vercel Edge Function — the only place the TMDB API key exists.
 //
-// Catch-all: /api/tmdb/movie/popular?page=2  ->  api.themoviedb.org/3/movie/popular?page=2
-// The key is read from TMDB_API_KEY. It deliberately has no VITE_ prefix:
-// Vite inlines every VITE_* var into the browser bundle, which is exactly the
+// The browser calls /api/tmdb/movie/popular?page=2 exactly as before; a rewrite
+// in vercel.json turns that into /api/tmdb?path=movie/popular&page=2 so this
+// file can live at a plain, non-dynamic path.
+//
+// That matters: this used to be api/tmdb/[...path].js, and a bracketed filename
+// is a dynamic route, which Vercel resolves AFTER the rewrites in vercel.json.
+// The SPA fallback matched first every time, so the function was built and
+// deployed but never reached — /api/tmdb/movie/popular answered 404 in
+// production while working fine in dev.
+//
+// The key is read from TMDB_API_KEY. It deliberately has no VITE_ prefix: Vite
+// inlines every VITE_* var into the browser bundle, which is exactly the
 // exposure this proxy exists to prevent.
 
-import { isAllowedTmdbPath, buildTmdbUrl, fetchTmdb } from "../../shared/tmdb-paths.js";
+import {
+  isAllowedTmdbPath,
+  buildTmdbUrl,
+  fetchTmdb,
+  parseTmdbRequest
+} from "../shared/tmdb-paths.js";
 
 export const config = { runtime: "edge" };
 
@@ -16,8 +30,7 @@ const json = (body, status) =>
   });
 
 export default async function handler(req) {
-  const url = new URL(req.url);
-  const path = url.pathname.replace(/^\/api\/tmdb\/?/, "").replace(/^\/+|\/+$/g, "");
+  const { path, search } = parseTmdbRequest(req.url);
 
   if (!path) return json({ error: "Missing TMDB path" }, 400);
   if (!isAllowedTmdbPath(path)) return json({ error: "Path not allowed" }, 403);
@@ -25,7 +38,7 @@ export default async function handler(req) {
   const apiKey = process.env.TMDB_API_KEY;
   if (!apiKey) return json({ error: "Server is missing TMDB_API_KEY" }, 500);
 
-  const result = await fetchTmdb(buildTmdbUrl(path, url.search, apiKey));
+  const result = await fetchTmdb(buildTmdbUrl(path, search, apiKey));
 
   if (!result.ok) {
     return json(

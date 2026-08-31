@@ -68,12 +68,26 @@ On Vercel, set `TMDB_API_KEY` as a project environment variable.
 
 ## Routing on Vercel
 
-`vercel.json` sends every path to `index.html` so a cold load of a deep link
-like `/early-access` reaches the router instead of a 404.
+`vercel.json` does two things, and the order matters.
 
-The negative lookahead in `"/((?!api/).*)"` is load-bearing. Without it the
-pattern also matches `/api/tmdb/*`, the edge function never runs, and the proxy
-answers with the HTML shell:
+```
+/api/tmdb/:path*   ->  /api/tmdb?path=:path*     the proxy
+/((?!api/).*)      ->  /index.html               the SPA fallback
+```
+
+The fallback lets a cold load of a deep link like `/early-access` reach the
+router instead of a 404. Its negative lookahead is load-bearing: without it the
+pattern also matches `/api/tmdb/*` and the proxy answers with the HTML shell.
+
+The first rule exists because of a subtler trap. The proxy was originally
+`api/tmdb/[...path].js`, and a bracketed filename is a **dynamic route**, which
+Vercel resolves *after* the rewrites in `vercel.json`. The SPA fallback won
+every race, so the function was built and deployed but never reached — the
+Vercel dashboard listed it under Functions while `/api/tmdb/movie/popular`
+returned 404 in production and worked perfectly in dev. A plain `api/tmdb.js`
+is resolved in the filesystem phase, which no rewrite can outrun.
+
+Check it after any deploy:
 
 ```bash
 curl -s https://<deployment>/api/tmdb/movie/550 | head -c 20
@@ -93,7 +107,8 @@ All TMDB traffic goes through `/api/tmdb/*` so the API key never reaches the bro
 browser  ->  /api/tmdb/movie/550       ->  api.themoviedb.org/3/movie/550?api_key=…
 ```
 
-- **Production:** [`api/tmdb/[...path].js`](api/tmdb/%5B...path%5D.js), a Vercel edge function.
+- **Production:** [`api/tmdb.js`](api/tmdb.js), a Vercel edge function, reached
+  through the `/api/tmdb/:path*` rewrite in `vercel.json`.
 - **Dev & preview:** middleware in [`vite.config.js`](vite.config.js).
 - **Shared:** both import the path allowlist from [`shared/tmdb-paths.js`](shared/tmdb-paths.js), so it cannot drift between them.
 
@@ -184,7 +199,7 @@ Read results in the Supabase SQL Editor, which bypasses RLS.
 ## Layout
 
 ```
-api/tmdb/[...path].js     Vercel edge proxy (holds the TMDB key)
+api/tmdb.js               Vercel edge proxy (holds the TMDB key)
 shared/tmdb-paths.js      Allowlist + URL builder, shared with vite.config.js
 src/
   components/             UI, one folder per component + CSS module

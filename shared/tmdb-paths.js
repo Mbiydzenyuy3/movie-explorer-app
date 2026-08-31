@@ -1,4 +1,4 @@
-// Shared between the Vercel edge proxy (api/tmdb/[...path].js) and the Vite dev
+// Shared between the Vercel edge proxy (api/tmdb.js) and the Vite dev
 // middleware (vite.config.js) so the allowlist can never drift between them.
 
 export const TMDB_BASE = "https://api.themoviedb.org/3";
@@ -22,6 +22,37 @@ const ALLOWED = [
 ];
 
 export const isAllowedTmdbPath = (path) => ALLOWED.some((re) => re.test(path));
+
+/**
+ * Pull the TMDB path, and the params worth forwarding, out of a request URL.
+ *
+ * Two shapes arrive, and both have to work:
+ *
+ *   /api/tmdb/movie/550?page=2        the dev middleware, which sees the real path
+ *   /api/tmdb?path=movie/550&page=2   production, after the vercel.json rewrite
+ *
+ * The rewrite exists because a bracketed filename (api/tmdb/[...path].js) is a
+ * dynamic route, and Vercel resolves those AFTER the rewrites in vercel.json.
+ * The SPA fallback therefore won every race and the function never ran. A plain
+ * api/tmdb.js is resolved in the filesystem phase instead, which nothing can
+ * outrun.
+ */
+export const parseTmdbRequest = (rawUrl) => {
+  const [rawPath, rawSearch = ""] = String(rawUrl).split("?");
+  const params = new URLSearchParams(rawSearch);
+
+  // Carried by the rewrite, not meant for TMDB: forwarding it would show up as
+  // a stray filter on every upstream request.
+  const fromQuery = params.get("path");
+  params.delete("path");
+
+  const fromPath = rawPath.replace(/^.*\/api\/tmdb\/?/, "");
+
+  return {
+    path: (fromQuery || fromPath || "").replace(/^\/+|\/+$/g, ""),
+    search: params.toString()
+  };
+};
 
 /**
  * Build the upstream TMDB URL, forcing our own api_key so a caller cannot

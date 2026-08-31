@@ -158,7 +158,7 @@ browser -> /api/tmdb/movie/550 -> api.themoviedb.org/3/movie/550?api_key=…
 
 | Environment | Implementation |
 |---|---|
-| Production | `api/tmdb/[...path].js` (Vercel edge function) |
+| Production | `api/tmdb.js` (Vercel edge function), via the `/api/tmdb/:path*` rewrite |
 | Dev / preview | Middleware in `vite.config.js` |
 | Shared | `shared/tmdb-paths.js` — allowlist + URL builder |
 

@@ -218,6 +218,13 @@
 }
 
 /* --------------------------------------------------------- done state */
+/* Replaces a framer-motion cross-fade. The library was 42 kB gzipped on a page
+   whose whole job is to load fast on mobile data; two fades do not justify it.
+   accessibility.css already neutralises this under prefers-reduced-motion, and
+   the rule below states it locally too. */
+.done { animation: fadeIn 0.2s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 .doneHeading {
   display: flex;
   align-items: center;
@@ -393,4 +400,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation: none; }
+  .done { animation: none; }
 }

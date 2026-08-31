@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
 import { Check, Loader2, ArrowRight, ExternalLink } from "lucide-react";
 import { joinWaitlist, addWaitlistDetails, trackEvent } from "../services/waitlist";
@@ -114,106 +113,90 @@ export default function EarlyAccessPage() {
             Get it when it launches
           </h2>
 
-          <AnimatePresence mode="wait" initial={false}>
-            {status !== "done" ? (
-              <motion.form
-                key="form"
-                className={styles.form}
-                onSubmit={handleSubmit}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <label htmlFor="email" className={styles.label}>
-                  Your email
-                </label>
+          {status !== "done" ? (
+            <form className={styles.form} onSubmit={handleSubmit}>
+              <label htmlFor="email" className={styles.label}>
+                Your email
+              </label>
 
-                <div className={styles.inputRow}>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={styles.input}
-                    aria-describedby={error ? "email-error" : "email-hint"}
-                    aria-invalid={status === "error" || undefined}
-                  />
-                  <button type="submit" className={styles.submit} disabled={status === "sending"}>
-                    {status === "sending" ? (
-                      <>
-                        <Loader2 size={16} className={styles.spinner} aria-hidden="true" />
-                        Joining
-                      </>
-                    ) : (
-                      <>
-                        Join the list
-                        <ArrowRight size={16} aria-hidden="true" />
-                      </>
-                    )}
-                  </button>
-                </div>
+              <div className={styles.inputRow}>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={styles.input}
+                  aria-describedby={error ? "email-error" : "email-hint"}
+                  aria-invalid={status === "error" || undefined}
+                />
+                <button type="submit" className={styles.submit} disabled={status === "sending"}>
+                  {status === "sending" ? (
+                    <>
+                      <Loader2 size={16} className={styles.spinner} aria-hidden="true" />
+                      Joining
+                    </>
+                  ) : (
+                    <>
+                      Join the list
+                      <ArrowRight size={16} aria-hidden="true" />
+                    </>
+                  )}
+                </button>
+              </div>
 
-                <p id="email-hint" className={styles.hint}>
-                  One email when it launches. No newsletter, no sharing your address.
+              <p id="email-hint" className={styles.hint}>
+                One email when it launches. No newsletter, no sharing your address.
+              </p>
+
+              {error && (
+                <p id="email-error" className={styles.error} role="alert">
+                  {error}
                 </p>
+              )}
+            </form>
+          ) : (
+            <div className={styles.done}>
+              <p className={styles.doneHeading}>
+                <Check size={18} aria-hidden="true" />
+                You&apos;re on the list
+              </p>
+              <p className={styles.doneBody}>
+                We&apos;ll email {email} once it launches. Nothing before then.
+              </p>
 
-                {error && (
-                  <p id="email-error" className={styles.error} role="alert">
-                    {error}
+              {!answered ? (
+                <div className={styles.question}>
+                  <p className={styles.questionText}>
+                    One quick question: would you use this every week?
                   </p>
-                )}
-              </motion.form>
-            ) : (
-              <motion.div
-                key="done"
-                className={styles.done}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <p className={styles.doneHeading}>
-                  <Check size={18} aria-hidden="true" />
-                  You&apos;re on the list
-                </p>
-                <p className={styles.doneBody}>
-                  We&apos;ll email {email} once it launches. Nothing before then.
-                </p>
-
-                {!answered ? (
-                  <div className={styles.question}>
-                    <p className={styles.questionText}>
-                      One quick question: would you use this every week?
-                    </p>
-                    <div className={styles.answers}>
-                      {[
-                        ["yes", "Yes"],
-                        ["maybe", "Maybe"],
-                        ["no", "Probably not"]
-                      ].map(([value, label]) => (
-                        <button
-                          key={value}
-                          type="button"
-                          className={styles.answer}
-                          onClick={() => handleAnswer(value)}
-                        >
-                          {label}
-                        </button>
-                      ))}
-                    </div>
+                  <div className={styles.answers}>
+                    {[
+                      ["yes", "Yes"],
+                      ["maybe", "Maybe"],
+                      ["no", "Probably not"]
+                    ].map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={styles.answer}
+                        onClick={() => handleAnswer(value)}
+                      >
+                        {label}
+                      </button>
+                    ))}
                   </div>
-                ) : (
-                  <p className={styles.thanks} role="status">
-                    Thank you. That genuinely helps.
-                  </p>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                </div>
+              ) : (
+                <p className={styles.thanks} role="status">
+                  Thank you. That genuinely helps.
+                </p>
+              )}
+            </div>
+          )}
         </section>
 
         {/* --------------------------------------------------------- steps */}

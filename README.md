@@ -66,6 +66,25 @@ On Vercel, set `TMDB_API_KEY` as a project environment variable.
 
 ---
 
+## Routing on Vercel
+
+`vercel.json` sends every path to `index.html` so a cold load of a deep link
+like `/early-access` reaches the router instead of a 404.
+
+The negative lookahead in `"/((?!api/).*)"` is load-bearing. Without it the
+pattern also matches `/api/tmdb/*`, the edge function never runs, and the proxy
+answers with the HTML shell:
+
+```bash
+curl -s https://<deployment>/api/tmdb/movie/550 | head -c 20
+# {"adult":false,...   proxy works
+# <!doctype html>      the rewrite is swallowing /api
+```
+
+That is the first thing to check after any deploy.
+
+---
+
 ## The TMDB proxy
 
 All TMDB traffic goes through `/api/tmdb/*` so the API key never reaches the browser.

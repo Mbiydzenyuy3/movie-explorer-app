@@ -252,12 +252,13 @@ accessibility 90+.
    [ADR 0002](docs/decisions/0002-demand-test-thresholds.md) and read with query
    §7 of `supabase/queries.sql`. Blocked on: the `usage_intent` rename migration
    not yet applied to the live database, and no public deployment.
-5. **Code splitting.** Now a demand-test blocker, not a nice-to-have: every
-   route is eagerly imported, so `/early-access` ships the whole app (780 kB,
-   231 kB gzipped) before it paints. `trackEvent("view")` fires from a
-   `useEffect`, which means anyone who gives up during that download is never
-   counted at all — they land in neither the numerator nor the denominator of
-   the ADR 0002 gate. See §9 and the ADR.
+5. ~~**Code splitting.**~~ **Done, 2026-08-31.** `/early-access` went from
+   245 kB to 85 kB of transfer, measured in a browser against a production
+   build: routes are lazy, every provider sits behind `AppProviders`, and the
+   landing page no longer loads framer-motion (42 kB) or supabase-js (51 kB).
+   It mattered because `trackEvent("view")` fires from a `useEffect` and cannot
+   run until the bundle has downloaded, so anyone who gave up first was counted
+   in neither the numerator nor the denominator of the ADR 0002 gate.
 6. Three pre-existing lint errors. *(Now reporting clean — verify and close.)*
 
 ---

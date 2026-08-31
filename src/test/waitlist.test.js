@@ -1,24 +1,24 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import waitlistSource from "../services/waitlist?raw";
 
-const mockInsert = vi.fn();
-const mockUpdate = vi.fn();
-const mockEq = vi.fn();
+import {
+  joinWaitlist,
+  addWaitlistDetails,
+  trackEvent,
+  getSource
+} from "../services/waitlist";
 
-vi.mock("../services/supabaseClient", () => ({
-  supabase: {
-    from: () => ({
-      insert: mockInsert,
-      update: (...args) => {
-        mockUpdate(...args);
-        return { eq: mockEq };
-      }
-    })
-  }
-}));
+const mockFetch = vi.fn();
+globalThis.fetch = mockFetch;
 
-const { joinWaitlist, addWaitlistDetails, trackEvent, getSource } = await import(
-  "../services/waitlist"
-);
+const okResponse = (status = 201) => ({ ok: true, status, json: async () => ({}) });
+const failResponse = (status, body = {}) => ({ ok: false, status, json: async () => body });
+
+// Arguments of the nth fetch call, decoded.
+const call = (n = 0) => {
+  const [url, init] = mockFetch.mock.calls[n];
+  return { url, init, body: JSON.parse(init.body) };
+};
 
 const setUrl = (search) => {
   Object.defineProperty(window, "location", {
@@ -27,10 +27,21 @@ const setUrl = (search) => {
   });
 };
 
+// The whole reason this module talks to PostgREST directly is page weight:
+// supabase-js is 51 kB gzipped on a landing page that makes three requests.
+// A stray import would undo it silently, so it is asserted rather than
+// left to a future bundle check.
+describe("bundle weight", () => {
+  it("does not pull in supabase-js", () => {
+    expect(waitlistSource).not.toMatch(/from\s+["'].*supabaseClient/);
+    expect(waitlistSource).not.toMatch(/@supabase\/supabase-js/);
+  });
+});
+
 describe("joinWaitlist", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockInsert.mockResolvedValue({ error: null });
+    mockFetch.mockResolvedValue(okResponse());
     setUrl("");
     localStorage.clear();
   });
@@ -41,7 +52,8 @@ describe("joinWaitlist", () => {
     const result = await joinWaitlist("  Sarah@Example.COM  ");
 
     expect(result.ok).toBe(true);
-    expect(mockInsert.mock.calls[0][0].email).toBe("sarah@example.com");
+    expect(call(0).url).toContain("/rest/v1/waitlist");
+    expect(call(0).body.email).toBe("sarah@example.com");
   });
 
   it.each([
@@ -55,12 +67,12 @@ describe("joinWaitlist", () => {
 
     expect(result.ok).toBe(false);
     expect(result.error).toBeTruthy();
-    expect(mockInsert).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   // Someone re-submitting is not an error from their point of view.
   it("treats a duplicate signup as success", async () => {
-    mockInsert.mockResolvedValue({ error: { code: "23505" } });
+    mockFetch.mockResolvedValue(failResponse(409, { code: "23505" }));
 
     const result = await joinWaitlist("sarah@example.com");
 
@@ -68,7 +80,8 @@ describe("joinWaitlist", () => {
   });
 
   it("surfaces a real failure without leaking internals", async () => {
-    mockInsert.mockResolvedValue({ error: { code: "42501", message: "RLS denied" } });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mockFetch.mockResolvedValue(failResponse(403, { code: "42501", message: "RLS denied" }));
 
     const result = await joinWaitlist("sarah@example.com");
 
@@ -76,12 +89,30 @@ describe("joinWaitlist", () => {
     expect(result.error).not.toContain("RLS");
   });
 
+  // A rejected fetch (offline, DNS, CORS) must read as a failure, not a
+  // success, or someone would be told they are on a list they are not on.
+  it("reports a network failure rather than claiming success", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mockFetch.mockRejectedValue(new Error("network down"));
+
+    const result = await joinWaitlist("sarah@example.com");
+
+    expect(result.ok).toBe(false);
+  });
+
   // The write must never request the row back: RLS grants INSERT but not
-  // SELECT, so returning:'minimal' is what keeps the list unreadable.
+  // SELECT, so return=minimal is what keeps the list unreadable.
   it("never asks for the inserted row back", async () => {
     await joinWaitlist("sarah@example.com");
 
-    expect(mockInsert.mock.calls[0][1]).toEqual({ returning: "minimal" });
+    expect(call(0).init.headers.Prefer).toBe("return=minimal");
+  });
+
+  it("records a signup event after a successful join", async () => {
+    await joinWaitlist("sarah@example.com");
+
+    expect(call(1).url).toContain("/rest/v1/landing_events");
+    expect(call(1).body.event).toBe("signup");
   });
 });
 
@@ -106,7 +137,7 @@ describe("getSource", () => {
 describe("trackEvent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockInsert.mockResolvedValue({ error: null });
+    mockFetch.mockResolvedValue(okResponse());
     setUrl("?utm_source=x-twitter");
     localStorage.clear();
   });
@@ -114,15 +145,12 @@ describe("trackEvent", () => {
   it("records the event with its source", async () => {
     await trackEvent("view");
 
-    expect(mockInsert.mock.calls[0][0]).toMatchObject({
-      event: "view",
-      source: "x-twitter"
-    });
+    expect(call(0).body).toMatchObject({ event: "view", source: "x-twitter" });
   });
 
   // Analytics failing must never take the page down with it.
   it("swallows failures", async () => {
-    mockInsert.mockRejectedValue(new Error("network down"));
+    mockFetch.mockRejectedValue(new Error("network down"));
     vi.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(trackEvent("view")).resolves.toBeUndefined();
@@ -132,22 +160,29 @@ describe("trackEvent", () => {
 describe("addWaitlistDetails", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockEq.mockResolvedValue({ error: null });
+    mockFetch.mockResolvedValue(okResponse(204));
   });
 
   it("attaches answers to the matching row", async () => {
-    await addWaitlistDetails("Sarah@Example.com", { region: "NG", usageIntent: "yes" });
+    const result = await addWaitlistDetails("Sarah@Example.com", {
+      region: "NG",
+      usageIntent: "yes"
+    });
 
-    expect(mockUpdate).toHaveBeenCalledWith(
-      { region: "NG", usage_intent: "yes" },
-      { returning: "minimal" }
-    );
-    expect(mockEq).toHaveBeenCalledWith("email", "sarah@example.com");
+    expect(result.ok).toBe(true);
+    expect(call(0).init.method).toBe("PATCH");
+    // The address is URL-encoded, so a + in an address filters correctly
+    // rather than being read as a space.
+    expect(call(0).url).toContain("waitlist?email=eq.sarah%40example.com");
+    expect(call(0).body).toEqual({ region: "NG", usage_intent: "yes" });
   });
+
   it("reports failure when the database rejects the update", async () => {
-    // supabase-js surfaces db failures on `error` instead of throwing; this
-    // previously fell through to a success result.
-    mockEq.mockResolvedValue({ error: { code: "42703", message: "column does not exist" } });
+    // This is the PGRST204 case: it failed while the page still thanked the
+    // visitor, which would have read later as weak demand rather than a bug.
+    mockFetch.mockResolvedValue(
+      failResponse(400, { code: "PGRST204", message: "column does not exist" })
+    );
     vi.spyOn(console, "error").mockImplementation(() => {});
 
     const result = await addWaitlistDetails("sarah@example.com", {
@@ -157,5 +192,4 @@ describe("addWaitlistDetails", () => {
 
     expect(result.ok).toBe(false);
   });
-
 });

@@ -1,10 +1,17 @@
-import { supabase } from "./supabaseClient";
+// Waitlist and landing analytics for the demand test.
+//
+// This module deliberately does NOT use supabase-js. The client is 51 kB
+// gzipped, and this page makes three requests against PostgREST: two inserts
+// and one update. /early-access is the cold-traffic landing page the demand
+// test depends on, aimed at mobile users in markets where data is expensive,
+// and anyone who leaves during the download is invisible to the test — they
+// are counted as neither a visitor nor a signup. Fifty kilobytes for three
+// HTTP calls is the wrong trade here.
+//
+// See docs/decisions/0002-demand-test-thresholds.md.
 
-// The waitlist tables are insert-only for anonymous visitors: RLS grants INSERT
-// but no SELECT, so the email list cannot be read off the public API. Every
-// write therefore uses returning:'minimal' — asking for the row back would be
-// a read, and would fail.
-const MINIMAL = { returning: "minimal" };
+const SUPABASE_URL = String(import.meta.env.VITE_SUPABASE_URL || "").replace(/\/+$/, "");
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 const SESSION_KEY = "vibebox.landingSession";
 
@@ -31,7 +38,8 @@ export const getSessionId = () => {
  *
  * This matters more than it looks: signups from the founder's own network are
  * much weaker evidence than signups from cold traffic, and this is the only
- * thing that tells them apart afterwards.
+ * thing that tells them apart afterwards. Links shared into a known audience
+ * carry a "-warm" suffix and are excluded from the gate.
  */
 export const getSource = () => {
   try {
@@ -43,17 +51,50 @@ export const getSource = () => {
 };
 
 /**
+ * One PostgREST request.
+ *
+ * Never throws — a caller decides what a failure means, and analytics failing
+ * must not take the page down. Resolves to { ok: true }, or { ok: false } with
+ * the Postgres SQLSTATE in `code` when the server supplied one.
+ */
+const request = async (method, path, body) => {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      method,
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        "Content-Type": "application/json",
+        // RLS grants anonymous visitors INSERT but not SELECT, so asking for
+        // the row back would fail. It also keeps the email list off the wire.
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (res.ok) return { ok: true };
+
+    // PostgREST reports failures as a JSON body carrying the SQLSTATE.
+    // A 204 or an empty body leaves nothing to parse, hence the catch.
+    const detail = await res.json().catch(() => ({}));
+    return { ok: false, status: res.status, code: detail.code, message: detail.message };
+  } catch (err) {
+    return { ok: false, code: "network", message: String(err) };
+  }
+};
+
+/**
  * Records a landing-page event. Fire-and-forget: analytics must never block or
  * break the page, so failures are swallowed after logging.
  */
 export const trackEvent = async (event) => {
-  try {
-    await supabase
-      .from("landing_events")
-      .insert({ event, source: getSource(), session_id: getSessionId() }, MINIMAL);
-  } catch (err) {
-    console.error("Landing analytics failed:", err);
-  }
+  const result = await request("POST", "landing_events", {
+    event,
+    source: getSource(),
+    session_id: getSessionId()
+  });
+
+  if (!result.ok) console.error("Landing analytics failed:", result);
 };
 
 /**
@@ -67,15 +108,13 @@ export const joinWaitlist = async (email) => {
     return { ok: false, error: "That doesn't look like an email address." };
   }
 
-  const { error } = await supabase
-    .from("waitlist")
-    .insert({ email: trimmed, source: getSource() }, MINIMAL);
+  const result = await request("POST", "waitlist", { email: trimmed, source: getSource() });
 
-  if (error) {
+  if (!result.ok) {
     // 23505 = unique violation: already signed up. Not a failure from the
     // visitor's point of view, so it is reported as success.
-    if (error.code === "23505") return { ok: true, duplicate: true };
-    console.error("Waitlist signup failed:", error);
+    if (result.code === "23505") return { ok: true, duplicate: true };
+    console.error("Waitlist signup failed:", result);
     return { ok: false, error: "Couldn't save that just now. Try again in a moment." };
   }
 
@@ -86,26 +125,25 @@ export const joinWaitlist = async (email) => {
 /**
  * Attaches the optional follow-up answers to an existing row.
  * Best-effort: these are a bonus signal, never a blocker.
+ *
+ * The failure path matters more than it looks. Until the usage_intent rename
+ * was applied, this call failed with PGRST204 while the page still thanked the
+ * visitor, which would have read later as weak demand rather than as a bug.
  */
 export const addWaitlistDetails = async (email, { region, usageIntent }) => {
-  try {
-    // supabase-js reports database failures on the returned `error` property
-    // rather than by throwing, so the catch below only covers network faults.
-    // Without checking `error` here, a rejected update reported success.
-    const { error } = await supabase
-      .from("waitlist")
-      .update({ region, usage_intent: usageIntent }, MINIMAL)
-      .eq("email", email.trim().toLowerCase());
+  const target = encodeURIComponent(email.trim().toLowerCase());
 
-    if (error) {
-      console.error("Waitlist detail update failed:", error);
-      return { ok: false };
-    }
-    return { ok: true };
-  } catch (err) {
-    console.error("Waitlist detail update failed:", err);
+  const result = await request("PATCH", `waitlist?email=eq.${target}`, {
+    region,
+    usage_intent: usageIntent
+  });
+
+  if (!result.ok) {
+    console.error("Waitlist detail update failed:", result);
     return { ok: false };
   }
+
+  return { ok: true };
 };
 
 export default { joinWaitlist, addWaitlistDetails, trackEvent, getSource, getSessionId };

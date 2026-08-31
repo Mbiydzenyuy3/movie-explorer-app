@@ -242,16 +242,23 @@ accessibility 90+.
 
 1. **Verify Supabase RLS** on `watch_history` and `profiles`. Highest-priority
    security item.
-2. **Rotate the TMDB key.** The old key shipped in a built bundle before the proxy
-   existed and must be treated as compromised.
+2. ~~**Rotate the TMDB key.**~~ **Done, 2026-08-31.** The old key had shipped in
+   a built bundle before the proxy existed. The replacement is in `.env` and
+   verified working against TMDB. Must also be set as `TMDB_API_KEY` in the
+   Vercel project before deploying.
 3. **Add analytics.** Without click-through data, none of §9 can be answered.
 4. **Run the landing-page demand test.** The gating question before further
    building. Thresholds are fixed in
    [ADR 0002](docs/decisions/0002-demand-test-thresholds.md) and read with query
    §7 of `supabase/queries.sql`. Blocked on: the `usage_intent` rename migration
    not yet applied to the live database, and no public deployment.
-5. Code splitting for the 768 kB bundle.
-6. Three pre-existing lint errors.
+5. **Code splitting.** Now a demand-test blocker, not a nice-to-have: every
+   route is eagerly imported, so `/early-access` ships the whole app (780 kB,
+   231 kB gzipped) before it paints. `trackEvent("view")` fires from a
+   `useEffect`, which means anyone who gives up during that download is never
+   counted at all — they land in neither the numerator nor the denominator of
+   the ADR 0002 gate. See §9 and the ADR.
+6. Three pre-existing lint errors. *(Now reporting clean — verify and close.)*
 
 ---
 

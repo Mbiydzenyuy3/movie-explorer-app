@@ -23,11 +23,13 @@
 --      'direct', which the gate already excludes, but they still distort
 --      queries 1, 4 and 5.
 --
--- The complete fix is one date. Run this ONCE, on the day you share the first
--- link, substituting that date. Everything before it is noise by definition.
+-- Run this ONCE, immediately before sharing the first link. Everything that
+-- exists at that moment is noise by definition, so the cutoff is simply "now"
+-- — no date to pick, and no risk of deleting the first real signups because
+-- the date you typed included today.
 --
---   delete from public.landing_events where created_at < '2026-09-01';
---   delete from public.waitlist        where created_at < '2026-09-01';
+--   delete from public.landing_events where created_at < now();
+--   delete from public.waitlist        where created_at < now();
 --
 -- Left commented out on purpose: this file should stay safe to run whole.
 

@@ -125,7 +125,8 @@ The test cannot be run until all four are true:
 2. The app is deployed and `/early-access` is reachable at a public URL.
 3. All pre-launch rows are deleted. Local QA writes to the production project,
    so every `npm run dev` visit to `/early-access` leaves a real `view` behind.
-   `queries.sql` §0 clears everything before the launch date.
+   `queries.sql` §0 clears everything that exists at the moment you run it,
+   which is why it is run immediately before the first link goes out.
 4. The share links carry warmth-tagged `utm_source` values.
 
 ---

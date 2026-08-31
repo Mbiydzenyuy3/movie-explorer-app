@@ -13,6 +13,18 @@
 const SUPABASE_URL = String(import.meta.env.VITE_SUPABASE_URL || "").replace(/\/+$/, "");
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Guard against a deploy that is missing VITE_SUPABASE_URL, which is easier to
+// do than it sounds: dropping the VITE_ prefix to "keep the key secret" hides
+// the value from the client build entirely.
+//
+// Without this check the failure is not loud. An empty SUPABASE_URL makes the
+// fetch below relative — /rest/v1/waitlist — so it resolves against our own
+// domain instead of Supabase, where vercel.json rewrites unmatched paths to
+// index.html. Depending on how the host answers a POST there, res.ok can be
+// true: the visitor is told they are on the list and nothing was written. That
+// would read at the end of the window as a page nobody signed up through.
+const IS_CONFIGURED = /^https?:\/\//.test(SUPABASE_URL) && Boolean(ANON_KEY);
+
 const SESSION_KEY = "vibebox.landingSession";
 
 /**
@@ -58,6 +70,14 @@ export const getSource = () => {
  * the Postgres SQLSTATE in `code` when the server supplied one.
  */
 const request = async (method, path, body) => {
+  if (!IS_CONFIGURED) {
+    return {
+      ok: false,
+      code: "config",
+      message: "VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are missing from this build"
+    };
+  }
+
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
       method,

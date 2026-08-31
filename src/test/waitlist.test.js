@@ -116,6 +116,29 @@ describe("joinWaitlist", () => {
   });
 });
 
+// The prefix is what makes a variable visible to the browser build. Removing
+// it to "keep the key secret" leaves the value undefined at runtime, and an
+// undefined base URL makes every request relative to our own domain.
+describe("a deploy missing VITE_SUPABASE_URL", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("reports failure rather than telling someone they joined", async () => {
+    vi.clearAllMocks();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.resetModules();
+    vi.stubEnv("VITE_SUPABASE_URL", "");
+
+    const { joinWaitlist: join } = await import("../services/waitlist");
+    const result = await join("sarah@example.com");
+
+    expect(result.ok).toBe(false);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+});
+
 describe("getSource", () => {
   beforeEach(() => setUrl(""));
 

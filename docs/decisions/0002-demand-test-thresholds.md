@@ -111,6 +111,11 @@ signup is worth knowing before deciding what to change in a re-run.
 
 ## Prerequisites before the clock starts
 
+Run the preflight query (`queries.sql` §0b) first — every row must read OK. It
+checks the pipeline mechanically, because a broken one does not announce itself:
+signups keep working while the weekly-use answer is silently dropped, which
+reads later as weak demand rather than as a bug.
+
 The test cannot be run until all four are true:
 
 1. The `usage_intent` rename migration is applied to the live database

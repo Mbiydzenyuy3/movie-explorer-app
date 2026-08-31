@@ -26,6 +26,60 @@
 
 
 -- ===========================================================================
+-- 0b. PREFLIGHT — run this BEFORE sharing the first link
+-- ===========================================================================
+-- Checks the pipeline is actually capable of recording the test. Every row
+-- must read OK. A broken pipeline does not announce itself: signups keep
+-- working while the weekly-use answer is dropped, which reads later as weak
+-- demand rather than as a bug, and half the ADR 0002 pass condition is lost.
+select 'usage_intent column exists' as check_name,
+       case when exists (
+              select 1 from information_schema.columns
+              where table_schema = 'public'
+                and table_name   = 'waitlist'
+                and column_name  = 'usage_intent')
+            then 'OK'
+            else 'FAIL — rename migration not applied; run npm run db:push'
+       end as result
+union all
+select 'waitlist not publicly readable',
+       case when (select c.relrowsecurity
+                    from pg_class c
+                    join pg_namespace n on n.oid = c.relnamespace
+                   where n.nspname = 'public' and c.relname = 'waitlist')
+             and not exists (select 1 from pg_policies
+                              where schemaname = 'public'
+                                and tablename  = 'waitlist'
+                                and cmd in ('SELECT', 'ALL'))
+            then 'OK'
+            else 'FAIL — the email list may be readable from the public API'
+       end
+union all
+select 'landing_events not publicly readable',
+       case when (select c.relrowsecurity
+                    from pg_class c
+                    join pg_namespace n on n.oid = c.relnamespace
+                   where n.nspname = 'public' and c.relname = 'landing_events')
+             and not exists (select 1 from pg_policies
+                              where schemaname = 'public'
+                                and tablename  = 'landing_events'
+                                and cmd in ('SELECT', 'ALL'))
+            then 'OK'
+            else 'FAIL — event data readable from the public API'
+       end
+union all
+select 'probe rows cleared',
+       case when (select count(*) from public.waitlist
+                   where source = 'verification-probe'
+                      or email like 'e2e-%@example.com') = 0
+             and (select count(*) from public.landing_events
+                   where source = 'verification-probe') = 0
+            then 'OK'
+            else 'FAIL — run section 0 above'
+       end;
+
+
+-- ===========================================================================
 -- 1. THE NUMBER THAT DECIDES THINGS — conversion by traffic source
 -- ===========================================================================
 -- Read the sources separately. A signup from someone who knows you is much

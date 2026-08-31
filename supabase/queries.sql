@@ -14,13 +14,20 @@
 -- ===========================================================================
 -- 0. ONE-TIME CLEANUP — remove verification rows before counting anything
 -- ===========================================================================
--- These rows were created while testing that the tables worked. Delete them
--- once, then never again.
+-- Two sources of junk, both real:
 --
---   delete from public.waitlist
---   where source = 'verification-probe' or email like 'e2e-%@example.com';
+--   1. Rows created while testing that the tables worked.
+--   2. Rows created by your own QA. .env points at the production project, so
+--      every local `npm run dev` or `npm run preview` visit to /early-access
+--      writes a genuine 'view' into landing_events. They arrive as source
+--      'direct', which the gate already excludes, but they still distort
+--      queries 1, 4 and 5.
 --
---   delete from public.landing_events where source = 'verification-probe';
+-- The complete fix is one date. Run this ONCE, on the day you share the first
+-- link, substituting that date. Everything before it is noise by definition.
+--
+--   delete from public.landing_events where created_at < '2026-09-01';
+--   delete from public.waitlist        where created_at < '2026-09-01';
 --
 -- Left commented out on purpose: this file should stay safe to run whole.
 

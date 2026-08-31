@@ -123,7 +123,9 @@ The test cannot be run until all four are true:
    Until then the habit answer fails with PGRST204 and the second PASS condition
    is unmeasurable.
 2. The app is deployed and `/early-access` is reachable at a public URL.
-3. Verification-probe rows are deleted.
+3. All pre-launch rows are deleted. Local QA writes to the production project,
+   so every `npm run dev` visit to `/early-access` leaves a real `view` behind.
+   `queries.sql` §0 clears everything before the launch date.
 4. The share links carry warmth-tagged `utm_source` values.
 
 ---

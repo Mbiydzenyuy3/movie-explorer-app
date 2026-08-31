@@ -1,68 +1,49 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./lib/queryClient";
-import { AuthProvider } from "./context/AuthContext";
-import { MoodProvider } from "./context/MoodContext";
-import { AccessibilityProvider } from "./context/AccessibilityContext";
 import ErrorBoundary from "./components/ErrorCatch/ErrorDisplay";
-import SkipLink from "./components/SkipLink/SkipLink";
 
-import Homepage from "./pages/Home";
-import DetailPage from "./pages/MovieDetailsPage";
-import MoviesPage from "./pages/MoviesPage";
-import SeriesPage from "./pages/SeriesPage";
-import TrendingPage from "./pages/TrendingPage";
-import CategoriesPage from "./pages/CategoriesPage";
-import GenrePage from "./pages/GenrePage";
-import SearchPage from "./pages/SearchPage";
-import WatchlistPage from "./pages/WatchlistPage";
-import EarlyAccessPage from "./pages/EarlyAccessPage";
+// Routes are loaded on demand so that a visitor only downloads the page they
+// asked for. /early-access is deliberately outside AppProviders: it is the
+// cold-traffic landing page for the demand test, and every kilobyte it does
+// not need is one fewer reason for someone on mobile data to leave before the
+// page appears. See docs/decisions/0002-demand-test-thresholds.md.
+const EarlyAccessPage = lazy(() => import("./pages/EarlyAccessPage"));
+const AppProviders = lazy(() => import("./AppProviders"));
 
-import PropTypes from "prop-types";
-import { DetailMovieData } from "./context/movieContext";
-import { useSyncUser } from "./services/userService";
-
-const UserSyncWrapper = ({ children }) => {
-  useSyncUser();
-  return <>{children}</>;
-};
-
-UserSyncWrapper.propTypes = {
-  children: PropTypes.node
-};
+const Homepage = lazy(() => import("./pages/Home"));
+const DetailPage = lazy(() => import("./pages/MovieDetailsPage"));
+const MoviesPage = lazy(() => import("./pages/MoviesPage"));
+const SeriesPage = lazy(() => import("./pages/SeriesPage"));
+const TrendingPage = lazy(() => import("./pages/TrendingPage"));
+const CategoriesPage = lazy(() => import("./pages/CategoriesPage"));
+const GenrePage = lazy(() => import("./pages/GenrePage"));
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const WatchlistPage = lazy(() => import("./pages/WatchlistPage"));
 
 function App() {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <UserSyncWrapper>
-            <MoodProvider>
-              <AccessibilityProvider>
-                <SkipLink />
-                <DetailMovieData>
-                  <BrowserRouter>
-                    <main id='main-content' tabIndex={-1}>
-                      <Routes>
-                        <Route path='/' element={<Homepage />} />
-                        <Route path='/movies' element={<MoviesPage />} />
-                        <Route path='/series' element={<SeriesPage />} />
-                        <Route path='/trending' element={<TrendingPage />} />
-                        <Route path='/categories' element={<CategoriesPage />} />
-                        <Route path='/categories/:id' element={<GenrePage />} />
-                        <Route path='/details/:id' element={<DetailPage />} />
-                        <Route path='/search' element={<SearchPage />} />
-                        <Route path='/watchlist' element={<WatchlistPage />} />
-                        <Route path='/early-access' element={<EarlyAccessPage />} />
-                      </Routes>
-                    </main>
-                  </BrowserRouter>
-                </DetailMovieData>
-              </AccessibilityProvider>
-            </MoodProvider>
-          </UserSyncWrapper>
-        </AuthProvider>
-      </QueryClientProvider>
+      <BrowserRouter>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path='/early-access' element={<EarlyAccessPage />} />
+
+            {/* Pathless layout route: absolute paths are unchanged, but every
+                page below it now loads behind the provider chunk. */}
+            <Route element={<AppProviders />}>
+              <Route path='/' element={<Homepage />} />
+              <Route path='/movies' element={<MoviesPage />} />
+              <Route path='/series' element={<SeriesPage />} />
+              <Route path='/trending' element={<TrendingPage />} />
+              <Route path='/categories' element={<CategoriesPage />} />
+              <Route path='/categories/:id' element={<GenrePage />} />
+              <Route path='/details/:id' element={<DetailPage />} />
+              <Route path='/search' element={<SearchPage />} />
+              <Route path='/watchlist' element={<WatchlistPage />} />
+            </Route>
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }

@@ -1,8 +1,9 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
-// The /react entry, not /next — Vercel's setup page shows the Next.js import,
-// which does not resolve in a Vite build.
+// The /react entries, not /next — Vercel's setup pages show the Next.js
+// imports, which do not resolve in a Vite build.
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import ErrorBoundary from "./components/ErrorCatch/ErrorDisplay";
 
 // Routes are loaded on demand so that a visitor only downloads the page they
@@ -54,6 +55,15 @@ function App() {
             tracking is wrong, which is worth knowing before trusting it for
             21 days. Cookieless, so no consent banner. */}
         <Analytics />
+
+        {/* Real load times from real visitors' devices, rather than from a
+            laptop on home broadband. The landing page was cut from 245 kB to
+            85 kB for people on mobile data in Nigeria, Cameroon, Ghana and
+            Kenya; this is the only way to find out whether that actually
+            reached them. Note the per-country breakdown is a paid feature —
+            the free view splits desktop from mobile, which is still the split
+            that matters here. */}
+        <SpeedInsights />
       </BrowserRouter>
     </ErrorBoundary>
   );

@@ -251,7 +251,13 @@ accessibility 90+.
    the app, plus an independent cross-check on `landing_events`. It does **not**
    answer §9 — provider-link click-through and mood-filter→detail rate are
    custom events nobody records yet. Must be enabled in the Vercel dashboard
-   (Project → Analytics) or the script never loads.
+   (Project → Analytics) or the script never loads. Vercel Speed Insights is
+   wired in alongside it (`<SpeedInsights />`) for real load times from real
+   devices — the only check on whether the 245 kB → 85 kB work reached people on
+   mobile data. On the free plan the per-country breakdown and Real Experience
+   Score are paid; the desktop/mobile split and the individual metrics are not.
+   Custom events are Pro-only, so §9's click-through metrics have to live in
+   `landing_events`, not here.
 4. **Run the landing-page demand test.** The gating question before further
    building. Thresholds are fixed in
    [ADR 0002](docs/decisions/0002-demand-test-thresholds.md) and read with query

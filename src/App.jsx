@@ -1,5 +1,8 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
+// The /react entry, not /next — Vercel's setup page shows the Next.js import,
+// which does not resolve in a Vite build.
+import { Analytics } from "@vercel/analytics/react";
 import ErrorBoundary from "./components/ErrorCatch/ErrorDisplay";
 
 // Routes are loaded on demand so that a visitor only downloads the page they
@@ -43,6 +46,14 @@ function App() {
             </Route>
           </Routes>
         </Suspense>
+
+        {/* Page views for the whole app, which otherwise measures nothing —
+            PROJECT_DOCUMENTATION.md §11.3. It does NOT replace landing_events:
+            the demand test in ADR 0002 is decided from Supabase, and this is a
+            second, independent count. If the two disagree badly, our own
+            tracking is wrong, which is worth knowing before trusting it for
+            21 days. Cookieless, so no consent banner. */}
+        <Analytics />
       </BrowserRouter>
     </ErrorBoundary>
   );

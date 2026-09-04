@@ -246,7 +246,12 @@ accessibility 90+.
    a built bundle before the proxy existed. The replacement is in `.env` and
    verified working against TMDB. Must also be set as `TMDB_API_KEY` in the
    Vercel project before deploying.
-3. **Add analytics.** Without click-through data, none of §9 can be answered.
+3. **Add analytics.** *Partly done, 2026-09-04:* Vercel Web Analytics is wired
+   in (`<Analytics />` in `App.jsx`), giving visitor and page-view counts across
+   the app, plus an independent cross-check on `landing_events`. It does **not**
+   answer §9 — provider-link click-through and mood-filter→detail rate are
+   custom events nobody records yet. Must be enabled in the Vercel dashboard
+   (Project → Analytics) or the script never loads.
 4. **Run the landing-page demand test.** The gating question before further
    building. Thresholds are fixed in
    [ADR 0002](docs/decisions/0002-demand-test-thresholds.md) and read with query
